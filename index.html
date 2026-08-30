@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portal EXIM</title>
+  <title>NexPortal-EXIM</title>
   <style>
     html, body {
       margin: 0;
@@ -23,9 +23,7 @@
     }
     iframe {
       width: 100%;
-      /* Menambah tinggi iframe 50px */
       height: calc(100% + 50px);
-      /* Mendorong bagian atas iframe (banner Google) ke luar layar */
       margin-top: -50px;
       border: none;
     }
@@ -33,7 +31,8 @@
 </head>
 <body>
   <div class="container">
-    <iframe src="https://script.google.com/macros/s/AKfycbyxg0mddRYbApsUfQexlA9zC7LQWhLr3kh5FJeXKhAVYCpSoJnrrrpAbfPeA2ts-4vP/exec"></iframe>
+    <!-- Tambahkan ?embed=true di ujung URL Apps Script -->
+    <iframe src="https://script.google.com/macros/s/AKfycbyxg0mddRYbApsUfQexlA9zC7LQWhLr3kh5FJeXKhAVYCpSoJnrrrpAbfPeA2ts-4vP/exec?embed=true"></iframe>
   </div>
 </body>
 </html>
