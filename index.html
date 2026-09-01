@@ -1,50 +1,1349 @@
-<!-- 1. Panggil SDK Supabase di tag <head> -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script>
-  // 2. Inisialisasi Supabase Client
-  const SUPABASE_URL = 'https://kmpvhpiraqkvljsbrhm.supabase.co';
-  const SUPABASE_KEY = 'sb_publishable_KcGVwFpF2qyiwmmePfkmWw_nTFwV6wI';
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>NexPortal-EXIM</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   
-  // PERBAIKAN DI BARIS INI: Pakai window.supabase.createClient agar tidak error
-  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  <!-- SDK SUPABASE -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  // 3. Fungsi contoh pembacaan data control_schedule
-  async function loadControlSchedule() {
-    const { data, error } = await supabaseClient
-      .from('control_schedule')
-      .select('*')
-      .order('id', { ascending: true });
-
-    if (error) {
-      console.error('Gagal mengambil data schedule:', error.message);
-      return;
+  <style>
+    :root {
+      --bg-image: url('https://lh3.googleusercontent.com/d/1Rxg3_8Q53qaXpV2bMtMfS-llOf5bSw80');
     }
 
-    console.log('Data Schedule dari Supabase:', data);
-    // Masukkan data ke fungsi render tabel UI kamu di sini
-  }
-
-  // 4. Fungsi contoh pembacaan data control_booking
-  async function loadControlBooking() {
-    const { data, error } = await supabaseClient
-      .from('control_booking')
-      .select('*')
-      .order('id', { ascending: true });
-
-    if (error) {
-      console.error('Gagal mengambil data booking:', error.message);
-      return;
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter', sans-serif; }
+    
+    html, body { 
+      background: #0f172a; 
+      color: #f8fafc; 
+      height: 100vh; 
+      width: 100vw;
+      overflow: hidden !important; 
     }
 
-    console.log('Data Booking dari Supabase:', data);
-    // Masukkan data ke fungsi render tabel UI kamu di sini
-  }
+    ::-webkit-scrollbar { display: none; }
+    html, body, div { -ms-overflow-style: none; scrollbar-width: none; }
 
-  // Jalankan pemanggilan data saat halaman selesai dimuat
-  document.addEventListener('DOMContentLoaded', () => {
-    loadControlSchedule();
-    loadControlBooking();
-  });
-  
-</script>
+    #login-screen {
+      display: flex; 
+      justify-content: center; 
+      align-items: flex-end; 
+      height: 100vh;
+      width: 100vw;
+      background-image: linear-gradient(rgba(15, 23, 42, 0.35), rgba(15, 23, 42, 0.55)), var(--bg-image);
+      background-size: cover; 
+      background-position: center; 
+      background-repeat: no-repeat;
+      padding: 24px 16px 10vh;
+      overflow: hidden;
+    }
+
+    .login-box {
+      background: rgba(30, 41, 59, 0.45); 
+      backdrop-filter: blur(10px); 
+      -webkit-backdrop-filter: blur(10px);
+      padding: 20px 20px; 
+      border-radius: 14px; 
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      width: 100%; 
+      max-width: 320px; 
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      text-align: center;
+    }
+
+    .login-box h2 { text-align: center; margin-bottom: 4px; color: #38bdf8; font-weight: 700; font-size: 19px; }
+    .login-subtitle { text-align: center; color: #cbd5e1; font-size: 12px; margin-bottom: 18px; }
+
+    .input-group { margin-bottom: 14px; position: relative; text-align: left; }
+    .input-group label { display: block; font-size: 12px; color: #cbd5e1; margin-bottom: 4px; font-weight: 500; }
+    
+    .password-wrapper { position: relative; display: flex; align-items: center; }
+    .input-group input, .input-group select {
+      width: 100%; padding: 10px; background: rgba(15, 23, 42, 0.7); border: 1px solid #475569;
+      border-radius: 8px; color: #fff; font-size: 13px; outline: none; transition: 0.3s;
+    }
+    .password-wrapper input { padding-right: 36px; }
+    .input-group input:focus, .input-group select:focus { border-color: #38bdf8; box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2); }
+    
+    .btn-toggle-pass {
+      position: absolute; right: 8px; background: none; border: none;
+      color: #94a3b8; cursor: pointer; font-size: 15px; padding: 4px;
+    }
+    .btn-toggle-pass:hover { color: #38bdf8; }
+
+    .btn-login {
+      width: 100%; padding: 10px; background: #0284c7; color: white; border: none;
+      border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.3s; font-size: 13px;
+    }
+    .btn-login:hover { background: #0369a1; }
+    #login-alert { margin-top: 12px; color: #f87171; font-size: 12px; text-align: center; font-weight: 500; }
+
+    #dashboard-screen { 
+      display: none; 
+      height: 100vh; 
+      width: 100vw;
+      flex-direction: row; 
+      position: relative; 
+      overflow: hidden !important; 
+    }
+    
+    .sidebar {
+      background: #1e293b; 
+      border-right: 1px solid #334155;
+      flex-shrink: 0; 
+      z-index: 99; 
+      height: 100vh; 
+      overflow-x: hidden;
+      overflow-y: auto;
+      white-space: nowrap;
+    }
+
+    .sidebar-header { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      padding-bottom: 10px; 
+      border-bottom: 1px solid #334155; 
+      min-height: 50px; 
+    }
+    
+    .brand-title { display: flex; align-items: center; justify-content: center; width: 100%; overflow: hidden; }
+    .brand-logo-img { object-fit: contain; flex-shrink: 0; margin: 0 auto; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .btn-close-sidebar { display: none; background: none; border: none; color: #ef4444; font-size: 18px; cursor: pointer; }
+
+    .nav-menu { margin-top: 12px; list-style: none; }
+    .menu-item { margin-bottom: 6px; }
+    
+    .dropdown-btn {
+      width: 100%; padding: 10px 10px; background: transparent; color: #cbd5e1; border: none;
+      border-radius: 8px; text-align: left; font-size: 13px; font-weight: 500; cursor: pointer;
+      display: flex; align-items: center; justify-content: space-between; transition: 0.2s;
+    }
+    .dropdown-btn:hover { background: #334155; color: #fff; }
+    .menu-label { margin-left: 6px; }
+    .dropdown-container { display: none; padding-left: 18px; margin-top: 4px; }
+    
+    .dropdown-container a {
+      display: block; padding: 8px 10px; color: #94a3b8; text-decoration: none;
+      font-size: 12px; border-radius: 6px; cursor: pointer; margin-bottom: 2px; transition: 0.2s;
+    }
+    .dropdown-container a:hover, .dropdown-container a.active-link { color: #38bdf8; background: rgba(56, 189, 248, 0.1); font-weight: 600; }
+    .arrow { font-size: 9px; transition: transform 0.3s; }
+    .active-arrow { transform: rotate(180deg); }
+
+    .main-wrapper { 
+      flex: 1; display: flex; flex-direction: column; background: #0f172a; 
+      min-width: 0; height: 100vh; overflow: hidden !important;
+    }
+
+    .topbar {
+      height: 50px; background: #1e293b; border-bottom: 1px solid #334155;
+      display: flex; justify-content: space-between; align-items: center; padding: 0 16px;
+      flex-shrink: 0; z-index: 100;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 10px; }
+    .topbar-brand { font-size: 16px; font-weight: 700; color: #38bdf8; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px; }
+    .topbar-logo-img { width: 28px; height: 28px; object-fit: contain; }
+    .btn-toggle-menu { display: none; background: #334155; color: #38bdf8; border: none; padding: 6px 10px; border-radius: 6px; font-size: 16px; cursor: pointer; }
+    
+    .topbar-actions { display: flex; align-items: center; }
+    .user-dropdown { position: relative; }
+    .user-info-btn { 
+      font-size: 13px; color: #94a3b8; white-space: nowrap; display: flex; align-items: center; 
+      padding: 5px 8px; border-radius: 8px; cursor: pointer; transition: 0.2s; gap: 6px;
+    }
+    .user-info-btn:hover { background: rgba(56, 189, 248, 0.08); }
+    .user-name-text { color: #38bdf8; font-weight: 600; text-transform: uppercase; }
+    
+    .badge-role { background: #0284c7; color: #fff; padding: 2px 5px; border-radius: 4px; font-size: 9px; text-transform: uppercase; font-weight: 600; }
+    .badge-dev { background: #a855f7 !important; }
+
+    .user-menu {
+      display: none; 
+      position: absolute; 
+      right: 0; 
+      top: 100%; 
+      margin-top: 6px;
+      background: #1e293b;
+      border: 1px solid #334155; 
+      border-radius: 8px; 
+      width: 210px; 
+      box-shadow: 0 15px 30px rgba(0,0,0,0.8);
+      z-index: 10000 !important; 
+      overflow: hidden;
+    }
+    .user-menu a { display: block; padding: 10px 12px; color: #f8fafc; text-decoration: none; font-size: 12px; cursor: pointer; transition: 0.2s; }
+    .user-menu a:hover { background: #334155; color: #38bdf8; }
+    .user-menu a.dev-item { color: #c084fc; font-weight: 500; }
+    .user-menu a.dev-item:hover { background: rgba(168, 85, 247, 0.15); color: #e9d5ff; }
+    .user-menu a.logout-item { color: #f87171; border-top: 1px solid #334155; font-weight: 600; }
+    .user-menu a.logout-item:hover { background: #dc2626; color: #fff; }
+    
+    .content-area { padding: 10px; flex: 1; height: calc(100vh - 50px); overflow: hidden !important; }
+    .card { background: #1e293b; padding: 12px; border-radius: 10px; border: 1px solid #334155; width: 100%; height: 100%; overflow: hidden !important; display: flex; flex-direction: column; }
+
+    .ceisa-pagination-bar { display: flex; justify-content: flex-end; align-items: center; gap: 6px; padding: 8px 12px; background: #0f172a; border-top: 1px solid #334155; font-size: 12px; color: #94a3b8; flex-wrap: wrap; border-radius: 0 0 8px 8px; }
+    .ceisa-page-total { color: #cbd5e1; font-weight: 500; margin-right: 8px; }
+    .ceisa-page-btn-group { display: flex; align-items: center; gap: 4px; }
+    .ceisa-page-btn { background: #1e293b; border: 1px solid #334155; color: #cbd5e1; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; transition: all 0.2s; }
+    .ceisa-page-btn:hover:not(:disabled) { border-color: #38bdf8; color: #38bdf8; background: #334155; }
+    .ceisa-page-btn.active { background: #0284c7; border-color: #0284c7; color: #ffffff; font-weight: 700; }
+    .ceisa-page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    .ceisa-page-select { background: #1e293b; border: 1px solid #334155; color: #38bdf8; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600; outline: none; cursor: pointer; }
+
+    .table-responsive-custom {
+      width: 100%; flex: 1; overflow-x: auto !important; overflow-y: auto !important;
+      border-radius: 8px 8px 0 0; background-color: #0f172a;
+    }
+
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); justify-content: center; align-items: center; z-index: 2000; padding: 12px; }
+    .modal-card { background: #1e293b; border: 1px solid #334155; padding: 18px; border-radius: 12px; width: 100%; max-width: 420px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); }
+    .modal-card-lg { max-width: 800px !important; }
+    .modal-card h3 { color: #38bdf8; margin-bottom: 12px; font-size: 15px; }
+
+    .dev-table-container { max-height: 320px; overflow-y: auto; overflow-x: auto; margin: 12px 0; border: 1px solid #334155; border-radius: 8px; }
+    .dev-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 11px; min-width: 620px; }
+    .dev-table th, .dev-table td { padding: 8px; border-bottom: 1px solid #334155; }
+    .dev-table th { background: #0f172a; color: #38bdf8; position: sticky; top: 0; }
+    .btn-sm { padding: 4px 8px; border-radius: 4px; font-size: 10px; border: none; cursor: pointer; font-weight: 600; }
+    .btn-edit { background: #eab308; color: #000; }
+    .btn-reset { background: #0284c7; color: #fff; margin-left: 4px; }
+    .btn-delete { background: #ef4444; color: #fff; margin-left: 4px; }
+
+    .perm-tab-header { display: flex; gap: 8px; border-bottom: 1px solid #334155; margin-bottom: 12px; padding-bottom: 4px; }
+    .perm-tab-btn { background: transparent; border: none; color: #94a3b8; padding: 6px 14px; font-size: 12px; font-weight: 600; cursor: pointer; border-radius: 6px; transition: 0.2s; }
+    .perm-tab-btn.active { background: #0284c7; color: #fff; }
+    
+    .perm-grid-compact { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; max-height: 48vh; overflow-y: auto; padding-right: 4px; }
+    .perm-card-compact { background: #0f172a; border: 1px solid #334155; padding: 10px; border-radius: 8px; }
+    .perm-card-compact h5 { color: #38bdf8; font-size: 11px; text-transform: uppercase; margin-bottom: 6px; border-bottom: 1px solid #334155; padding-bottom: 4px; }
+    
+    .perm-item { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 11px; color: #cbd5e1; cursor: pointer; }
+    .perm-item input[type="checkbox"] { accent-color: #38bdf8; cursor: pointer; }
+
+    .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 98; backdrop-filter: blur(2px); }
+
+    @media (min-width: 769px) {
+      .sidebar { width: 60px; padding: 12px 8px; transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+      .sidebar:hover { width: 240px; padding: 12px 14px; box-shadow: 10px 0 25px rgba(0,0,0,0.5); }
+      .brand-logo-img { width: 40px; height: 40px; }
+      .sidebar:hover .brand-logo-img { width: 100%; max-width: 200px; max-height: 60px; }
+      .menu-label, .arrow { opacity: 0; transition: opacity 0.2s; }
+      .sidebar:hover .menu-label, .sidebar:hover .arrow { opacity: 1; }
+      .sidebar:not(:hover) .dropdown-container { display: none !important; }
+    }
+
+    @media (max-width: 768px) {
+      #login-screen { padding: 16px 12px 6vh; }
+      .login-box { max-width: 90%; padding: 16px 14px; border-radius: 12px; }
+      .login-box h2 { font-size: 17px; }
+      .login-subtitle { font-size: 11px; margin-bottom: 14px; }
+      .input-group { margin-bottom: 10px; }
+      .input-group label { font-size: 11px; }
+      .input-group input { padding: 8px 10px; font-size: 12px; }
+      .btn-login { padding: 9px; font-size: 12px; }
+
+      .sidebar {
+        position: fixed; top: 0; left: 0; height: 100vh; 
+        width: 240px !important; transform: translateX(-100%); 
+        transition: transform 0.3s ease; padding: 14px 12px !important;
+        box-shadow: 5px 0 20px rgba(0,0,0,0.7);
+      }
+      .sidebar.active { transform: translateX(0); }
+      .sidebar .brand-logo-img { width: 100% !important; max-width: 180px !important; height: auto !important; max-height: 48px !important; }
+      .menu-label { opacity: 1 !important; font-size: 12px; }
+      .arrow { opacity: 1 !important; }
+      .dropdown-btn { padding: 9px 8px; font-size: 12px; }
+      .dropdown-container { padding-left: 12px; }
+      .dropdown-container a { padding: 7px 8px; font-size: 11.5px; }
+      .btn-close-sidebar { display: block; }
+      .btn-toggle-menu { display: block; }
+      .topbar { height: 46px; padding: 0 10px; }
+      .topbar-brand { font-size: 15px; }
+      .topbar-logo-img { width: 24px; height: 24px; }
+      .user-info-btn { font-size: 11.5px; padding: 4px 6px; }
+      .badge-role { font-size: 8.5px; padding: 2px 4px; }
+      .content-area { padding: 6px; height: calc(100vh - 46px); }
+      .card { padding: 8px; border-radius: 8px; }
+      .ceisa-pagination-bar { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- LOGIN SCREEN -->
+  <div id="login-screen">
+    <div class="login-box">
+      <h2>NexPortal-EXIM</h2>
+      <div class="login-subtitle">Sistem Informasi & Operasional Tim EXIM</div>
+      <div class="input-group">
+        <label>Username</label>
+        <input type="text" id="user-input" placeholder="Masukkan ID User">
+      </div>
+      <div class="input-group">
+        <label>Password</label>
+        <div class="password-wrapper">
+          <input type="password" id="pass-input" placeholder="Masukkan Password" onkeyup="handleEnterLogin(event)">
+          <button type="button" class="btn-toggle-pass" onclick="togglePasswordVisibility()">👁️</button>
+        </div>
+      </div>
+      <button class="btn-login" onclick="prosesLogin()">LOGIN KE Nexport</button>
+      <div id="login-alert"></div>
+    </div>
+  </div>
+
+  <!-- DASHBOARD MAIN -->
+  <div id="dashboard-screen">
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+    
+    <div class="sidebar" id="sidebarMenu">
+      <div class="sidebar-header">
+        <div class="brand-title">
+          <img src="https://lh3.googleusercontent.com/d/1SXcLGz0aaGEjRdBAU5StSmXXpQClCtnm" alt="NexPortal EXIM Logo" class="brand-logo-img">
+        </div>
+        <button class="btn-close-sidebar" onclick="closeSidebar()">✖</button>
+      </div>
+      <ul class="nav-menu">
+        
+        <!-- MENU 1: OVERTIME -->
+        <li class="menu-item" id="group-overtime" data-menu-item="LaporanOvertime">
+          <button class="dropdown-btn" onclick="toggleDropdown('menu-overtime', this)">
+            <span>⏱️ <span class="menu-label">OVERTIME</span></span>
+            <span class="arrow">▼</span>
+          </button>
+          <div class="dropdown-container" id="menu-overtime">
+            <a data-page="LaporanOvertime" onclick="loadMenuMobile('LaporanOvertime', this)">1. Laporan Overtime</a>
+          </div>
+        </li>
+
+        <!-- MENU 2: EXPORT -->
+        <li class="menu-item" id="group-export" data-menu-item="ControlSchedule,ControlBooking,PlanShipmentJepara,PlanShipmentTugu,PlanShipmentAir">
+          <button class="dropdown-btn" onclick="toggleDropdown('menu-export', this)">
+            <span>📦 <span class="menu-label">EXPORT</span></span>
+            <span class="arrow">▼</span>
+          </button>
+          <div class="dropdown-container" id="menu-export">
+            <a data-page="ControlSchedule" onclick="loadMenuMobile('ControlSchedule', this)">1. Control Schedule</a>
+            <a data-page="ControlBooking" onclick="loadMenuMobile('ControlBooking', this)">2. Control Booking</a>
+            <a data-page="PlanShipmentJepara" onclick="loadMenuMobile('PlanShipmentJepara', this)">3. Plan Shipment Jepara</a>
+            <a data-page="PlanShipmentTugu" onclick="loadMenuMobile('PlanShipmentTugu', this)">4. Plan Shipment Tugu</a>          
+            <a data-page="PlanShipmentAir" onclick="loadMenuMobile('PlanShipmentAir', this)">5. Plan Shipment Air Freight</a>
+          </div>
+        </li>
+
+        <!-- MENU 3: LAINNYA -->
+        <li class="menu-item" id="group-lainnya" data-menu-item="BlankPage">
+          <button class="dropdown-btn" onclick="toggleDropdown('menu-lainnya', this)">
+            <span>📂 <span class="menu-label">LAINNYA</span></span>
+            <span class="arrow">▼</span>
+          </button>
+          <div class="dropdown-container" id="menu-lainnya">
+            <a data-page="BlankPage" onclick="loadMenuMobile('BlankPage', this)">1. Dokumen Pendukung</a>
+          </div>
+        </li>
+
+      </ul>
+    </div>
+
+    <div class="main-wrapper">
+      <div class="topbar">
+        <div class="topbar-left">
+          <button class="btn-toggle-menu" onclick="openSidebar()">☰</button>
+          <div class="topbar-brand">
+            <img src="https://lh3.googleusercontent.com/d/1SXcLGz0aaGEjRdBAU5StSmXXpQClCtnm" alt="Logo" class="topbar-logo-img">
+            <span>NexPortal</span>
+          </div>
+        </div>
+        
+        <div class="topbar-actions">
+          <div class="user-dropdown">
+            <div class="user-info-btn" onclick="toggleUserMenu(event)">
+              <span>Hi, <span id="active-user" class="user-name-text">-</span></span>
+              <span id="active-role" class="badge-role">User</span>
+            </div>
+            <div class="user-menu" id="userMenu">
+              <a onclick="bukaModalPass(false)">🔒 Ubah Password Saya</a>
+              <a id="dev-menu-item" style="display:none;" class="dev-item" onclick="bukaModalDevUser()">👑 Kelola Semua User</a>
+              <a id="dev-perm-item" style="display:none;" class="dev-item" onclick="bukaModalDevPerm()">🛡️ Permission User</a>
+              <a onclick="logout()" class="logout-item">🚪 LOGOUT</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-area">
+        <div class="card" id="app-content">
+          <h2>Selamat Datang di Portal Operasional</h2>
+          <p style="color: #94a3b8; margin-top: 8px;">Pilih salah satu menu di sebelah kiri untuk mengakses sistem.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL POPUP UBAH PASSWORD SAYA -->
+  <div class="modal-overlay" id="modalPassword">
+    <div class="modal-card">
+      <h3 id="modal-title">🔑 Ubah Kata Sandi Saya</h3>
+      <p id="modal-desc" style="font-size:12px; color:#94a3b8; margin-bottom:16px;"></p>
+      
+      <div class="input-group">
+        <label>Password Lama</label>
+        <input type="password" id="pass-lama" placeholder="Password saat ini">
+      </div>
+      <div class="input-group">
+        <label>Password Baru</label>
+        <input type="password" id="pass-baru" placeholder="Minimal 5 karakter">
+      </div>
+      <div class="input-group">
+        <label>Konfirmasi Password Baru</label>
+        <input type="password" id="pass-konfirm" placeholder="Ulangi password baru">
+      </div>
+
+      <button class="btn-login" onclick="prosesSimpanPassword()">SIMPAN PASSWORD BARU</button>
+      <button class="btn-logout" id="btnBatalPass" onclick="tutupModalPass()" style="width:100%; margin-top:8px; background:#475569; border:none; padding:10px; border-radius:8px; color:white; cursor:pointer; font-weight:600;">BATAL</button>
+      <div id="modal-alert" style="margin-top:12px; font-size:13px; text-align:center;"></div>
+    </div>
+  </div>
+
+  <!-- MODAL DEVELOPER: KELOLA ALL USER -->
+  <div class="modal-overlay" id="modalDevUser">
+    <div class="modal-card modal-card-lg">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h3>👑 Developer Panel: Kelola Semua User</h3>
+        <button onclick="tutupModalDevUser()" style="background:none; border:none; color:#ef4444; font-size:18px; cursor:pointer;">✖</button>
+      </div>
+
+      <div style="background:#0f172a; padding:12px; border-radius:8px; margin-top:12px; border:1px solid #334155;">
+        <h4 id="form-dev-title" style="font-size:13px; color:#38bdf8; margin-bottom:10px;">➕ Tambah / Edit User Baru</h4>
+        <input type="hidden" id="dev-old-uname">
+        <div class="dev-grid-form" style="display:grid; grid-template-columns: 1fr 1fr 1fr auto; gap:8px; align-items:end;">
+          <div>
+            <label style="font-size:11px; color:#94a3b8;">Username</label>
+            <input type="text" id="dev-uname" placeholder="cth: budi" style="padding:8px; font-size:12px;">
+          </div>
+          <div>
+            <label style="font-size:11px; color:#94a3b8;">Password</label>
+            <input type="text" id="dev-pass" placeholder="Password user" style="padding:8px; font-size:12px;">
+          </div>
+          <div>
+            <label style="font-size:11px; color:#94a3b8;">Role</label>
+            <select id="dev-role" style="padding:8px; font-size:12px; background:#1e293b; color:#fff; border:1px solid #334155; border-radius:6px; width:100%;">
+              <option value="user">User</option>
+              <option value="admin">Admin</option>
+              <option value="developer">Developer</option>
+            </select>
+          </div>
+          <div>
+            <button class="btn-login" onclick="devSimpanUser()" style="padding:9px 14px; font-size:12px;">💾 Simpan</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="dev-table-container">
+        <table class="dev-table">
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Password</th>
+              <th>Role</th>
+              <th>Terakhir Ubah</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="dev-user-tbody">
+            <tr><td colspan="5" style="text-align:center;">Memuat data user...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div id="dev-alert" style="font-size:12px; text-align:center;"></div>
+    </div>
+  </div>
+
+  <!-- MODAL DEVELOPER: PERMISSION MANAGER -->
+  <div class="modal-overlay" id="modalDevPerm">
+    <div class="modal-card modal-card-lg">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h3>🛡️ Developer Panel: Permission Manager</h3>
+        <button onclick="tutupModalDevPerm()" style="background:none; border:none; color:#ef4444; font-size:18px; cursor:pointer;">✖</button>
+      </div>
+
+      <div class="perm-tab-header">
+        <button class="perm-tab-btn active" id="tab-btn-role" onclick="switchPermTab('role')">🌐 Permission Per Role</button>
+        <button class="perm-tab-btn" id="tab-btn-user" onclick="switchPermTab('user')">👤 Custom Per Username</button>
+      </div>
+
+      <!-- TAB 1: PERMISSION PER ROLE -->
+      <div id="perm-view-role">
+        <p style="font-size:11px; color:#94a3b8; margin-bottom:8px;">Atur hak akses bawaan/default berdasarkan Role Pengguna (User / Admin).</p>
+        <div id="perm-container-role" class="perm-grid-compact"></div>
+      </div>
+
+      <!-- TAB 2: PERMISSION PER USERNAME -->
+      <div id="perm-view-user" style="display:none;">
+        <div style="display:flex; gap:10px; margin-bottom:10px; align-items:center;">
+          <select id="perm-user-select" onchange="devRenderUserPermForm()" style="flex:1; padding:8px; background:#0f172a; border:1px solid #334155; color:#38bdf8; border-radius:6px; font-size:12px; font-weight:600;">
+          </select>
+          <input type="text" id="perm-user-search" placeholder="🔍 Cari Username..." onkeyup="filterPermUserDropdown()" style="width:180px; padding:8px; background:#0f172a; border:1px solid #334155; color:#fff; border-radius:6px; font-size:12px;">
+        </div>
+        <p style="font-size:11px; color:#94a3b8; margin-bottom:8px;">Jika centang diisi, izin ini akan **mengabaikan (override)** permission bawaan Role user tersebut.</p>
+        <div id="perm-container-user" class="perm-grid-compact"></div>
+      </div>
+
+      <div style="margin-top:14px; display:flex; justify-content:flex-end; gap:8px;">
+        <button class="btn-login" onclick="devSimpanPermissions()" style="width:auto; padding:8px 20px;">💾 SIMPAN PERMISSION</button>
+      </div>
+      <div id="perm-alert" style="margin-top:8px; font-size:12px; text-align:center;"></div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFIKASI -->
+  <div class="modal-overlay" id="globalToastOverlay" style="z-index: 99999999 !important; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); align-items: flex-start; padding-top: 30px;">
+    <div id="globalNexprtToast" style="background: #1e293b; border: 1px solid #38bdf8; border-left: 5px solid #38bdf8; color: #ffffff; padding: 16px 20px; border-radius: 10px; box-shadow: 0 20px 40px rgba(0,0,0,0.9); width: 92%; max-width: 440px; font-family: Calibri, 'Segoe UI', Arial, sans-serif !important; transition: all 0.3s ease;">
+      <div style="font-size: 13.5px; font-weight: bold; color: #38bdf8; margin-bottom: 8px;" id="globalToastTitle">
+        NexPortal-EXIM says:
+      </div>
+      <div style="font-size: 12px; color: #cbd5e1; line-height: 1.5; word-break: break-word; margin-bottom: 16px;" id="globalToastBody"></div>
+      <div style="display: flex; justify-content: flex-end; gap: 8px;">
+        <button id="globalToastBtnCancel" style="display: none; background: #475569; color: #ffffff; border: none; padding: 6px 18px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; transition: 0.2s;">
+          BATAL
+        </button>
+        <button id="globalToastBtnOk" style="background: #0284c7; color: #ffffff; border: none; padding: 6px 22px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 6px rgba(0,0,0,0.4);">
+          OK
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // INITIALIZE SUPABASE CLIENT
+    const SUPABASE_URL = 'https://kmpvhpiraqkvljsbrhm.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_KcGVwFpF2qyiwmmePfkmWw_nTFwV6wI';
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    let GLOBAL_PERM_DATA = {};
+    let GLOBAL_USER_LIST = [];
+
+    function scanAllAvailablePagesFromSidebar() {
+      const pages = [];
+      const links = document.querySelectorAll('.dropdown-container a[data-page]');
+      links.forEach(link => {
+        const pageId = link.getAttribute('data-page');
+        const parentGroup = link.closest('.menu-item');
+        let groupName = "LAINNYA";
+        
+        if (parentGroup) {
+          const btnText = parentGroup.querySelector('.dropdown-btn span');
+          if (btnText) groupName = btnText.innerText.replace(/[^a-zA-Z0-9]/g, '').trim();
+        }
+
+        pages.push({
+          id: pageId,
+          name: `${link.innerText.trim()} (${groupName})`
+        });
+      });
+      return pages;
+    }
+
+    let toastResolver = null;
+
+    function showNexprtToast(message, title = "NexPortal-EXIM says:", isConfirmMode = false) {
+      return new Promise((resolve) => {
+        toastResolver = resolve;
+        const overlay = document.getElementById("globalToastOverlay");
+        const toastTitle = document.getElementById("globalToastTitle");
+        const toastBody = document.getElementById("globalToastBody");
+        const toast = document.getElementById("globalNexprtToast");
+        const btnOk = document.getElementById("globalToastBtnOk");
+        const btnCancel = document.getElementById("globalToastBtnCancel");
+
+        if (!overlay || !toastTitle || !toastBody) return resolve(false);
+
+        toastTitle.innerText = title;
+        const formattedMsg = String(message).replace(/\n/g, "<br>");
+        toastBody.innerHTML = formattedMsg;
+
+        if (isConfirmMode) {
+          btnCancel.style.display = "inline-block";
+          toast.style.borderLeftColor = "#f59e0b";
+          toastTitle.style.color = "#f59e0b";
+        } else {
+          btnCancel.style.display = "none";
+          if (formattedMsg.includes("❌") || formattedMsg.toLowerCase().includes("gagal") || formattedMsg.toLowerCase().includes("error")) {
+            toast.style.borderLeftColor = "#ef4444";
+            toastTitle.style.color = "#ef4444";
+          } else if (formattedMsg.includes("⚠️") || formattedMsg.toLowerCase().includes("peringatan")) {
+            toast.style.borderLeftColor = "#f59e0b";
+            toastTitle.style.color = "#f59e0b";
+          } else if (formattedMsg.includes("✅") || formattedMsg.toLowerCase().includes("berhasil")) {
+            toast.style.borderLeftColor = "#4ade80";
+            toastTitle.style.color = "#4ade80";
+          } else {
+            toast.style.borderLeftColor = "#38bdf8";
+            toastTitle.style.color = "#38bdf8";
+          }
+        }
+
+        overlay.style.display = "flex";
+        if (btnOk) btnOk.focus();
+      });
+    }
+
+    function responGlobalToast(hasil) {
+      const overlay = document.getElementById("globalToastOverlay");
+      if (overlay) overlay.style.display = "none";
+      if (toastResolver) {
+        const resolveFunc = toastResolver;
+        toastResolver = null; 
+        resolveFunc(hasil === true); 
+      }
+    }
+
+    document.getElementById("globalToastBtnOk").onclick = function(e) { 
+      if(e) e.stopPropagation();
+      responGlobalToast(true); 
+    };
+    
+    document.getElementById("globalToastBtnCancel").onclick = function(e) { 
+      if(e) e.stopPropagation();
+      responGlobalToast(false); 
+    };
+
+    window.addEventListener("keydown", function(e) {
+      const overlay = document.getElementById("globalToastOverlay");
+      if (overlay && overlay.style.display === "flex") {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          responGlobalToast(true);
+        } else if (e.key === "Escape") {
+          e.preventDefault();
+          responGlobalToast(false);
+        }
+      }
+    });
+
+    (function() {
+      window.nativeAlert = window.alert;
+      window.nativeConfirm = window.confirm;
+      window.nativePrompt = window.prompt;
+
+      window.alert = function(message) { return showNexprtToast(message, "NexPortal-EXIM says:", false); };
+      window.confirm = function(message) { return showNexprtToast(message, "NexPortal-EXIM says:", true); };
+      window.prompt = function(message, defaultValue) {
+        showNexprtToast(message + "\n(Gunakan form input yang tersedia pada modul)", "NexPortal-EXIM says:", false);
+        return null;
+      };
+    })();
+
+    const TIMEOUT_60_MENIT = 60 * 60 * 1000;
+
+    function openSidebar() {
+      document.getElementById("sidebarMenu").classList.add("active");
+      document.getElementById("sidebarOverlay").style.display = "block";
+    }
+
+    function closeSidebar() {
+      document.getElementById("sidebarMenu").classList.remove("active");
+      document.getElementById("sidebarOverlay").style.display = "none";
+    }
+
+    function loadMenuMobile(pageName, element) {
+      if (element) {
+        document.querySelectorAll('.dropdown-container a').forEach(el => el.classList.remove('active-link'));
+        element.classList.add('active-link');
+      }
+      loadMenu(pageName);
+      if (window.innerWidth <= 768) closeSidebar();
+    }
+
+    function toggleUserMenu(e) {
+      if (e) e.stopPropagation();
+      const userMenu = document.getElementById("userMenu");
+      userMenu.style.display = (userMenu.style.display === "block") ? "none" : "block";
+    }
+
+    function togglePasswordVisibility() {
+      const passInput = document.getElementById("pass-input");
+      passInput.type = (passInput.type === "password") ? "text" : "password";
+    }
+
+    function handleEnterLogin(e) { if (e.key === "Enter") prosesLogin(); }
+
+    window.addEventListener("click", function(e) {
+      if (!e.target.closest('.user-dropdown')) {
+        const userMenu = document.getElementById("userMenu");
+        if (userMenu) userMenu.style.display = "none";
+      }
+    });
+
+    // SISTEM LOGIN - REPLACED WITH SUPABASE
+    async function prosesLogin() {
+      const u = document.getElementById("user-input").value.trim();
+      const p = document.getElementById("pass-input").value.trim();
+      const alertBox = document.getElementById("login-alert");
+
+      if(!u || !p) { alertBox.innerHTML = "Isi username dan password!"; return; }
+
+      alertBox.innerHTML = "⏳ Memeriksa data...";
+
+      try {
+        const { data: user, error } = await supabaseClient
+          .from('system_users')
+          .select('*')
+          .eq('username', u)
+          .single();
+
+        if (error || !user || user.password !== p) {
+          alertBox.innerHTML = "Username atau Password Salah!";
+          return;
+        }
+
+        // Ambil Permissions
+        const { data: permData } = await supabaseClient
+          .from('system_permissions')
+          .select('*');
+
+        let permsMap = {};
+        if (permData) {
+          permData.forEach(item => { permsMap[item.target] = item.allowed_menus; });
+        }
+
+        let allowedMenus = [];
+        if (user.role === "developer") {
+          allowedMenus = ["*"];
+        } else if (permsMap[u] && permsMap[u].length > 0) {
+          allowedMenus = permsMap[u];
+        } else {
+          allowedMenus = permsMap[user.role] || [];
+        }
+
+        const now = new Date().getTime();
+        const lastChanged = user.last_changed || now;
+        const ONE_YEAR_MS = 365 * 24 * 60 * 60 * 1000;
+        const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
+
+        let isForced = false;
+        let isWarning = false;
+        let msg = "";
+
+        const isYearExpired = (now - lastChanged) >= ONE_YEAR_MS;
+        const isForceReset = user.must_change === true;
+
+        if (isForceReset || isYearExpired) {
+          let grace = user.grace_deadline;
+          if (!grace) {
+            grace = now + THREE_DAYS_MS;
+            await supabaseClient.from('system_users').update({ grace_deadline: grace }).eq('username', u);
+          }
+
+          const sisaWaktu = grace - now;
+          if (sisaWaktu <= 0) {
+            isForced = true;
+            msg = "⚠️ Masa tenggang 3 hari telah habis! Anda wajib mengganti password baru sebelum melanjutkan.";
+          } else {
+            const sisaHari = Math.ceil(sisaWaktu / (24 * 60 * 60 * 1000));
+            isWarning = true;
+            const pemicu = isForceReset ? "kadaluarsa" : "berusia 1 tahun";
+            msg = `⚠️ Password Anda akan ${pemicu}. Harap perbarui password Anda dalam ${sisaHari} hari ke depan!`;
+          }
+        }
+
+        const currentTime = new Date().getTime();
+        sessionStorage.setItem("user_session", u);
+        sessionStorage.setItem("user_role", user.role);
+        sessionStorage.setItem("allowed_menus", JSON.stringify(allowedMenus));
+        sessionStorage.setItem("last_activity", currentTime);
+        
+        let defaultMenu = "LaporanOvertime";
+        if (allowedMenus.includes("*")) {
+          defaultMenu = "ControlSchedule";
+        } else if (allowedMenus.length > 0) {
+          defaultMenu = allowedMenus[0];
+        }
+
+        sessionStorage.setItem("active_menu", defaultMenu);
+        tampilkanDashboard(u, user.role, allowedMenus);
+        alertBox.innerHTML = "";
+
+        if (isForced) {
+          bukaModalPass(true, msg);
+        } else if (isWarning) {
+          alert(msg);
+        }
+      } catch (err) {
+        alertBox.innerHTML = "Gagal login: " + err.message;
+      }
+    }
+
+    function tampilkanDashboard(user, role, allowedMenus) {
+      document.getElementById("login-screen").style.display = "none";
+      document.getElementById("dashboard-screen").style.display = "flex";
+      document.getElementById("active-user").innerText = user;
+      
+      const roleBadge = document.getElementById("active-role");
+      roleBadge.innerText = role;
+      if (role === "developer") {
+        roleBadge.className = "badge-role badge-dev";
+        document.getElementById("dev-menu-item").style.display = "block";
+        document.getElementById("dev-perm-item").style.display = "block";
+      } else {
+        roleBadge.className = "badge-role";
+        document.getElementById("dev-menu-item").style.display = "none";
+        document.getElementById("dev-perm-item").style.display = "none";
+      }
+
+      filterSidebarMenu(role, allowedMenus);
+
+      const menuTerakhir = sessionStorage.getItem("active_menu") || "ControlSchedule";
+      
+      const activeLink = document.querySelector(`.dropdown-container a[data-page="${menuTerakhir}"]`);
+      if (activeLink) {
+        activeLink.classList.add('active-link');
+        const parentDropdown = activeLink.closest('.dropdown-container');
+        if (parentDropdown) {
+          parentDropdown.style.display = "block";
+          const parentBtn = parentDropdown.parentElement.querySelector('.dropdown-btn .arrow');
+          if (parentBtn) parentBtn.classList.add('active-arrow');
+        }
+      }
+
+      loadMenu(menuTerakhir);
+    }
+
+    function bukaModalPass(isForced = false, msg = "") {
+      document.getElementById("userMenu").style.display = "none";
+      document.getElementById("modalPassword").style.display = "flex";
+      document.getElementById("pass-lama").value = "";
+      document.getElementById("pass-baru").value = "";
+      document.getElementById("pass-konfirm").value = "";
+      document.getElementById("modal-alert").innerText = "";
+
+      const btnBatal = document.getElementById("btnBatalPass");
+      const desc = document.getElementById("modal-desc");
+
+      if (isForced) {
+        btnBatal.style.display = "none";
+        desc.innerText = msg || "Password Anda perlu diubah. Wajib diubah demi keamanan!";
+        desc.style.color = "#ef4444";
+      } else {
+        btnBatal.style.display = "block";
+        desc.innerText = msg || "Perbarui kata sandi Anda secara berkala.";
+        desc.style.color = msg ? "#f59e0b" : "#94a3b8";
+      }
+    }
+
+    function tutupModalPass() { document.getElementById("modalPassword").style.display = "none"; }
+
+    async function prosesSimpanPassword() {
+      const user = sessionStorage.getItem("user_session");
+      const passLama = document.getElementById("pass-lama").value;
+      const passBaru = document.getElementById("pass-baru").value;
+      const passKonfirm = document.getElementById("pass-konfirm").value;
+      const alertDiv = document.getElementById("modal-alert");
+
+      if (!passLama || !passBaru || !passKonfirm) {
+        alertDiv.style.color = "#ef4444"; alertDiv.innerText = "⚠️ Harap isi semua kolom!"; return;
+      }
+      if (passBaru !== passKonfirm) {
+        alertDiv.style.color = "#ef4444"; alertDiv.innerText = "⚠️ Konfirmasi password baru tidak cocok!"; return;
+      }
+      if (passLama === passBaru) {
+        alertDiv.style.color = "#ef4444"; alertDiv.innerText = "⚠️ Password baru tidak boleh sama dengan password lama!"; return;
+      }
+
+      alertDiv.style.color = "#38bdf8"; alertDiv.innerText = "⏳ Memperbarui password...";
+
+      const { data: dbUser } = await supabaseClient.from('system_users').select('password').eq('username', user).single();
+      if (!dbUser || dbUser.password !== passLama) {
+        alertDiv.style.color = "#ef4444"; alertDiv.innerText = "❌ Password lama salah!"; return;
+      }
+
+      const { error } = await supabaseClient.from('system_users').update({
+        password: passBaru,
+        last_changed: new Date().getTime(),
+        must_change: false,
+        grace_deadline: null
+      }).eq('username', user);
+
+      if (error) {
+        alertDiv.style.color = "#ef4444"; alertDiv.innerText = "❌ Gagal: " + error.message;
+      } else {
+        alertDiv.style.color = "#4ade80"; alertDiv.innerText = "✅ Password berhasil diperbarui!";
+        setTimeout(tutupModalPass, 1500);
+      }
+    }
+
+    function bukaModalDevUser() {
+      document.getElementById("userMenu").style.display = "none";
+      document.getElementById("modalDevUser").style.display = "flex";
+      devResetForm();
+      devMuatTabelUser();
+    }
+
+    function tutupModalDevUser() { document.getElementById("modalDevUser").style.display = "none"; }
+
+    function devResetForm() {
+      document.getElementById("form-dev-title").innerText = "➕ Tambah / Edit User Baru";
+      document.getElementById("dev-old-uname").value = "";
+      document.getElementById("dev-uname").value = "";
+      document.getElementById("dev-pass").value = "";
+      document.getElementById("dev-role").value = "user";
+      document.getElementById("dev-alert").innerText = "";
+    }
+
+    async function devMuatTabelUser() {
+      const tbody = document.getElementById("dev-user-tbody");
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">⏳ Memuat data...</td></tr>`;
+
+      const { data: users, error } = await supabaseClient.from('system_users').select('*').order('username');
+      if (error) {
+        tbody.innerHTML = `<tr><td colspan="5" style="color:#ef4444; text-align:center;">${error.message}</td></tr>`;
+        return;
+      }
+
+      const now = new Date().getTime();
+      const ONE_YEAR_MS = 365 * 24 * 60 * 60 * 1000;
+      tbody.innerHTML = "";
+
+      users.forEach(u => {
+        const lastChanged = u.last_changed || now;
+        const isExpired = (now - lastChanged) >= ONE_YEAR_MS || u.must_change === true;
+        const statusIcon = isExpired ? `<span title="Wajib Ganti Password" style="color:#ef4444; font-weight:bold;">❌</span>` : `<span title="Password Aman" style="color:#4ade80; font-weight:bold;">✅</span>`;
+        const dateText = u.last_changed ? new Date(u.last_changed).toLocaleString("id-ID") : "-";
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><b>${u.username}</b> ${statusIcon}</td>
+          <td style="font-family:monospace; color:#38bdf8;">${u.password}</td>
+          <td><span class="badge-role ${u.role === 'developer' ? 'badge-dev' : ''}">${u.role}</span></td>
+          <td style="font-size:10px; color:#94a3b8;">${dateText}</td>
+          <td>
+            <button class="btn-sm btn-edit" onclick="devPilihEdit('${u.username}', '${u.password}', '${u.role}')">✏️ Edit</button>
+            <button class="btn-sm btn-reset" onclick="devResetPassUser('${u.username}')">🔄 Reset Psw</button>
+            <button class="btn-sm btn-delete" onclick="devHapusUser('${u.username}')">🗑️ Hapus</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function devResetPassUser(uname) {
+      const isConfirmed = await confirm(`Apakah Anda yakin ingin melakukan Reset Password untuk user '${uname}'? User diberi masa tenggang 3 hari untuk mengganti password.`);
+      if (!isConfirmed) return;
+
+      const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
+      const grace = new Date().getTime() + THREE_DAYS_MS;
+
+      const { error } = await supabaseClient.from('system_users').update({
+        must_change: true,
+        grace_deadline: grace
+      }).eq('username', uname);
+
+      if (!error) {
+        alert("Status Password '" + uname + "' di-reset! User diberi masa tenggang 3 hari.");
+        devMuatTabelUser();
+      }
+    }
+
+    function devPilihEdit(uname, pass, role) {
+      document.getElementById("form-dev-title").innerText = "✏️ Edit User: " + uname;
+      document.getElementById("dev-old-uname").value = uname;
+      document.getElementById("dev-uname").value = uname;
+      document.getElementById("dev-pass").value = pass;
+      document.getElementById("dev-role").value = role;
+    }
+
+    async function devSimpanUser() {
+      const oldUname = document.getElementById("dev-old-uname").value;
+      const targetUname = document.getElementById("dev-uname").value.trim();
+      const targetPass = document.getElementById("dev-pass").value.trim();
+      const targetRole = document.getElementById("dev-role").value;
+      const alertDiv = document.getElementById("dev-alert");
+
+      if (!targetUname || !targetPass) {
+        alertDiv.style.color = "#ef4444"; alertDiv.innerText = "⚠️ Username dan Password tidak boleh kosong!"; return;
+      }
+
+      alertDiv.style.color = "#38bdf8"; alertDiv.innerText = "⏳ Menyimpan user...";
+
+      if (oldUname && oldUname !== targetUname) {
+        await supabaseClient.from('system_users').delete().eq('username', oldUname);
+      }
+
+      const { error } = await supabaseClient.from('system_users').upsert({
+        username: targetUname,
+        password: targetPass,
+        role: targetRole,
+        last_changed: new Date().getTime()
+      });
+
+      if (error) {
+        alertDiv.style.color = "#ef4444"; alertDiv.innerText = "❌ " + error.message;
+      } else {
+        alertDiv.style.color = "#4ade80"; alertDiv.innerText = "✅ User '" + targetUname + "' berhasil disimpan!";
+        devResetForm();
+        devMuatTabelUser();
+      }
+    }
+
+    async function devHapusUser(uname) {
+      const isConfirmed = await confirm(`Apakah Anda yakin ingin menghapus user '${uname}'?`);
+      if (!isConfirmed) return;
+
+      const devUser = sessionStorage.getItem("user_session");
+      if (devUser === uname) { alert("Anda tidak dapat menghapus akun developer sendiri!"); return; }
+
+      const { error } = await supabaseClient.from('system_users').delete().eq('username', uname);
+      if (!error) {
+        devMuatTabelUser();
+      }
+    }
+
+    function bukaModalDevPerm() {
+      document.getElementById("userMenu").style.display = "none";
+      document.getElementById("modalDevPerm").style.display = "flex";
+      devMuatPermissions();
+    }
+
+    function tutupModalDevPerm() { document.getElementById("modalDevPerm").style.display = "none"; }
+
+    function switchPermTab(type) {
+      document.getElementById("tab-btn-role").classList.toggle("active", type === "role");
+      document.getElementById("tab-btn-user").classList.toggle("active", type === "user");
+      document.getElementById("perm-view-role").style.display = type === "role" ? "block" : "none";
+      document.getElementById("perm-view-user").style.display = type === "user" ? "block" : "none";
+    }
+
+    async function devMuatPermissions() {
+      const roleContainer = document.getElementById("perm-container-role");
+      roleContainer.innerHTML = "<p style='color:#38bdf8;'>⏳ Memuat data...</p>";
+
+      const availablePages = scanAllAvailablePagesFromSidebar();
+
+      const { data: permsData } = await supabaseClient.from('system_permissions').select('*');
+      const { data: usersData } = await supabaseClient.from('system_users').select('username, role');
+
+      let permsObj = {};
+      if (permsData) { permsData.forEach(p => permsObj[p.target] = p.allowed_menus); }
+      GLOBAL_PERM_DATA = permsObj;
+      GLOBAL_USER_LIST = (usersData || []).filter(u => u.role !== "developer");
+
+      let roleHtml = "";
+      ["user", "admin"].forEach(r => {
+        const activePages = GLOBAL_PERM_DATA[r] || [];
+        roleHtml += `<div class="perm-card-compact"><h5>ROLE: ${r.toUpperCase()}</h5>`;
+        availablePages.forEach(p => {
+          const checked = activePages.includes(p.id) ? "checked" : "";
+          roleHtml += `
+            <label class="perm-item">
+              <input type="checkbox" class="chk-perm" data-target="${r}" value="${p.id}" ${checked}>
+              <span>${p.name}</span>
+            </label>
+          `;
+        });
+        roleHtml += `</div>`;
+      });
+      roleContainer.innerHTML = roleHtml;
+
+      const userSelect = document.getElementById("perm-user-select");
+      userSelect.innerHTML = "";
+      GLOBAL_USER_LIST.forEach(u => {
+        const opt = document.createElement("option");
+        opt.value = u.username;
+        opt.innerText = `👤 ${u.username} (${u.role.toUpperCase()})`;
+        userSelect.appendChild(opt);
+      });
+
+      devRenderUserPermForm();
+    }
+
+    function devRenderUserPermForm() {
+      const userSelect = document.getElementById("perm-user-select");
+      const userContainer = document.getElementById("perm-container-user");
+      if (!userSelect.value) { userContainer.innerHTML = "<p style='color:#94a3b8;'>Belum ada user terdaftar.</p>"; return; }
+
+      const selectedUser = userSelect.value;
+      const activePages = GLOBAL_PERM_DATA[selectedUser] || [];
+      const availablePages = scanAllAvailablePagesFromSidebar();
+
+      let html = `<div class="perm-card-compact" style="grid-column: 1 / -1; background:rgba(168, 85, 247, 0.08); border-color:#a855f7;">
+        <h5 style="color:#c084fc;">HAK AKSES KHUSUS: ${selectedUser.toUpperCase()}</h5>`;
+      
+      availablePages.forEach(p => {
+        const checked = activePages.includes(p.id) ? "checked" : "";
+        html += `
+          <label class="perm-item">
+            <input type="checkbox" class="chk-perm" data-target="${selectedUser}" value="${p.id}" ${checked}>
+            <span>${p.name}</span>
+          </label>
+        `;
+      });
+      html += `</div>`;
+      userContainer.innerHTML = html;
+    }
+
+    function filterPermUserDropdown() {
+      const filter = document.getElementById("perm-user-search").value.toLowerCase();
+      const options = document.querySelectorAll("#perm-user-select option");
+      options.forEach(opt => {
+        const text = opt.innerText.toLowerCase();
+        opt.style.display = text.includes(filter) ? "" : "none";
+      });
+    }
+
+    async function devSimpanPermissions() {
+      const alertDiv = document.getElementById("perm-alert");
+      const permsObj = Object.assign({}, GLOBAL_PERM_DATA);
+      const checkboxes = document.querySelectorAll(".chk-perm");
+
+      checkboxes.forEach(chk => {
+        const target = chk.getAttribute("data-target");
+        if (!permsObj[target]) permsObj[target] = [];
+        
+        if (chk.checked) {
+          if (!permsObj[target].includes(chk.value)) permsObj[target].push(chk.value);
+        } else {
+          permsObj[target] = permsObj[target].filter(val => val !== chk.value);
+        }
+      });
+
+      alertDiv.style.color = "#38bdf8"; alertDiv.innerText = "⏳ Menyimpan permission...";
+
+      for (let target in permsObj) {
+        await supabaseClient.from('system_permissions').upsert({
+          target: target,
+          allowed_menus: permsObj[target]
+        });
+      }
+
+      alertDiv.style.color = "#4ade80"; alertDiv.innerText = "✅ Permission berhasil disimpan!";
+      setTimeout(tutupModalDevPerm, 1200);
+    }
+
+    function filterSidebarMenu(role, allowedMenus) {
+      if (role === "developer" || allowedMenus.includes("*")) {
+        document.querySelectorAll('.menu-item').forEach(el => el.style.display = "block");
+        document.querySelectorAll('.dropdown-container a').forEach(el => el.style.display = "block");
+        return;
+      }
+
+      document.querySelectorAll('.dropdown-container a').forEach(el => {
+        const page = el.getAttribute('data-page');
+        el.style.display = allowedMenus.includes(page) ? "block" : "none";
+      });
+
+      document.querySelectorAll('.menu-item').forEach(group => {
+        const pagesInGroup = group.getAttribute('data-menu-item').split(',');
+        const hasAccess = pagesInGroup.some(page => allowedMenus.includes(page));
+        group.style.display = hasAccess ? "block" : "none";
+      });
+    }
+
+    function cekSession() {
+      const user = sessionStorage.getItem("user_session");
+      const role = sessionStorage.getItem("user_role");
+      const allowedMenus = JSON.parse(sessionStorage.getItem("allowed_menus") || "[]");
+      const lastActivity = sessionStorage.getItem("last_activity");
+      const currentTime = new Date().getTime();
+
+      if (user && lastActivity) {
+        if (currentTime - lastActivity > TIMEOUT_60_MENIT) {
+          alert("⏰ Sesi Anda telah berakhir karena tidak ada aktivitas selama 60 menit.");
+          logout();
+        } else {
+          sessionStorage.setItem("last_activity", currentTime);
+          tampilkanDashboard(user, role, allowedMenus);
+        }
+      } else {
+        logout();
+      }
+    }
+
+    function perbaruiAktivitas() {
+      if (sessionStorage.getItem("user_session")) {
+        sessionStorage.setItem("last_activity", new Date().getTime());
+      }
+    }
+
+    window.addEventListener("mousemove", perbaruiAktivitas);
+    window.addEventListener("keypress", perbaruiAktivitas);
+    window.addEventListener("click", perbaruiAktivitas);
+
+    window.onload = function() {
+      cekSession();
+      setInterval(function() {
+        const lastActivity = sessionStorage.getItem("last_activity");
+        if (lastActivity && (new Date().getTime() - lastActivity > TIMEOUT_60_MENIT)) {
+          alert("⏰ Sesi Anda telah berakhir karena tidak ada aktivitas selama 60 menit.");
+          logout();
+        }
+      }, 60000); 
+    };
+
+    function logout() {
+      sessionStorage.clear();
+      document.getElementById("user-input").value = "";
+      document.getElementById("pass-input").value = "";
+      document.getElementById("login-alert").innerHTML = "";
+      document.getElementById("login-screen").style.display = "flex";
+      document.getElementById("dashboard-screen").style.display = "none";
+    }
+
+    function toggleDropdown(id, btn) {
+      const container = document.getElementById(id);
+      const arrow = btn.querySelector('.arrow');
+      const isVisible = (container.style.display === "block" || getComputedStyle(container).display === "block");
+
+      document.querySelectorAll('.dropdown-container').forEach(el => el.style.display = "none");
+      document.querySelectorAll('.arrow').forEach(el => el.classList.remove('active-arrow'));
+
+      if (!isVisible) {
+        container.style.display = "block";
+        if (arrow) arrow.classList.add('active-arrow');
+      }
+    }
+
+    // PEMUATAN MODUL STATIC DARI GITHUB
+    function loadMenu(pageName) {
+      sessionStorage.setItem("active_menu", pageName);
+      const contentArea = document.getElementById("app-content");
+      contentArea.innerHTML = "<h3>⏳ Memuat Modul " + pageName + "...</h3>";
+
+      // Pada GitHub Pages, file modul akan kita tempatkan di folder pages/
+      fetch(`pages/${pageName}.html`)
+        .then(response => {
+          if (!response.ok) throw new Error("Modul belum diunggah (" + pageName + ".html)");
+          return response.text();
+        })
+        .then(htmlContent => {
+          contentArea.innerHTML = htmlContent;
+          const scripts = contentArea.querySelectorAll("script");
+          scripts.forEach(function(oldScript) {
+            const newScript = document.createElement("script");
+            Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+            newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+            oldScript.parentNode.replaceChild(newScript, oldScript);
+          });
+        })
+        .catch(err => {
+          contentArea.innerHTML = "<div style='color:white; padding:20px;'><h3>⚠️ Halaman Modul: " + pageName + "</h3><p style='color:#94a3b8; margin-top:8px;'>" + err.message + "</p></div>";
+        });
+    }
+
+    /* ENGINE PAGINATION TERPUSAT (NEX-PAGINATION) */
+    window.NexPagination = {
+      menuState: {},
+
+      init: function(options) {
+        const menuName = options.menuName || sessionStorage.getItem("active_menu") || "DefaultMenu";
+        const rawData = options.data || [];
+        const renderCallback = options.renderCallback;
+        const containerId = options.containerId || "ceisa-pagination-container";
+
+        const savedSize = sessionStorage.getItem("PAGE_SIZE_" + menuName);
+        const initialPageSize = savedSize ? parseInt(savedSize, 10) : 20;
+
+        if (!this.menuState[menuName]) {
+          this.menuState[menuName] = {
+            currentPage: 1,
+            pageSize: initialPageSize
+          };
+        }
+
+        this.applyAndRender(menuName, rawData, renderCallback, containerId);
+      },
+
+      applyAndRender: function(menuName, rawData, renderCallback, containerId) {
+        const state = this.menuState[menuName];
+        const totalItems = rawData.length;
+        const totalPages = Math.ceil(totalItems / state.pageSize) || 1;
+
+        if (state.currentPage > totalPages) state.currentPage = totalPages;
+        if (state.currentPage < 1) state.currentPage = 1;
+
+        const startIndex = (state.currentPage - 1) * state.pageSize;
+        const endIndex = startIndex + state.pageSize;
+        const slicedData = rawData.slice(startIndex, endIndex);
+
+        if (typeof renderCallback === "function") {
+          renderCallback(slicedData);
+        }
+
+        this.renderBar(menuName, totalItems, totalPages, rawData, renderCallback, containerId);
+      },
+
+      renderBar: function(menuName, totalItems, totalPages, rawData, renderCallback, containerId) {
+        let container = document.getElementById(containerId);
+        if (!container) return;
+
+        const state = this.menuState[menuName];
+
+        let btnPagesHtml = "";
+        let startP = Math.max(1, state.currentPage - 2);
+        let endP = Math.min(totalPages, startP + 4);
+        if (endP - startP < 4) startP = Math.max(1, endP - 4);
+
+        if (startP > 1) {
+          btnPagesHtml += `<button class="ceisa-page-btn" onclick="NexPagination.goToPage('${menuName}', 1, '${containerId}')">1</button>`;
+          if (startP > 2) btnPagesHtml += `<span style="color:#64748b; padding:0 2px;">...</span>`;
+        }
+
+        for (let i = startP; i <= endP; i++) {
+          const activeClass = (i === state.currentPage) ? "active" : "";
+          btnPagesHtml += `<button class="ceisa-page-btn ${activeClass}" onclick="NexPagination.goToPage('${menuName}', ${i}, '${containerId}')">${i}</button>`;
+        }
+
+        if (endP < totalPages) {
+          if (endP < totalPages - 1) btnPagesHtml += `<span style="color:#64748b; padding:0 2px;">...</span>`;
+          btnPagesHtml += `<button class="ceisa-page-btn" onclick="NexPagination.goToPage('${menuName}', ${totalPages}, '${containerId}')">${totalPages}</button>`;
+        }
+
+        const prevDisabled = (state.currentPage <= 1) ? "disabled" : "";
+        const nextDisabled = (state.currentPage >= totalPages) ? "disabled" : "";
+
+        container.innerHTML = `
+          <div class="ceisa-pagination-bar">
+            <span class="ceisa-page-total">Total ${totalItems}</span>
+            <div class="ceisa-page-btn-group">
+              <button class="ceisa-page-btn" ${prevDisabled} onclick="NexPagination.goToPage('${menuName}', ${state.currentPage - 1}, '${containerId}')">&lt;</button>
+              ${btnPagesHtml}
+              <button class="ceisa-page-btn" ${nextDisabled} onclick="NexPagination.goToPage('${menuName}', ${state.currentPage + 1}, '${containerId}')">&gt;</button>
+            </div>
+            <select class="ceisa-page-select" onchange="NexPagination.changePageSize('${menuName}', this.value, '${containerId}')">
+              <option value="10" ${state.pageSize == 10 ? 'selected' : ''}>10 / page</option>
+              <option value="20" ${state.pageSize == 20 ? 'selected' : ''}>20 / page</option>
+              <option value="50" ${state.pageSize == 50 ? 'selected' : ''}>50 / page</option>
+              <option value="100" ${state.pageSize == 100 ? 'selected' : ''}>100 / page</option>
+            </select>
+          </div>
+        `;
+
+        container._rawData = rawData;
+        container._renderCallback = renderCallback;
+      },
+
+      goToPage: function(menuName, pageNum, containerId) {
+        const container = document.getElementById(containerId);
+        if (!container || !container._rawData) return;
+        this.menuState[menuName].currentPage = pageNum;
+        this.applyAndRender(menuName, container._rawData, container._renderCallback, containerId);
+      },
+
+      changePageSize: function(menuName, newSize, containerId) {
+        const container = document.getElementById(containerId);
+        if (!container || !container._rawData) return;
+
+        const parsedSize = parseInt(newSize, 10);
+        this.menuState[menuName].pageSize = parsedSize;
+        this.menuState[menuName].currentPage = 1;
+        sessionStorage.setItem("PAGE_SIZE_" + menuName, String(parsedSize));
+        this.applyAndRender(menuName, container._rawData, container._renderCallback, containerId);
+      }
+    };
+  </script>
+</body>
+</html>
