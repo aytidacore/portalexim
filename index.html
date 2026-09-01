@@ -80,7 +80,7 @@
       border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.3s; font-size: 13px;
     }
     .btn-login:hover { background: #0369a1; }
-    #login-alert { margin-top: 12px; color: #f87171; font-size: 12px; text-align: center; font-weight: 500; }
+    #login-alert { margin-top: 12px; color: #f87171; font-size: 12px; text-align: center; font-weight: 500; word-break: break-word; }
 
     #dashboard-screen { 
       display: none; 
@@ -680,25 +680,45 @@
       }
     });
 
-    // SISTEM LOGIN - REPLACED WITH SUPABASE
+    // SISTEM LOGIN AMAN SUPABASE
     async function prosesLogin() {
       const u = document.getElementById("user-input").value.trim();
       const p = document.getElementById("pass-input").value.trim();
       const alertBox = document.getElementById("login-alert");
 
-      if(!u || !p) { alertBox.innerHTML = "Isi username dan password!"; return; }
+      if (!u || !p) {
+        alertBox.style.color = "#f87171";
+        alertBox.innerHTML = "Isi username dan password!";
+        return;
+      }
 
+      alertBox.style.color = "#38bdf8";
       alertBox.innerHTML = "⏳ Memeriksa data...";
 
       try {
-        const { data: user, error } = await supabaseClient
+        const { data: users, error } = await supabaseClient
           .from('system_users')
           .select('*')
-          .eq('username', u)
-          .single();
+          .eq('username', u);
 
-        if (error || !user || user.password !== p) {
-          alertBox.innerHTML = "Username atau Password Salah!";
+        if (error) {
+          console.error("Supabase Error:", error);
+          alertBox.style.color = "#f87171";
+          alertBox.innerHTML = "❌ Error Database: " + error.message;
+          return;
+        }
+
+        if (!users || users.length === 0) {
+          alertBox.style.color = "#f87171";
+          alertBox.innerHTML = "❌ Username '" + u + "' tidak ditemukan!";
+          return;
+        }
+
+        const user = users[0];
+
+        if (user.password !== p) {
+          alertBox.style.color = "#f87171";
+          alertBox.innerHTML = "❌ Password Salah!";
           return;
         }
 
@@ -774,8 +794,11 @@
         } else if (isWarning) {
           alert(msg);
         }
+
       } catch (err) {
-        alertBox.innerHTML = "Gagal login: " + err.message;
+        console.error("Catch Error:", err);
+        alertBox.style.color = "#f87171";
+        alertBox.innerHTML = "❌ Gagal Login: " + err.message;
       }
     }
 
@@ -1213,7 +1236,6 @@
       const contentArea = document.getElementById("app-content");
       contentArea.innerHTML = "<h3>⏳ Memuat Modul " + pageName + "...</h3>";
 
-      // Pada GitHub Pages, file modul akan kita tempatkan di folder pages/
       fetch(`pages/${pageName}.html`)
         .then(response => {
           if (!response.ok) throw new Error("Modul belum diunggah (" + pageName + ".html)");
