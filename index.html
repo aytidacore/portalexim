@@ -1,37 +1,49 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NexPortal-EXIM</title>
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background-color: #ffffff;
+<!-- 1. Panggil SDK Supabase di tag <head> -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+  // 2. Inisialisasi Supabase Client
+  const SUPABASE_URL = 'https://kmpvhpiraqkvljsbrhm.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_KcGVwFpF2qyiwmmePfkmWw_nTFwV6wI';
+  
+  // PERBAIKAN DI BARIS INI: Pakai window.supabase.createClient agar tidak error
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  // 3. Fungsi contoh pembacaan data control_schedule
+  async function loadControlSchedule() {
+    const { data, error } = await supabaseClient
+      .from('control_schedule')
+      .select('*')
+      .order('id', { ascending: true });
+
+    if (error) {
+      console.error('Gagal mengambil data schedule:', error.message);
+      return;
     }
-    .container {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
+
+    console.log('Data Schedule dari Supabase:', data);
+    // Masukkan data ke fungsi render tabel UI kamu di sini
+  }
+
+  // 4. Fungsi contoh pembacaan data control_booking
+  async function loadControlBooking() {
+    const { data, error } = await supabaseClient
+      .from('control_booking')
+      .select('*')
+      .order('id', { ascending: true });
+
+    if (error) {
+      console.error('Gagal mengambil data booking:', error.message);
+      return;
     }
-    iframe {
-      width: 100%;
-      height: calc(100% + 50px);
-      margin-top: -50px;
-      border: none;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <iframe src="https://script.google.com/macros/s/AKfycbyxg0mddRYbApsUfQexlA9zC7LQWhLr3kh5FJeXKhAVYCpSoJnrrrpAbfPeA2ts-4vP/exec"></iframe>
-  </div>
-</body>
-</html>
+
+    console.log('Data Booking dari Supabase:', data);
+    // Masukkan data ke fungsi render tabel UI kamu di sini
+  }
+
+  // Jalankan pemanggilan data saat halaman selesai dimuat
+  document.addEventListener('DOMContentLoaded', () => {
+    loadControlSchedule();
+    loadControlBooking();
+  });
+</script>
