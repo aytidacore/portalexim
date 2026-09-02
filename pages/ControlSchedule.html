@@ -51,7 +51,7 @@
   .col-checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 6px; font-size: 11px; color: #cbd5e1; }
   .col-checkbox-grid label { display: flex; align-items: center; gap: 5px; cursor: pointer; }
 
-  /* AREA TABEL SCROLLBAR UTAMA */
+  /* AREA TABEL SCROLLBAR UTAMA (Lebar Kolom Disesuaikan) */
   .table-responsive-schedule {
     flex: 1 1 auto; width: 100%; min-height: 150px; overflow-x: auto !important; overflow-y: auto !important;
     border: 1px solid #253346; border-radius: 8px 8px 0 0; position: relative; background: #141d2b;
@@ -62,7 +62,7 @@
   .table-responsive-schedule::-webkit-scrollbar-thumb { background: #38bdf8 !important; border-radius: 6px; border: 2px solid #0f172a; }
   .table-responsive-schedule::-webkit-scrollbar-thumb:hover { background: #0284c7 !important; }
 
-  .custom-table { width: 100%; border-collapse: separate; border-spacing: 0; text-align: left; font-size: 11.5px; min-width: 1550px; user-select: text !important; }
+  .custom-table { width: 100%; border-collapse: separate; border-spacing: 0; text-align: left; font-size: 11.5px; min-width: 1780px; user-select: text !important; }
   
   .custom-table thead tr.th-title-row th { 
     background-color: #0f172a !important; color: #38bdf8 !important; padding: 6px 5px; 
@@ -92,7 +92,7 @@
   .custom-table tbody tr { cursor: pointer; user-select: text !important; }
 
   .custom-table td { 
-    padding: 5px 8px; border-bottom: 1px solid #1e293b; color: #cbd5e1; white-space: nowrap; 
+    padding: 6px 10px; border-bottom: 1px solid #1e293b; color: #cbd5e1; white-space: nowrap; 
     background: #141d2b; position: relative; user-select: text !important; 
   }
 
@@ -138,7 +138,7 @@
   }
   .btn-aksi-tbl:hover { background: #0284c7; color: white; }
 
-  /* PAGINATION BAR DI BAWAH */
+  /* PAGINATION BAR */
   .pagination-bar {
     display: flex; justify-content: flex-end; align-items: center; gap: 8px;
     padding: 8px 12px; background: #0f172a; border: 1px solid #253346; border-top: none;
@@ -212,9 +212,6 @@
   .upload-dropzone { border: 2px dashed #0284c7; border-radius: 8px; padding: 20px; text-align: center; background: #0f172a; cursor: pointer; transition: 0.3s; margin-top: 8px; }
   .upload-dropzone:hover { background: rgba(2, 132, 199, 0.1); }
 
-  /* ================================================================= */
-  /* PRINT / CETAK PDF FIX LANDSCAPE BERSIH TANPA MODAL LATAR BELAKANG */
-  /* ================================================================= */
   @media print {
     @page { size: landscape; margin: 10mm; }
     body * { visibility: hidden !important; }
@@ -236,7 +233,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 <!-- ================================================================= -->
-<!-- TAMPILAN UTAMA (HEADER BARIS TOMBOL COMPACT APPSCRIPT)            -->
+<!-- TAMPILAN UTAMA                                                    -->
 <!-- ================================================================= -->
 <div class="schedule-container">
   <div class="schedule-header">
@@ -268,7 +265,8 @@
       <button class="btn-action btn-toggle-col" onclick="toggleColumnBox()">⚙️ Show/Hide</button>
       <button class="btn-action btn-reset-filter" onclick="resetFilterSchedule()">🧹 Reset</button>
       <button class="btn-action" onclick="muatDataSchedule()">🔄 Refresh</button>
-      <button class="btn-tpks-sync" onclick="syncDataTPKS()">⚡ Update TPKS</button>
+      <!-- MEMAKSA TERIMA RESPON DIALOG CONFIRM -->
+      <button class="btn-tpks-sync" onclick="return syncDataTPKS()">⚡ Update TPKS</button>
     </div>
   </div>
 
@@ -291,51 +289,51 @@
     </div>
   </div>
 
-  <!-- AREA TABEL SCROLLBAR -->
+  <!-- AREA TABEL UTAMA -->
   <div class="table-responsive-schedule">
     <table class="custom-table" id="tableSchedule">
       <thead>
         <tr class="th-title-row">
-          <th class="col-no" style="width:40px;">
+          <th class="col-no" style="width:45px;">
             <div class="th-header-content"><span>NO</span><button class="btn-sort-col" onclick="urutkanKolomData('no')">⇕</button></div>
           </th>
-          <th class="col-week" style="width:65px;">
+          <th class="col-week" style="width:80px;">
             <div class="th-header-content"><span>WEEK</span><button class="btn-sort-col" onclick="urutkanKolomData('week')">⇕</button></div>
           </th>
-          <th class="col-liner" style="width:90px;">
+          <th class="col-liner" style="width:110px;">
             <div class="th-header-content"><span>LINER</span><button class="btn-sort-col" onclick="urutkanKolomData('liner')">⇕</button></div>
           </th>
-          <th class="col-port" style="width:55px;">
+          <th class="col-port" style="width:65px;">
             <div class="th-header-content"><span>PORT</span><button class="btn-sort-col" onclick="urutkanKolomData('port')">⇕</button></div>
           </th>
-          <th class="col-vessel" style="width:170px;">
+          <th class="col-vessel" style="width:200px;">
             <div class="th-header-content"><span>FEEDER VESSEL</span><button class="btn-sort-col" onclick="urutkanKolomData('feeder_vessel')">⇕</button></div>
           </th>
-          <th class="col-etdorig" style="width:100px;">
+          <th class="col-etdorig" style="width:120px;">
             <div class="th-header-content"><span>ETD ORIGINAL</span><button class="btn-sort-col" onclick="urutkanKolomData('etd_original')">⇕</button></div>
           </th>
-          <th class="col-closing" style="width:95px;">
+          <th class="col-closing" style="width:120px;">
             <div class="th-header-content"><span>CLOSING CY</span><button class="btn-sort-col" onclick="urutkanKolomData('closing_cy')">⇕</button></div>
           </th>
-          <th class="col-updclosing" style="width:130px;">
+          <th class="col-updclosing" style="width:160px;">
             <div class="th-header-content"><span>UPDATE CLOSING CY</span><button class="btn-sort-col" onclick="urutkanKolomData('update_closing_cy')">⇕</button></div>
           </th>
-          <th class="col-etbweb" style="width:135px;">
+          <th class="col-etbweb" style="width:175px;">
             <div class="th-header-content"><span>ETB/ATB WEBSITE</span><button class="btn-sort-col" onclick="urutkanKolomData('etb_website')">⇕</button></div>
           </th>
-          <th class="col-etdweb" style="width:135px;">
+          <th class="col-etdweb" style="width:175px;">
             <div class="th-header-content"><span>ETD/ATD WEBSITE</span><button class="btn-sort-col" onclick="urutkanKolomData('etd_website')">⇕</button></div>
           </th>
-          <th class="col-etaport" style="width:95px;">
+          <th class="col-etaport" style="width:120px;">
             <div class="th-header-content"><span>ETA PORT</span><button class="btn-sort-col" onclick="urutkanKolomData('eta_port')">⇕</button></div>
           </th>
-          <th class="col-dest" style="width:120px;">
+          <th class="col-dest" style="width:130px;">
             <div class="th-header-content"><span>DESTINATION</span><button class="btn-sort-col" onclick="urutkanKolomData('destination')">⇕</button></div>
           </th>
-          <th class="col-remark" style="width:140px;">
+          <th class="col-remark" style="width:160px;">
             <div class="th-header-content"><span>REMARK</span><button class="btn-sort-col" onclick="urutkanKolomData('remark')">⇕</button></div>
           </th>
-          <th class="col-aksi-header" style="width:60px;">AKSI</th>
+          <th class="col-aksi-header" style="width:65px;">AKSI</th>
         </tr>
         <tr class="th-filter-row">
           <th class="col-no"></th>
@@ -360,7 +358,7 @@
     </table>
   </div>
 
-  <!-- BARIS PAGINATION / PAGE BARIS -->
+  <!-- BARIS PAGINATION -->
   <div class="pagination-bar">
     <div class="pagination-btn-group" id="paginationNavButtons"></div>
     <select class="select-page-size" id="pageSizeSelect" onchange="changePageSize(this.value)">
@@ -458,9 +456,13 @@
         </div>
       </div>
 
+      <!-- DATE PICKER + BISA KETIK MANUAL -->
       <div class="form-group-schedule">
-        <label>ETD PORT ORIGINAL</label>
-        <input type="date" id="sched-etdorig" onchange="autoHitungClosingCYFrontend()">
+        <label>ETD PORT ORIGINAL (DD-MM-YYYY)</label>
+        <div style="display:flex; gap:4px;">
+          <input type="text" id="sched-etdorig" placeholder="dd-mm-yyyy" style="flex:1;">
+          <input type="date" style="width:36px; padding:2px; background:#0f172a; border:1px solid #334155; border-radius:6px; cursor:pointer;" onchange="document.getElementById('sched-etdorig').value=formatDateToDDMMYYYY(this.value); autoHitungClosingCYFrontend();">
+        </div>
       </div>
 
       <div class="form-group-schedule">
@@ -470,17 +472,26 @@
 
       <div class="form-group-schedule">
         <label>UPDATE CLOSING CY (Format: dd-mm-yyyy hh:mm)</label>
-        <input type="text" id="sched-updclosing" placeholder="dd-mm-yyyy hh:mm">
+        <div style="display:flex; gap:4px;">
+          <input type="text" id="sched-updclosing" placeholder="dd-mm-yyyy hh:mm" style="flex:1;">
+          <input type="datetime-local" style="width:36px; padding:2px; background:#0f172a; border:1px solid #334155; border-radius:6px; cursor:pointer;" onchange="document.getElementById('sched-updclosing').value=formatDateTimeToDDMMYYYYHHMM(this.value);">
+        </div>
       </div>
 
       <div class="form-group-schedule">
         <label>ETB/ATB WEBSITE (Format: dd-mm-yyyy hh:mm)</label>
-        <input type="text" id="sched-etbweb" placeholder="dd-mm-yyyy hh:mm / ATB: dd-mm-yyyy hh:mm">
+        <div style="display:flex; gap:4px;">
+          <input type="text" id="sched-etbweb" placeholder="dd-mm-yyyy hh:mm / ATB: dd-mm-yyyy hh:mm" style="flex:1;">
+          <input type="datetime-local" style="width:36px; padding:2px; background:#0f172a; border:1px solid #334155; border-radius:6px; cursor:pointer;" onchange="document.getElementById('sched-etbweb').value=formatDateTimeToDDMMYYYYHHMM(this.value);">
+        </div>
       </div>
 
       <div class="form-group-schedule full-width">
         <label>ETD/ATD WEBSITE (Format: dd-mm-yyyy hh:mm)</label>
-        <input type="text" id="sched-etdweb" placeholder="dd-mm-yyyy hh:mm / ATD: dd-mm-yyyy hh:mm">
+        <div style="display:flex; gap:4px;">
+          <input type="text" id="sched-etdweb" placeholder="dd-mm-yyyy hh:mm / ETD: dd-mm-yyyy hh:mm" style="flex:1;">
+          <input type="datetime-local" style="width:36px; padding:2px; background:#0f172a; border:1px solid #334155; border-radius:6px; cursor:pointer;" onchange="document.getElementById('sched-etdweb').value=formatDateTimeToDDMMYYYYHHMM(this.value);">
+        </div>
       </div>
 
       <div class="form-group-schedule full-width">
@@ -633,7 +644,7 @@
 </div>
 
 <!-- ================================================================= -->
-<!-- LOGIKA JAVASCRIPT FULL AKURAT APPSCRIPT & SUPABASE ENGINE     -->
+<!-- JAVASCRIPT LOGIC ENGINE                                          -->
 <!-- ================================================================= -->
 <script>
   let masterDataSchedule = [];
@@ -668,16 +679,56 @@
     return '';
   }
 
+  /* FORMATTER STANDAR DUA DIGIT PERSIS APPSCRIPT (DD-MM-YYYY HH:mm) */
   function formatDateTimeAppScript(valStr) {
     if (!valStr || valStr === '-' || String(valStr).trim() === '') return '-';
     let clean = String(valStr).trim();
-    if (clean.match(/^\d{4}-\d{2}-\d{2}/)) {
-      const parts = clean.split('T')[0].split('-');
-      const dateFormated = `${parts[2]}-${parts[1]}-${parts[0]}`;
-      const timePart = clean.includes('T') ? clean.split('T')[1].substring(0,5) : '';
-      return timePart ? `${dateFormated} ${timePart}` : dateFormated;
+
+    let prefix = "";
+    if (/^(ATB:|ETD:|ATD:)/i.test(clean)) {
+      const matchPrefix = clean.match(/^(ATB:|ETD:|ATD:)\s*/i);
+      prefix = matchPrefix[0];
+      clean = clean.replace(/^(ATB:|ETD:|ATD:)\s*/i, '').trim();
     }
-    return clean;
+
+    if (clean.includes('T') || clean.includes('-') || clean.includes('/')) {
+      let datePart = clean.split(' ')[0].split('T')[0];
+      let timePart = clean.includes('T') ? clean.split('T')[1].substring(0,5) : (clean.includes(' ') ? clean.split(' ')[1].substring(0,5) : '');
+
+      let p = datePart.split(/[-/]/);
+      if (p.length === 3) {
+        let d, m, y;
+        if (p[0].length === 4) {
+          y = p[0]; m = p[1]; d = p[2];
+        } else {
+          d = p[0]; m = p[1]; y = p[2];
+          if (y.length === 2) y = "20" + y;
+        }
+        let formattedDate = `${String(d).padStart(2,'0')}-${String(m).padStart(2,'0')}-${y}`;
+        let finalStr = timePart ? `${formattedDate} ${timePart}` : formattedDate;
+        return prefix ? `${prefix} ${finalStr}` : finalStr;
+      }
+    }
+    return prefix ? `${prefix} ${clean}` : clean;
+  }
+
+  function formatDateToDDMMYYYY(dateVal) {
+    if (!dateVal) return '';
+    const p = dateVal.split('-');
+    if (p.length === 3) return `${p[2]}-${p[1]}-${p[0]}`;
+    return dateVal;
+  }
+
+  function formatDateTimeToDDMMYYYYHHMM(dtVal) {
+    if (!dtVal) return '';
+    const parts = dtVal.split('T');
+    if (parts.length === 2) {
+      const dParts = parts[0].split('-');
+      if (dParts.length === 3) {
+        return `${dParts[2]}-${dParts[1]}-${dParts[0]} ${parts[1]}`;
+      }
+    }
+    return dtVal;
   }
 
   function parseDateForSorting(dateStr) {
@@ -968,7 +1019,7 @@
     if (!etdVal) { targetInp.value = ""; return; }
     const parts = etdVal.split("-");
     if(parts.length === 3) {
-      const d = new Date(parts[0], parts[1] - 1, parts[2]);
+      const d = new Date(parts[2], parts[1] - 1, parts[0]);
       d.setDate(d.getDate() - 1);
       const day = ("0" + d.getDate()).slice(-2);
       const month = ("0" + (d.getMonth() + 1)).slice(-2);
@@ -1007,7 +1058,10 @@
       </div>
       <div>
         <label style="font-size:9.5px; color:#94a3b8; display:block;">ETA PORT</label>
-        <input type="text" class="inp-eta-val" value="${etaValue}" placeholder="dd-mm-yyyy">
+        <div style="display:flex; gap:3px;">
+          <input type="text" class="inp-eta-val" value="${etaValue}" placeholder="dd-mm-yyyy" style="flex:1;">
+          <input type="date" style="width:30px; padding:2px; background:#0f172a; border:1px solid #334155; border-radius:4px; cursor:pointer;" onchange="this.previousElementSibling.value=formatDateToDDMMYYYY(this.value)">
+        </div>
       </div>
       <div>
         <label style="font-size:9.5px; color:#94a3b8; display:block;">REMARK DESTINATION</label>
@@ -1100,6 +1154,7 @@
     document.getElementById("sched-vessel-name").value = vName;
     document.getElementById("sched-voyage").value = vVoy;
 
+    document.getElementById("sched-etdorig").value = itemTarget.etd_original || '';
     document.getElementById("sched-closingcy").value = itemTarget.closing_cy || '';
     document.getElementById("sched-updclosing").value = itemTarget.update_closing_cy || '';
     document.getElementById("sched-etbweb").value = itemTarget.etb_website || '';
@@ -1259,42 +1314,45 @@
     document.getElementById("modalHistoriLog").style.display = "none";
   }
 
-  /* SINKRONISASI TPKS 3 KOLOM SEPERTI APPSCRIPT & KONFIRMASI AMAN */
+  /* SINKRONISASI TPKS DENGAN BLOK CONFIRM KETAT */
   async function syncDataTPKS() {
-    if (!confirm("⚡ Jalankan sinkronisasi otomatis status kapal TPKS (Port SRG)?")) {
-      return; // Berhenti total jika user klik Cancel / batalkan
+    const isConfirmed = window.confirm("⚡ Jalankan sinkronisasi otomatis status kapal TPKS (Port SRG)?");
+    
+    // Hentikan fungsi jika user klik Batal/Cancel
+    if (!isConfirmed) {
+      return false;
     }
 
     try {
       const { data: srgRows } = await supabaseClient.from('control_schedule').select('*').eq('port', 'SRG');
       if (!srgRows || srgRows.length === 0) {
         alert("ℹ️ Tidak ditemukan baris kapal dengan PORT 'SRG' untuk di-sync.");
-        return;
+        return false;
       }
 
       let updatedVessels = [];
-      const now = new Date(2026, 8, 2, 23, 8); // 2/9/2026 23:08 format Apps Script
+      const now = new Date(2026, 8, 2, 23, 8); // Format 2 digit: 02-09-2026 23:08
       const dateStr = `${String(now.getDate()).padStart(2,'0')}-${String(now.getMonth()+1).padStart(2,'0')}-${now.getFullYear()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
 
       for (let row of srgRows) {
         let isModified = false;
         let updatePayload = {};
 
-        // 1. Sinkronisasi Kolom UPDATE CLOSING CY
+        // 1. UPDATE CLOSING CY
         const oldUpdClos = row.update_closing || row.update_closing_cy || '';
         if (!oldUpdClos || oldUpdClos === '-' || oldUpdClos.trim() === '') {
           updatePayload.update_closing = dateStr;
           isModified = true;
         }
 
-        // 2. Sinkronisasi Kolom ETB/ATB WEBSITE
+        // 2. ETB/ATB WEBSITE
         const oldEtb = row.etb_atb_website || '';
         if (!oldEtb || oldEtb === '-' || oldEtb.trim() === '') {
           updatePayload.etb_atb_website = `ATB: ${dateStr}`;
           isModified = true;
         }
 
-        // 3. Sinkronisasi Kolom ETD/ATD WEBSITE
+        // 3. ETD/ATD WEBSITE
         const oldEtd = row.etd_atd_website || '';
         if (!oldEtd || oldEtd === '-' || oldEtd.trim() === '') {
           updatePayload.etd_atd_website = `ETD: ${dateStr}`;
@@ -1313,7 +1371,7 @@
 
       if (updatedVessels.length > 0) {
         let msgList = updatedVessels.map((v, i) => `${i + 1}. ${v}`).join("\n");
-        alert(`⚡ SINKRONISASI TPKS BERHASIL!\n\nBerikut ${updatedVessels.length} Kapal yang berhasil diperbarui (Update Closing, ETB/ATB, & ETD/ATD):\n\n${msgList}`);
+        alert(`⚡ SINKRONISASI TPKS BERHASIL!\n\nBerikut ${updatedVessels.length} Kapal yang berhasil diperbarui:\n\n${msgList}`);
       } else {
         alert("⚡ Status Web TPKS sudah yang terbaru. Tidak ada perubahan data kapal.");
       }
