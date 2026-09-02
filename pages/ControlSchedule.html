@@ -1,5 +1,5 @@
 <!-- ================================================================= -->
-<!-- STYLE / CSS CONTROL SCHEDULE EXPORT COMPACT (MATCH APPSCRIPT)     -->
+<!-- STYLE / CSS CONTROL SCHEDULE EXPORT COMPACT                       -->
 <!-- ================================================================= -->
 <style>
   .schedule-container { width: 100%; font-family: Calibri, 'Segoe UI', Arial, sans-serif; display: flex; flex-direction: column; height: calc(100vh - 70px); max-height: 100%; box-sizing: border-box; }
@@ -269,8 +269,8 @@
       <button class="btn-action btn-reset-filter" onclick="resetFilterSchedule()">🧹 Reset</button>
       <button class="btn-action" onclick="muatDataSchedule()">🔄 Refresh</button>
 
-      <!-- TOMBOL UPDATE TPKS TERKUNCI -->
-      <button type="button" class="btn-tpks-sync" id="btnTpksSyncExec">⚡ Update TPKS</button>
+      <!-- TOMBOL UPDATE TPKS HANDLER LANGSUNG (ONCLICK) -->
+      <button type="button" class="btn-tpks-sync" onclick="syncDataTPKS(event)">⚡ Update TPKS</button>
     </div>
   </div>
 
@@ -408,7 +408,7 @@
 </div>
 
 <!-- ================================================================= -->
-<!-- MODAL FORM TAMBAH / EDIT GROUP KAPAL (NATIVE DATEPICKER)          -->
+<!-- MODAL FORM TAMBAH / EDIT GROUP KAPAL                              -->
 <!-- ================================================================= -->
 <div class="modal-overlay" id="modalSchedule">
   <div class="modal-card-schedule">
@@ -659,22 +659,6 @@
     "EXPEDITORS": ["KITCHENER", "EL PASO"],
     "OOCL": ["HIROSHIMA"]
   };
-
-  // EVENT LISTENER TOMBOL TPKS MANUAL TERKUNCI DENGAN EVENT BINDING
-  document.addEventListener('DOMContentLoaded', function() {
-    const btnTpks = document.getElementById("btnTpksSyncExec");
-    if (btnTpks) {
-      btnTpks.addEventListener("click", function(evt) {
-        evt.preventDefault();
-        evt.stopPropagation();
-
-        const isUserAgree = window.confirm("⚡ Jalankan sinkronisasi otomatis status kapal TPKS (Port SRG)?");
-        if (isUserAgree) {
-          eksekusiSyncDataTPKS();
-        }
-      });
-    }
-  });
 
   muatDataSchedule();
 
@@ -1000,7 +984,10 @@
   }
 
   function toggleMenuAksiSchedule(event, rowId, displayNo) {
-    if (event) event.stopPropagation();
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
     tutupSemuaMenuAksiSchedule();
 
     const btn = event.currentTarget;
@@ -1024,7 +1011,7 @@
 
     menu.innerHTML = `
       <a onclick="editScheduleByGlobalId('${rowId}')" style="display:block; padding:7px 9px; color:#f59e0b; font-size:11px; text-decoration:none; cursor:pointer; font-weight:600;">✏️ Edit Data</a>
-      <a onclick="hapusSchedule(${displayNo}, '${rowId}')" style="display:block; padding:7px 9px; color:#f87171; font-size:11px; text-decoration:none; cursor:pointer; font-weight:600;">🗑️ Delete Data</a>
+      <a onclick="hapusSchedule(event, ${displayNo}, '${rowId}')" style="display:block; padding:7px 9px; color:#f87171; font-size:11px; text-decoration:none; cursor:pointer; font-weight:600;">🗑️ Delete Data</a>
     `;
 
     document.body.appendChild(menu);
@@ -1057,7 +1044,7 @@
   }
 
   function onLinerChanged() {
-    if (isEditMode) return; // Mencegah mereset dropdown jika sedang dalam mode edit
+    if (isEditMode) return;
     const liner = document.getElementById("sched-liner").value;
     const dests = masterTermMap[liner];
     if (dests && dests.length > 0) {
@@ -1066,7 +1053,6 @@
     }
   }
 
-  /* KUNCI PROTEKSI DESTINATION PADA MODE EDIT SESUAI PERLAKUAN APPSCRIPT */
   function tambahDestinasiRowInForm(selectedDest = "", etaValue = "", remarkValue = "", syncCheck = true, lockDestination = false) {
     const wrapper = document.getElementById("dest-rows-wrapper");
     const liner = document.getElementById("sched-liner").value;
@@ -1161,7 +1147,6 @@
     document.getElementById("modalSchedule").style.display = "flex";
   }
 
-  /* EDIT MODE: MEMPROTEKSI DESTINATION DAN MEMUAT INPUT DATE NATIVE */
   function editScheduleByGlobalId(targetId) {
     tutupSemuaMenuAksiSchedule();
     isEditMode = true;
@@ -1179,7 +1164,7 @@
     document.getElementById("modal-schedule-title").innerText = `✏️ Edit Grup Kapal: ${itemTarget.feeder_vessel} (${groupItems.length} Destinasi)`;
     document.getElementById("sched-week").value = (itemTarget.week || '').replace(/\D/g, '');
     document.getElementById("sched-liner").value = itemTarget.liner || '';
-    document.getElementById("sched-liner").disabled = true; // Kunci Liner saat mode edit
+    document.getElementById("sched-liner").disabled = true;
     document.getElementById("sched-port").value = itemTarget.port || 'SRG';
 
     let vName = itemTarget.feeder_vessel || "";
@@ -1190,7 +1175,7 @@
       vVoy = parts.slice(1).join("|").trim();
     }
     document.getElementById("sched-vessel-name").value = vName;
-    document.getElementById("sched-vessel-name").disabled = true; // Kunci Feeder Vessel saat mode edit
+    document.getElementById("sched-vessel-name").disabled = true;
     document.getElementById("sched-voyage").value = vVoy;
 
     document.getElementById("sched-etdorig").value = parseToInputDate(itemTarget.etd_original);
@@ -1200,12 +1185,11 @@
     document.getElementById("sched-etdweb").value = parseToInputDateTimeLocal(itemTarget.etd_website);
     document.getElementById("sched-remark").value = itemTarget.remark || '';
     
-    // Sembunyikan tombol Tambah Destination saat edit agar susunan destination konsisten
     document.getElementById("btn-add-dest-row").style.display = "none";
 
     document.getElementById("dest-rows-wrapper").innerHTML = "";
     groupItems.forEach(g => {
-      tambahDestinasiRowInForm(g.destination || '', g.eta_port || '', g.remark || '', false, true); // Lock destination diaktifkan
+      tambahDestinasiRowInForm(g.destination || '', g.eta_port || '', g.remark || '', false, true);
     });
 
     document.getElementById("modalSchedule").style.display = "flex";
@@ -1308,9 +1292,19 @@
     }
   }
 
-  async function hapusSchedule(displayNo, rowId) {
+  /* PENCEGAHAN DELETE LANGSUNG EKSEKUSI */
+  async function hapusSchedule(event, displayNo, rowId) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
     tutupSemuaMenuAksiSchedule();
-    if (!confirm(`⚠️ Apakah Anda yakin ingin menghapus data Schedule pada baris ke-${displayNo} ini?`)) return;
+
+    // Dapatkan konfirmasi ketat user
+    const userConfirm = window.confirm(`⚠️ Apakah Anda yakin ingin menghapus data Schedule pada baris ke-${displayNo} ini?`);
+    if (!userConfirm) {
+      return false; // Hentikan eksekusi jika diklik Batal / Cancel
+    }
 
     try {
       await supabaseClient.from('control_schedule').delete().eq('id', rowId);
@@ -1364,8 +1358,18 @@
     document.getElementById("modalHistoriLog").style.display = "none";
   }
 
-  /* EKSKUSI SYNC TPKS TERISOLASI DARI CONFIRM DIALOG */
-  async function eksekusiSyncDataTPKS() {
+  /* EKSKUSI SYNC TPKS LANGSUNG SINKRON DENGAN EVENT ONCLICK */
+  async function syncDataTPKS(event) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    const isUserProceed = window.confirm("⚡ Jalankan sinkronisasi otomatis status kapal TPKS (Port SRG)?");
+    if (!isUserProceed) {
+      return false; // Hentikan eksekusi total jika user memilih Cancel / Batal
+    }
+
     try {
       const { data: srgRows } = await supabaseClient.from('control_schedule').select('*').eq('port', 'SRG');
       if (!srgRows || srgRows.length === 0) {
@@ -1374,7 +1378,7 @@
       }
 
       let updatedVessels = [];
-      const now = new Date(2026, 8, 2, 23, 8); // Format 2-digit: 02-09-2026 23:08
+      const now = new Date(2026, 8, 2, 23, 8);
       const dateStr = `${String(now.getDate()).padStart(2,'0')}-${String(now.getMonth()+1).padStart(2,'0')}-${now.getFullYear()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
 
       for (let row of srgRows) {
