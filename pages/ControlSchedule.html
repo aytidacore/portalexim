@@ -211,6 +211,26 @@
 
   .upload-dropzone { border: 2px dashed #0284c7; border-radius: 8px; padding: 20px; text-align: center; background: #0f172a; cursor: pointer; transition: 0.3s; margin-top: 8px; }
   .upload-dropzone:hover { background: rgba(2, 132, 199, 0.1); }
+
+  /* ================================================================= */
+  /* PRINT / CETAK PDF FIX LANDSCAPE BERSIH TANPA MODAL LATAR BELAKANG */
+  /* ================================================================= */
+  @media print {
+    @page { size: landscape; margin: 10mm; }
+    body * { visibility: hidden !important; }
+    #printableArea, #printableArea * { visibility: visible !important; }
+    #printableArea {
+      position: absolute !important;
+      left: 0 !important;
+      top: 0 !important;
+      width: 100% !important;
+      background: #ffffff !important;
+      color: #000000 !important;
+      box-shadow: none !important;
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+  }
 </style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -386,7 +406,7 @@
 </div>
 
 <!-- ================================================================= -->
-<!-- MODAL FORM TAMBAH / EDIT GROUP KAPAL (APPSCRIPT MULTI-DEST)       -->
+<!-- MODAL FORM TAMBAH / EDIT GROUP KAPAL                              -->
 <!-- ================================================================= -->
 <div class="modal-overlay" id="modalSchedule">
   <div class="modal-card-schedule">
@@ -395,7 +415,6 @@
       <button onclick="tutupModalSchedule()" style="background:none; border:none; color:#ef4444; font-size:18px; cursor:pointer;">✖</button>
     </div>
 
-    <!-- Menyimpan daftar ID yang sedang diedit dalam satu grup kapal -->
     <input type="hidden" id="sched-group-ids">
 
     <div class="form-grid-schedule">
@@ -661,9 +680,8 @@
     return clean;
   }
 
-  /* PARSER TANGGAL KE OBJECT DATE UNTUK SORTING BERDASARKAN KEDEKATAN HARI INI (SEPT 2, 2026) */
   function parseDateForSorting(dateStr) {
-    if (!dateStr || dateStr === '-' || dateStr.trim() === '') return new Date(9999, 11, 31); // Taruh paling bawah jika kosong
+    if (!dateStr || dateStr === '-' || dateStr.trim() === '') return new Date(9999, 11, 31);
     let clean = dateStr.replace(/^(ATB:|ETD:|ATD:)\s*/i, '').trim();
     const parts = clean.split(/[-/]/);
     if (parts.length >= 3) {
@@ -768,8 +786,7 @@
         };
       });
 
-      /* PENGURUTAN DATABASE BERDASARKAN KOLOM ETD/ATD WEBSITE TERDEKAT DENGAN HARI INI */
-      const today = new Date(2026, 8, 2); // 2 September 2026
+      const today = new Date(2026, 8, 2);
 
       masterDataSchedule.sort((a, b) => {
         let dateA = parseDateForSorting(a.etd_website);
@@ -778,11 +795,9 @@
         let isPastA = dateA < today;
         let isPastB = dateB < today;
 
-        // Jika satu sudah lewat dan satu lagi belum, yang belum lewat (mendatang) ditarik ke atas
         if (!isPastA && isPastB) return -1;
         if (isPastA && !isPastB) return 1;
 
-        // Jika sama-sama belum lewat atau sama-sama sudah lewat, urutkan berdasarkan yang terdekat
         return Math.abs(dateA - today) - Math.abs(dateB - today);
       });
 
@@ -906,7 +921,6 @@
     tampilkanTabelScheduleWithPagination();
   }
 
-  /* DROPDOWN AKSI FIXED POSITIONING DI BODY AGAR TIDAK TERTUTUP */
   function toggleMenuAksiSchedule(event, rowId, displayNo) {
     if (event) event.stopPropagation();
     tutupSemuaMenuAksiSchedule();
@@ -1058,13 +1072,11 @@
     document.getElementById("modalSchedule").style.display = "flex";
   }
 
-  /* FITUR EDIT GABUNGAN MULTI-DESTINATION PER KAPAL (PERSIS APPSCRIPT) */
   function editScheduleByGlobalId(targetId) {
     tutupSemuaMenuAksiSchedule();
     const itemTarget = masterDataSchedule.find(x => String(x.id) === String(targetId));
     if (!itemTarget) return;
 
-    // Cari seluruh baris lain yang memiliki Liner & Feeder Vessel yang sama (Grup Kapal)
     const groupItems = masterDataSchedule.filter(x => 
       String(x.liner).trim().toUpperCase() === String(itemTarget.liner).trim().toUpperCase() &&
       String(x.feeder_vessel).trim().toUpperCase() === String(itemTarget.feeder_vessel).trim().toUpperCase()
@@ -1094,7 +1106,6 @@
     document.getElementById("sched-etdweb").value = itemTarget.etd_website || '';
     document.getElementById("sched-remark").value = itemTarget.remark || '';
 
-    // Muat semua destinasi yang tergabung dalam grup kapal tersebut ke form
     document.getElementById("dest-rows-wrapper").innerHTML = "";
     groupItems.forEach(g => {
       tambahDestinasiRowInForm(g.destination || '', g.eta_port || '', g.remark || '', false);
@@ -1148,7 +1159,6 @@
     try {
       let existingIds = groupIdsStr ? JSON.parse(groupIdsStr) : [];
 
-      // Jika sedang edit grup, hapus baris lama grup ini lalu masukkan ulang data destinasi terbarunya
       if (existingIds.length > 0) {
         for (let oldId of existingIds) {
           await supabaseClient.from('control_schedule').delete().eq('id', oldId);
@@ -1249,9 +1259,11 @@
     document.getElementById("modalHistoriLog").style.display = "none";
   }
 
-  /* SYNC TPKS SESUAI FORMAT APPSCRIPT */
+  /* SINKRONISASI TPKS 3 KOLOM SEPERTI APPSCRIPT & KONFIRMASI AMAN */
   async function syncDataTPKS() {
-    if (!confirm("⚡ Jalankan sinkronisasi otomatis status kapal TPKS (Port SRG)?")) return;
+    if (!confirm("⚡ Jalankan sinkronisasi otomatis status kapal TPKS (Port SRG)?")) {
+      return; // Berhenti total jika user klik Cancel / batalkan
+    }
 
     try {
       const { data: srgRows } = await supabaseClient.from('control_schedule').select('*').eq('port', 'SRG');
@@ -1261,24 +1273,38 @@
       }
 
       let updatedVessels = [];
-      const now = new Date(2026, 8, 2, 23, 8); // 2/9/2026 23:8 sesuai Apps Script format
-      const timeStampStr = `ATB: ${now.getDate()}/${now.getMonth()+1}/${now.getFullYear()} ${now.getHours()}:${now.getMinutes()}`;
+      const now = new Date(2026, 8, 2, 23, 8); // 2/9/2026 23:08 format Apps Script
+      const dateStr = `${String(now.getDate()).padStart(2,'0')}-${String(now.getMonth()+1).padStart(2,'0')}-${now.getFullYear()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
 
       for (let row of srgRows) {
-        const oldEtb = row.etb_atb_website || '';
-        let newEtb = oldEtb;
+        let isModified = false;
+        let updatePayload = {};
 
-        if (!oldEtb || oldEtb === '-' || oldEtb.trim() === '') {
-          newEtb = timeStampStr;
+        // 1. Sinkronisasi Kolom UPDATE CLOSING CY
+        const oldUpdClos = row.update_closing || row.update_closing_cy || '';
+        if (!oldUpdClos || oldUpdClos === '-' || oldUpdClos.trim() === '') {
+          updatePayload.update_closing = dateStr;
+          isModified = true;
         }
 
-        if (newEtb !== oldEtb) {
-          await supabaseClient.from('control_schedule').update({
-            etb_atb_website: newEtb
-          }).eq('id', row.id);
+        // 2. Sinkronisasi Kolom ETB/ATB WEBSITE
+        const oldEtb = row.etb_atb_website || '';
+        if (!oldEtb || oldEtb === '-' || oldEtb.trim() === '') {
+          updatePayload.etb_atb_website = `ATB: ${dateStr}`;
+          isModified = true;
+        }
 
-          await catatLogChangesServer(row.id, "TPKS BOT", "SYNC TPKS", "ETB/ATB WEBSITE", oldEtb, newEtb);
-          
+        // 3. Sinkronisasi Kolom ETD/ATD WEBSITE
+        const oldEtd = row.etd_atd_website || '';
+        if (!oldEtd || oldEtd === '-' || oldEtd.trim() === '') {
+          updatePayload.etd_atd_website = `ETD: ${dateStr}`;
+          isModified = true;
+        }
+
+        if (isModified) {
+          await supabaseClient.from('control_schedule').update(updatePayload).eq('id', row.id);
+          await catatLogChangesServer(row.id, "TPKS BOT", "SYNC TPKS", "3 KOLOM TPKS", "-", dateStr);
+
           if (!updatedVessels.includes(row.feeder_vessel)) {
             updatedVessels.push(row.feeder_vessel);
           }
@@ -1287,7 +1313,7 @@
 
       if (updatedVessels.length > 0) {
         let msgList = updatedVessels.map((v, i) => `${i + 1}. ${v}`).join("\n");
-        alert(`⚡ SINKRONISASI TPKS BERHASIL!\n\nBerikut ${updatedVessels.length} Kapal yang berhasil diperbarui:\n\n${msgList}`);
+        alert(`⚡ SINKRONISASI TPKS BERHASIL!\n\nBerikut ${updatedVessels.length} Kapal yang berhasil diperbarui (Update Closing, ETB/ATB, & ETD/ATD):\n\n${msgList}`);
       } else {
         alert("⚡ Status Web TPKS sudah yang terbaru. Tidak ada perubahan data kapal.");
       }
