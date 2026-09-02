@@ -132,10 +132,21 @@
     background: #141d2b !important; z-index: 5; border-left: 1px solid #253346; text-align: center;
   }
 
+  .aksi-dropdown { position: relative; display: inline-block; }
   .btn-aksi-tbl {
     background: #334155; color: #f8fafc; border: 1px solid #475569; padding: 2px 6px; border-radius: 4px; font-size: 10.5px; font-weight: 600; cursor: pointer;
   }
   .btn-aksi-tbl:hover { background: #0284c7; color: white; }
+
+  .aksi-menu {
+    display: none; position: fixed !important; background: #0f172a; border: 1px solid #334155;
+    border-radius: 8px; width: 140px; box-shadow: 0 10px 25px rgba(0,0,0,0.9); z-index: 99999 !important; text-align: left; overflow: hidden;
+  }
+  .aksi-menu a { display: block; padding: 7px 9px; color: #cbd5e1; font-size: 11px; text-decoration: none; cursor: pointer; transition: 0.2s; }
+  .aksi-menu a.dev-edit { color: #f59e0b; }
+  .aksi-menu a.dev-edit:hover { background: #d97706 !important; color: #ffffff !important; }
+  .aksi-menu a.dev-del { color: #f87171; }
+  .aksi-menu a.dev-del:hover { background: #dc2626 !important; color: #ffffff !important; }
 
   .modal-overlay {
     display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -157,11 +168,28 @@
   .btn-preview-mode { background: #334155; color: #94a3b8; border: 1px solid #475569; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; }
   .btn-preview-mode.active-mode { background: #0284c7; color: #ffffff; border-color: #38bdf8; }
 
+  .form-grid-schedule { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .form-group-schedule { display: flex; flex-direction: column; }
+  .form-group-schedule.full-width { grid-column: span 2; }
+  .form-group-schedule label { font-size: 11px; color: #94a3b8; margin-bottom: 3px; font-weight: 500; }
+  .form-group-schedule input, .form-group-schedule select, .form-group-schedule textarea {
+    padding: 7px 9px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #fff; font-size: 11.5px; outline: none; transition: 0.2s;
+  }
+
+  .vessel-voyage-port-row {
+    grid-column: span 2; display: grid; grid-template-columns: 90px 1.5fr 1fr; gap: 8px; align-items: flex-start;
+  }
+
+  .dest-section-box { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 10px; margin-top: 4px; }
+  .dest-row-item {
+    display: grid; grid-template-columns: 1.2fr 1fr 1.3fr auto auto; gap: 6px; align-items: center; margin-bottom: 6px;
+    background: #1e293b; padding: 6px 8px; border-radius: 6px; border: 1px solid #334155;
+  }
+
   .log-table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 8px; }
   .log-table th { background: #0f172a; color: #38bdf8; padding: 6px; border-bottom: 2px solid #334155; text-align: left; }
   .log-table td { padding: 6px; border-bottom: 1px solid #334155; color: #cbd5e1; white-space: nowrap; }
-  
-  /* TINGKATAN REVISI LEGEND BADGE */
+
   .rev-legend-box { display: flex; gap: 3px; align-items: center; font-size: 9px; font-weight: bold; }
   .rev-legend-item { padding: 1px 4px; border-radius: 2px; }
 </style>
@@ -284,6 +312,94 @@
 </div>
 
 <!-- ================================================================= -->
+<!-- MODAL FORM TAMBAH / EDIT SCHEDULE                                -->
+<!-- ================================================================= -->
+<div class="modal-overlay" id="modalSchedule">
+  <div class="modal-card-schedule">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+      <h3 id="modal-schedule-title">🚢 Form Control Schedule</h3>
+      <button onclick="tutupModalSchedule()" style="background:none; border:none; color:#ef4444; font-size:18px; cursor:pointer;">✖</button>
+    </div>
+
+    <input type="hidden" id="sched-id">
+
+    <div class="form-grid-schedule">
+      <div class="form-group-schedule">
+        <label>WEEK (Cukup Ketik Angka)</label>
+        <input type="number" id="sched-week" placeholder="Contoh: 36">
+      </div>
+
+      <div class="form-group-schedule">
+        <label>LINER *</label>
+        <input type="text" id="sched-liner" placeholder="Contoh: ONE, WAN HAI, SITC">
+      </div>
+
+      <div class="vessel-voyage-port-row">
+        <div class="form-group-schedule">
+          <label>PORT *</label>
+          <select id="sched-port">
+            <option value="SRG" selected>SRG</option>
+            <option value="SUB">SUB</option>
+            <option value="JKT">JKT</option>
+          </select>
+        </div>
+
+        <div class="form-group-schedule">
+          <label>FEEDER VESSEL *</label>
+          <input type="text" id="sched-vessel-name" placeholder="Contoh: DANUM 171 | 110N">
+        </div>
+
+        <div class="form-group-schedule">
+          <label>ETD PORT ORIGINAL</label>
+          <input type="date" id="sched-etdorig">
+        </div>
+      </div>
+
+      <div class="form-group-schedule">
+        <label>CLOSING CY</label>
+        <input type="date" id="sched-closingcy">
+      </div>
+
+      <div class="form-group-schedule">
+        <label>UPDATE CLOSING CY</label>
+        <input type="text" id="sched-updclosing" placeholder="Contoh: 23-08-2026 12:00">
+      </div>
+
+      <div class="form-group-schedule">
+        <label>ETB/ATB WEBSITE</label>
+        <input type="text" id="sched-etbweb" placeholder="Contoh: ATB: 24-08-2026 15:30">
+      </div>
+
+      <div class="form-group-schedule">
+        <label>ETD/ATD WEBSITE</label>
+        <input type="text" id="sched-etdweb" placeholder="Contoh: ATD: 25-08-2026 07:20">
+      </div>
+
+      <div class="form-group-schedule">
+        <label>ETA PORT</label>
+        <input type="date" id="sched-etaport">
+      </div>
+
+      <div class="form-group-schedule">
+        <label>DESTINATION *</label>
+        <input type="text" id="sched-dest" placeholder="Contoh: NAGOYA">
+      </div>
+
+      <div class="form-group-schedule full-width">
+        <label>REMARK UTAMA</label>
+        <textarea id="sched-remark" rows="2" placeholder="Catatan tambahan (Opsional)"></textarea>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:6px; margin-top:12px;">
+      <button class="btn-action" onclick="simpanSchedule()" style="flex:1; background:#16a34a;">💾 Simpan Data Schedule</button>
+      <button class="btn-action" onclick="tutupModalSchedule()" style="background:#475569;">Batal</button>
+    </div>
+    <div id="sched-alert" style="font-size:11.5px; margin-top:8px; text-align:center;"></div>
+  </div>
+</div>
+
+<!-- ================================================================= -->
 <!-- MODAL PREVIEW CETAK DATA (MODE RAPI MERGED CELLS)                 -->
 <!-- ================================================================= -->
 <div class="modal-overlay" id="modalExportPreview">
@@ -373,7 +489,7 @@
 </div>
 
 <!-- ================================================================= -->
-<!-- LOGIKA JAVASCRIPT FIXED UNTUK DATABASE SUPABASE ANDA             -->
+<!-- LOGIKA JAVASCRIPT FIXED                                           -->
 <!-- ================================================================= -->
 <script>
   let masterDataSchedule = [];
@@ -381,9 +497,10 @@
   let currentPreviewMode = 'merged';
   let currentSortState = { column: null, direction: 'asc' };
 
+  // INISIALISASI
   muatDataSchedule();
 
-  // PEMBACAAN VARIABEL SUPABASE
+  // HEURISTIK PEMBACAAN SUPABASE PERSIS DENGAN DATABASE KAMU
   function getSupabaseVal(row, candidates) {
     if (!row) return '';
     for (let c of candidates) {
@@ -433,7 +550,7 @@
           port: getSupabaseVal(row, ['port', 'Port']) || 'SRG',
           feeder_vessel: getSupabaseVal(row, ['feeder_vessel', 'vessel']),
           
-          // MAPPING SESUAI KOLOM DATABASE SUPABASE KAMU
+          // NAMA KOLOM UTAMA SESUAI SUPABASE KAMU
           etd_original: getSupabaseVal(row, ['etd_port_origin', 'etd_original', 'etd_orig']),
           closing_cy: getSupabaseVal(row, ['closing_cy', 'closing']),
           update_closing_cy: getSupabaseVal(row, ['update_closing', 'update_closing_cy', 'upd_closing']),
@@ -504,11 +621,149 @@
         <td class="col-dest" ondblclick="${fnDblClick}" style="font-weight:600;">${item.destination || '-'}</td>
         <td class="col-remark" ondblclick="${fnDblClick}">${item.remark || '-'}</td>
         <td class="col-aksi-cell">
-          <button class="btn-aksi-tbl" onclick="alert('ID Row: ${item.id}')">Aksi ▾</button>
+          <div class="aksi-dropdown">
+            <button class="btn-aksi-tbl" onclick="toggleMenuAksiSchedule(event, ${index})">Aksi ▾</button>
+            <div class="aksi-menu" id="aksi-menu-sched-${index}">
+              <a class="dev-edit" onclick="editSchedule(${index})">✏️ Edit Data</a>
+              <a class="dev-del" onclick="hapusSchedule('${item.id}')">🗑️ Delete Data</a>
+            </div>
+          </div>
         </td>
       `;
       tbody.appendChild(tr);
     });
+  }
+
+  function toggleMenuAksiSchedule(event, index) {
+    if (event) event.stopPropagation();
+    tutupSemuaMenuAksiSchedule();
+    const menu = document.getElementById(`aksi-menu-sched-${index}`);
+    if (menu) {
+      const btn = event.currentTarget;
+      const rect = btn.getBoundingClientRect();
+      menu.style.top = `${rect.bottom + 2}px`;
+      menu.style.left = `${rect.left - 80}px`;
+      menu.style.display = 'block';
+    }
+  }
+
+  function tutupSemuaMenuAksiSchedule() {
+    document.querySelectorAll('.aksi-menu').forEach(m => m.style.display = 'none');
+  }
+
+  window.addEventListener('click', function() {
+    tutupSemuaMenuAksiSchedule();
+    const expMenu = document.getElementById("exportMenuList");
+    if (expMenu) expMenu.style.display = "none";
+  });
+
+  // MODAL FORM ADD / EDIT
+  function bukaModalSchedule(mode) {
+    document.getElementById("sched-alert").innerText = "";
+    if (mode === 'add') {
+      document.getElementById("modal-schedule-title").innerText = "🚢 Form Tambah Control Schedule";
+      document.getElementById("sched-id").value = "";
+      document.getElementById("sched-week").value = "";
+      document.getElementById("sched-liner").value = "";
+      document.getElementById("sched-port").value = "SRG";
+      document.getElementById("sched-vessel-name").value = "";
+      document.getElementById("sched-etdorig").value = "";
+      document.getElementById("sched-closingcy").value = "";
+      document.getElementById("sched-updclosing").value = "";
+      document.getElementById("sched-etbweb").value = "";
+      document.getElementById("sched-etdweb").value = "";
+      document.getElementById("sched-etaport").value = "";
+      document.getElementById("sched-dest").value = "";
+      document.getElementById("sched-remark").value = "";
+    }
+    document.getElementById("modalSchedule").style.display = "flex";
+  }
+
+  function editSchedule(index) {
+    tutupSemuaMenuAksiSchedule();
+    const item = currentFilteredSchedule[index];
+    if (!item) return;
+
+    document.getElementById("modal-schedule-title").innerText = "✏️ Edit Control Schedule";
+    document.getElementById("sched-id").value = item.id;
+    document.getElementById("sched-week").value = (item.week || '').replace(/\D/g, '');
+    document.getElementById("sched-liner").value = item.liner || '';
+    document.getElementById("sched-port").value = item.port || 'SRG';
+    document.getElementById("sched-vessel-name").value = item.feeder_vessel || '';
+    document.getElementById("sched-updclosing").value = item.update_closing_cy || '';
+    document.getElementById("sched-etbweb").value = item.etb_website || '';
+    document.getElementById("sched-etdweb").value = item.etd_website || '';
+    document.getElementById("sched-dest").value = item.destination || '';
+    document.getElementById("sched-remark").value = item.remark || '';
+
+    document.getElementById("modalSchedule").style.display = "flex";
+  }
+
+  function tutupModalSchedule() {
+    document.getElementById("modalSchedule").style.display = "none";
+  }
+
+  async function simpanSchedule() {
+    const rowId = document.getElementById("sched-id").value;
+    const weekInp = document.getElementById("sched-week").value.trim();
+    const linerInp = document.getElementById("sched-liner").value.trim().toUpperCase();
+    const vesselInp = document.getElementById("sched-vessel-name").value.trim().toUpperCase();
+    const destInp = document.getElementById("sched-dest").value.trim().toUpperCase();
+    const alertDiv = document.getElementById("sched-alert");
+
+    if (!linerInp || !vesselInp || !destInp) {
+      alertDiv.style.color = "#ef4444";
+      alertDiv.innerText = "⚠️ Harap isi Liner, Feeder Vessel, dan Destination!";
+      return;
+    }
+
+    const payload = {
+      week: weekInp ? `WEEK ${weekInp}` : '',
+      liner: linerInp,
+      port: document.getElementById("sched-port").value,
+      feeder_vessel: vesselInp,
+      etd_port_origin: document.getElementById("sched-etdorig").value,
+      closing_cy: document.getElementById("sched-closingcy").value,
+      update_closing: document.getElementById("sched-updclosing").value.trim(),
+      etb_atb_website: document.getElementById("sched-etbweb").value.trim(),
+      etd_atd_website: document.getElementById("sched-etdweb").value.trim(),
+      eta_port: document.getElementById("sched-etaport").value,
+      destination: destInp,
+      remark: document.getElementById("sched-remark").value.trim()
+    };
+
+    alertDiv.style.color = "#38bdf8";
+    alertDiv.innerText = "⏳ Menyimpan data ke Supabase...";
+
+    try {
+      if (rowId) {
+        await supabaseClient.from('control_schedule').update(payload).eq('id', rowId);
+      } else {
+        await supabaseClient.from('control_schedule').insert([payload]);
+      }
+      alertDiv.style.color = "#4ade80";
+      alertDiv.innerText = "✅ Data Schedule berhasil disimpan!";
+      setTimeout(() => {
+        tutupModalSchedule();
+        muatDataSchedule();
+      }, 1000);
+    } catch(err) {
+      alertDiv.style.color = "#ef4444";
+      alertDiv.innerText = "❌ Gagal menyimpan: " + err.message;
+    }
+  }
+
+  async function hapusSchedule(rowId) {
+    tutupSemuaMenuAksiSchedule();
+    if (!confirm("⚠️ Apakah Anda yakin ingin menghapus data ini?")) return;
+
+    try {
+      await supabaseClient.from('control_schedule').delete().eq('id', rowId);
+      alert("✅ Data berhasil dihapus!");
+      muatDataSchedule();
+    } catch(err) {
+      alert("❌ Gagal hapus: " + err.message);
+    }
   }
 
   // HISTORI LOG PERUBAHAN DATA
@@ -547,7 +802,7 @@
     document.getElementById("modalHistoriLog").style.display = "none";
   }
 
-  // FITUR PREVIEW MODE RAPI (MERGED CELLS PERSIS APPSCRIPT)
+  // PREVIEW MODE RAPI (MERGED CELLS)
   function bukaModalExportPreview() {
     document.getElementById("modalExportPreview").style.display = "flex";
     renderPreviewTable();
@@ -582,7 +837,7 @@
       return;
     }
 
-    // ALGORITMA MERGING / GROUPING DENGAN WARNA REVISI SAMA PERSIS APPSCRIPT
+    // ALGORITMA MERGING CELL PERSIS APPSCRIPT
     let groups = [];
     currentFilteredSchedule.forEach(item => {
       const key = `${item.week}_${item.liner}_${item.feeder_vessel}`;
@@ -670,7 +925,12 @@
     tampilkanTabelSchedule(masterDataSchedule);
   }
 
-  function toggleExportMenu(e) { if(e) e.stopPropagation(); }
+  function toggleExportMenu(e) {
+    if(e) e.stopPropagation();
+    const menu = document.getElementById("exportMenuList");
+    menu.style.display = (menu.style.display === "block") ? "none" : "block";
+  }
+
   function toggleColumnBox() {
     const box = document.getElementById("colBox");
     box.style.display = (box.style.display === "block") ? "none" : "block";
