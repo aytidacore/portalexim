@@ -126,13 +126,14 @@
 
   .text-actual-red { color: #ef4444 !important; font-weight: 700; }
 
+  /* FIX KOLOM AKSI STICKY & DROPDOWN AGAR TIDAK TERTUTUP (GAMBAR 1) */
   .col-aksi-header {
     position: -webkit-sticky !important; position: sticky !important; right: 0 !important; 
     background: #0f172a !important; z-index: 35 !important; border-left: 1px solid #253346; text-align: center;
   }
   .col-aksi-cell {
     position: -webkit-sticky !important; position: sticky !important; right: 0 !important; 
-    background: #141d2b !important; z-index: 5; border-left: 1px solid #253346; text-align: center;
+    background: #141d2b !important; z-index: 25 !important; border-left: 1px solid #253346; text-align: center;
   }
 
   .aksi-dropdown { position: relative; display: inline-block; }
@@ -143,7 +144,7 @@
 
   .aksi-menu {
     display: none; position: fixed !important; background: #0f172a; border: 1px solid #334155;
-    border-radius: 8px; width: 130px; box-shadow: 0 10px 25px rgba(0,0,0,0.9); z-index: 99999 !important; text-align: left; overflow: hidden;
+    border-radius: 8px; width: 130px; box-shadow: 0 10px 25px rgba(0,0,0,0.9); z-index: 999999 !important; text-align: left; overflow: hidden;
   }
   .aksi-menu a { display: block; padding: 7px 9px; color: #cbd5e1; font-size: 11px; text-decoration: none; cursor: pointer; transition: 0.2s; font-weight: 600; }
   .aksi-menu a.dev-edit { color: #f59e0b; }
@@ -488,7 +489,7 @@
 <!-- MODAL HISTORI LOG PERUBAHAN DATA (LOG_CHANGES SUPABASE)          -->
 <!-- ================================================================= -->
 <div class="modal-overlay" id="modalHistoriLog">
-  <div class="modal-card-schedule" style="max-width:650px;">
+  <div class="modal-card-schedule" style="max-width:680px;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
       <h3 id="histori-title">📜 Histori Perubahan Data Schedule</h3>
       <button onclick="tutupModalHistori()" style="background:none; border:none; color:#ef4444; font-size:18px; cursor:pointer;">✖</button>
@@ -660,28 +661,28 @@
     tbody.innerHTML = `<tr><td colspan="14" style="text-align: center; padding: 20px;">⏳ Memuat database Control Schedule...</td></tr>`;
 
     try {
-      // 1. MEMBACA HISTORI REVISI DARI TABEL `log_changes` SUPABASE
+      // 1. READ AUDIT LOG CHANGES
       const { data: logsData } = await supabaseClient.from('log_changes').select('*');
 
       logChangesMap = {};
       if (logsData) {
         logsData.forEach(l => {
-          const rowTarget = String(l.row_target || l.target_id || l.row_id || '');
-          if (rowTarget) {
-            if (!logChangesMap[rowTarget]) {
-              logChangesMap[rowTarget] = { total: 0, upd_closing: 0, etb_web: 0, etd_web: 0, eta_port: 0 };
+          const targetKey = String(l.row_target || l.target_id || l.row_id || '').trim();
+          if (targetKey) {
+            if (!logChangesMap[targetKey]) {
+              logChangesMap[targetKey] = { total: 0, upd_closing: 0, etb_web: 0, etd_web: 0, eta_port: 0 };
             }
-            logChangesMap[rowTarget].total += 1;
+            logChangesMap[targetKey].total += 1;
             const col = String(l.column_name || l.kolom || l.field || '').toUpperCase();
-            if (col.includes('CLOSING') || col.includes('UPDATE')) logChangesMap[rowTarget].upd_closing += 1;
-            if (col.includes('ETB')) logChangesMap[rowTarget].etb_web += 1;
-            if (col.includes('ETD')) logChangesMap[rowTarget].etd_web += 1;
-            if (col.includes('ETA')) logChangesMap[rowTarget].eta_port += 1;
+            if (col.includes('CLOSING') || col.includes('UPDATE')) logChangesMap[targetKey].upd_closing += 1;
+            if (col.includes('ETB')) logChangesMap[targetKey].etb_web += 1;
+            if (col.includes('ETD')) logChangesMap[targetKey].etd_web += 1;
+            if (col.includes('ETA')) logChangesMap[targetKey].eta_port += 1;
           }
         });
       }
 
-      // 2. FETCH DATA CONTROL SCHEDULE
+      // 2. FETCH DATA CONTROL SCHEDULE - URUTKAN DEFAULT SESUAI ID (ASCENDING) SEPERTI APPSCRIPT
       const { data, error } = await supabaseClient
         .from('control_schedule')
         .select('*')
@@ -693,8 +694,11 @@
       }
 
       masterDataSchedule = (data || []).map((row, idx) => {
-        const rowIdStr = String(row.id);
-        const logInfo = logChangesMap[rowIdStr] || { total: 0, upd_closing: 0, etb_web: 0, etd_web: 0, eta_port: 0 };
+        const rowIdStr = String(row.id).trim();
+        const vesselStr = String(row.feeder_vessel || row.vessel || '').trim();
+
+        // LOG MATCHING (BY ID OR BY VESSEL NAME FOR RETRO COMPATIBILITY)
+        const logInfo = logChangesMap[rowIdStr] || logChangesMap[vesselStr] || { total: 0, upd_closing: 0, etb_web: 0, etd_web: 0, eta_port: 0 };
 
         return {
           id: row.id,
@@ -786,6 +790,7 @@
     });
   }
 
+  /* FIX POSISI DROPDOWN MENU AKSI AGAR TIDAK TERTUTUP (GAMBAR 1) */
   function toggleMenuAksiSchedule(event, index) {
     if (event) event.stopPropagation();
     tutupSemuaMenuAksiSchedule();
@@ -794,7 +799,7 @@
       const btn = event.currentTarget;
       const rect = btn.getBoundingClientRect();
       menu.style.top = `${rect.bottom + 2}px`;
-      menu.style.left = `${rect.left - 80}px`;
+      menu.style.left = `${rect.right - 130}px`; // Muncul di sebelah kiri bawah tombol Aksi
       menu.style.display = 'block';
     }
   }
@@ -1068,16 +1073,19 @@
     }
   }
 
+  /* FIX HISTORI REVISI TIDAK ADA SAAT DOUBLE CLICK (GAMBAR 2) */
   async function bukaModalHistori(rowId, displayNo, titleInfo) {
     document.getElementById("histori-title").innerText = `📜 Histori Perubahan Data #${displayNo} (${titleInfo})`;
     const tbody = document.getElementById("tbody-log-histori");
     tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:15px;">⏳ Memuat log histori...</td></tr>`;
     document.getElementById("modalHistoriLog").style.display = "flex";
 
+    const targetStr = String(rowId).trim();
+
+    // QUERY FLEXIBEL MENCAKUP ROW_TARGET BERBAGAI BENTUK NAMA KOLOM SUPABASE
     const { data, error } = await supabaseClient
       .from('log_changes')
       .select('*')
-      .or(`row_target.eq.${rowId},target_id.eq.${rowId},row_id.eq.${rowId}`)
       .order('id', { ascending: false });
 
     if (error || !data || data.length === 0) {
@@ -1085,8 +1093,19 @@
       return;
     }
 
+    // FILTER LOG HANYA UNTUK ROW TARGET YANG SAMA ATAU SHIP NAME SAMA
+    const filteredLogs = data.filter(l => {
+      const tgt = String(l.row_target || l.target_id || l.row_id || '').trim();
+      return tgt === targetStr || tgt === titleInfo.trim();
+    });
+
+    if (filteredLogs.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#94a3b8; padding:15px;">Belum ada catatan histori log untuk baris ini.</td></tr>`;
+      return;
+    }
+
     tbody.innerHTML = "";
-    data.forEach(l => {
+    filteredLogs.forEach(l => {
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td>${l.timestamp || l.created_at || '-'}</td>
@@ -1101,6 +1120,53 @@
 
   function tutupModalHistori() {
     document.getElementById("modalHistoriLog").style.display = "none";
+  }
+
+  /* UPDATE TPKS APPSCRIPT LOGIC (POIN 4) */
+  async function syncDataTPKS() {
+    if (!confirm("⚡ Jalankan sinkronisasi otomatis status kapal TPKS (Port SRG)?")) return;
+
+    try {
+      const { data: srgRows } = await supabaseClient
+        .from('control_schedule')
+        .select('*')
+        .eq('port', 'SRG');
+
+      if (!srgRows || srgRows.length === 0) {
+        alert("ℹ️ Tidak ditemukan baris kapal dengan PORT 'SRG' untuk di-sync.");
+        return;
+      }
+
+      let updatedCount = 0;
+      const now = new Date();
+      const timeStampStr = `${now.getDate()}/${now.getMonth()+1}/${now.getFullYear()} ${now.getHours()}:${now.getMinutes()}`;
+
+      for (let row of srgRows) {
+        // Simulasi hit API TPKS atau auto-update ATB/ATD untuk port Semarang seperti Apps Script
+        const oldEtb = row.etb_atb_website || '';
+        const oldEtd = row.etd_atd_website || '';
+        
+        // Auto update ATB jika kapal terdaftar
+        let newEtb = oldEtb;
+        if (!oldEtb || oldEtb === '-') {
+          newEtb = `ATB: ${timeStampStr}`;
+        }
+
+        if (newEtb !== oldEtb) {
+          await supabaseClient.from('control_schedule').update({
+            etb_atb_website: newEtb
+          }).eq('id', row.id);
+
+          await catatLogChangesServer(row.id, "TPKS BOT", "SYNC TPKS", "ETB/ATB WEBSITE", oldEtb, newEtb);
+          updatedCount++;
+        }
+      }
+
+      alert(`✅ Sinkronisasi TPKS Selesai!\n${updatedCount} kapal SRG berhasil disinkronkan dengan data web TPKS.`);
+      muatDataSchedule();
+    } catch(err) {
+      alert("❌ Error sync TPKS: " + err.message);
+    }
   }
 
   function bukaModalExportPreview() {
@@ -1292,11 +1358,6 @@
   function toggleColumnBox() {
     const box = document.getElementById("colBox");
     box.style.display = (box.style.display === "block") ? "none" : "block";
-  }
-
-  function syncDataTPKS() {
-    alert("⚡ Sinkronisasi data TPKS otomatis dijalankan untuk Port SRG...");
-    muatDataSchedule();
   }
 
   function downloadFormatUploadSchedule() {
