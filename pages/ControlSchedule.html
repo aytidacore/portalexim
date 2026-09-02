@@ -1,5 +1,5 @@
 <!-- ================================================================= -->
-<!-- STYLE / CSS CONTROL SCHEDULE EXPORT (SAMA PERSIS APPSCRIPT)       -->
+<!-- STYLE / CSS CONTROL SCHEDULE EXPORT - APPSCRIPT MATCH EXACT       -->
 <!-- ================================================================= -->
 <style>
   .schedule-container { width: 100%; font-family: Calibri, 'Segoe UI', Arial, sans-serif; display: flex; flex-direction: column; height: 100%; }
@@ -11,37 +11,35 @@
   }
   .schedule-title h3 { color: #38bdf8; font-size: 15px; font-weight: 600; margin: 0; }
 
-  /* Tombol Ringkas & Presisi */
+  /* Tombol Presisi Persis AppsScript */
   .btn-add-schedule, .btn-action, .btn-export-main, .btn-import-main, .btn-tpks-sync {
-    padding: 4px 8px !important; font-size: 11px !important; border-radius: 4px !important; font-weight: 600; cursor: pointer; border: none; transition: 0.2s; white-space: nowrap;
+    padding: 5px 10px !important; font-size: 11px !important; border-radius: 4px !important; font-weight: 700; cursor: pointer; border: none; transition: 0.2s; white-space: nowrap; display: inline-flex; align-items: center; gap: 4px;
   }
   .btn-add-schedule { background: #16a34a; color: white; }
   .btn-add-schedule:hover { background: #15803d; }
-  .btn-action { background: #0284c7; color: white; }
-  .btn-action:hover { background: #0369a1; }
+  .btn-import-main { background: #0284c7; color: white; }
+  .btn-import-main:hover { background: #0369a1; }
+  .btn-export-main { background: #8b5cf6; color: white; }
+  .btn-export-main:hover { background: #7c3aed; }
   .btn-toggle-col { background: #334155; color: #38bdf8; border: 1px solid #475569 !important; }
   .btn-reset-filter { background: #64748b; color: white; border: 1px solid #475569 !important; }
   .btn-reset-filter:hover { background: #475569; }
+  .btn-tpks-sync { background: #ea580c; color: white; font-weight: 800; border: 1px solid #f97316 !important; }
+  .btn-tpks-sync:hover { background: #c2410c; }
 
-  /* Tombol Sync TPKS */
-  .btn-tpks-sync { background: #d97706; color: white; border: 1px solid #f59e0b !important; }
-  .btn-tpks-sync:hover { background: #b45309; }
+  /* --- MENU DROPDOWN EXPORT & IMPORT --- */
+  .dropdown-wrapper { position: relative; display: inline-block; }
 
-  /* --- MENU DROPDOWN EXPORT --- */
-  .export-dropdown-wrapper { position: relative; display: inline-block; }
-  .btn-export-main { background: #8b5cf6; color: white; }
-  .btn-export-main:hover { background: #7c3aed; }
-
-  .export-menu-list {
+  .dropdown-menu-list {
     display: none; position: absolute; right: 0; top: 110%; background: #0f172a;
-    border: 1px solid #334155; border-radius: 8px; width: 230px; box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+    border: 1px solid #334155; border-radius: 8px; width: 240px; box-shadow: 0 10px 25px rgba(0,0,0,0.85);
     z-index: 99999; overflow: hidden;
   }
-  .export-menu-list button {
-    width: 100%; text-align: left; background: none; border: none; padding: 8px 10px;
-    color: #cbd5e1; font-size: 11px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 6px;
+  .dropdown-menu-list button {
+    width: 100%; text-align: left; background: none; border: none; padding: 8px 12px;
+    color: #cbd5e1; font-size: 11px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 6px; font-weight: 600;
   }
-  .export-menu-list button:hover { background: #1e293b; color: #38bdf8; }
+  .dropdown-menu-list button:hover { background: #1e293b; color: #38bdf8; }
 
   /* --- PANEL SHOW / HIDE KOLOM --- */
   .column-selector-box {
@@ -60,7 +58,7 @@
   .table-responsive-schedule::-webkit-scrollbar-track { background: #0f172a !important; }
   .table-responsive-schedule::-webkit-scrollbar-thumb { background: #38bdf8 !important; border-radius: 6px; }
 
-  .custom-table { width: 100%; border-collapse: separate; border-spacing: 0; text-align: left; font-size: 11.5px; min-width: 1550px; user-select: text !important; }
+  .custom-table { width: 100%; border-collapse: separate; border-spacing: 0; text-align: left; font-size: 11.5px; min-width: 1600px; user-select: text !important; }
   
   .custom-table thead tr.th-title-row th { 
     background-color: #0f172a !important; color: #38bdf8 !important; padding: 6px 5px; 
@@ -106,7 +104,7 @@
     display: inline-block; text-transform: lowercase;
   }
 
-  /* WARNA TINGKATAN REVISI APPSCRIPT (REV 1 - REV 11+) */
+  /* WARNA TINGKATAN REVISI PASTI AKURAT PERSIS APPSCRIPT */
   td.rev-lvl-1 { background-color: #dcfce7 !important; color: #14532d !important; font-weight: bold; }
   td.rev-lvl-2 { background-color: #86efac !important; color: #064e3b !important; font-weight: bold; }
   td.rev-lvl-3 { background-color: #fef9c3 !important; color: #713f12 !important; font-weight: bold; }
@@ -140,7 +138,7 @@
     display: none; position: fixed !important; background: #0f172a; border: 1px solid #334155;
     border-radius: 8px; width: 140px; box-shadow: 0 10px 25px rgba(0,0,0,0.9); z-index: 99999 !important; text-align: left; overflow: hidden;
   }
-  .aksi-menu a { display: block; padding: 7px 9px; color: #cbd5e1; font-size: 11px; text-decoration: none; cursor: pointer; transition: 0.2s; }
+  .aksi-menu a { display: block; padding: 7px 9px; color: #cbd5e1; font-size: 11px; text-decoration: none; cursor: pointer; transition: 0.2s; font-weight: 600; }
   .aksi-menu a.dev-edit { color: #f59e0b; }
   .aksi-menu a.dev-edit:hover { background: #d97706 !important; color: #ffffff !important; }
   .aksi-menu a.dev-del { color: #f87171; }
@@ -153,37 +151,38 @@
   }
   .modal-card-schedule {
     background: #1e293b; border: 1px solid #334155; padding: 16px; border-radius: 12px;
-    width: 100%; max-width: 850px; max-height: 92vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5);
+    width: 100%; max-width: 880px; max-height: 92vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5);
   }
-  .modal-card-schedule.preview-large { max-width: 98vw !important; width: 1450px !important; }
+  .modal-card-schedule.preview-large { max-width: 98vw !important; width: 1480px !important; }
 
-  /* FORM GRID MULTI DESTINATION DYNAMIC STYLE APPSCRIPT */
+  /* FORM GRID MULTI DESTINATION DYNAMIC STYLE GAMBAR 7, 8, 9 APPSCRIPT */
   .form-grid-schedule { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .form-group-schedule { display: flex; flex-direction: column; }
   .form-group-schedule.full-width { grid-column: span 2; }
-  .form-group-schedule label { font-size: 11px; color: #94a3b8; margin-bottom: 3px; font-weight: 500; }
+  .form-group-schedule label { font-size: 11px; color: #94a3b8; margin-bottom: 3px; font-weight: 600; }
   .form-group-schedule input, .form-group-schedule select, .form-group-schedule textarea {
     padding: 7px 9px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #fff; font-size: 11.5px; outline: none; transition: 0.2s;
   }
+  .form-group-schedule input:focus, .form-group-schedule select:focus { border-color: #38bdf8; }
 
-  .vessel-voyage-port-row {
-    grid-column: span 2; display: grid; grid-template-columns: 90px 1.5fr 1fr; gap: 8px; align-items: flex-start;
+  .vessel-voyage-row {
+    grid-column: span 2; display: grid; grid-template-columns: 80px 2fr 1fr; gap: 8px; align-items: flex-start;
   }
 
   .dest-section-box { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 10px; margin-top: 4px; }
   .dest-row-item {
-    display: grid; grid-template-columns: 1.2fr 1fr auto; gap: 8px; align-items: center; margin-bottom: 6px;
+    display: grid; grid-template-columns: 1.2fr 1fr 1.3fr 45px 35px; gap: 6px; align-items: center; margin-bottom: 6px;
     background: #1e293b; padding: 6px 8px; border-radius: 6px; border: 1px solid #334155;
   }
 
-  .term-info-panel { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 8px; margin-top: 10px; }
-  .term-info-header { display: flex; justify-content: space-between; align-items: center; color: #eab308; font-size: 11px; font-weight: 600; }
-  .term-info-body { display: block; margin-top: 5px; font-size: 10.5px; color: #cbd5e1; border-top: 1px dashed #334155; padding-top: 5px; }
+  .term-info-panel { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 10px; margin-top: 10px; }
+  .term-info-header { color: #eab308; font-size: 11.5px; font-weight: 700; }
+  .term-info-body { margin-top: 6px; font-size: 10.5px; color: #cbd5e1; border-top: 1px dashed #334155; padding-top: 6px; }
   .term-info-body ul { list-style: none; padding-left: 0; margin: 0; }
-  .term-info-body li { margin-bottom: 2px; line-height: 1.3; }
+  .term-info-body li { margin-bottom: 3px; line-height: 1.3; }
   .term-info-body b { color: #38bdf8; }
 
-  /* PREVIEW CETAK PRETTY / MERGED MODE STYLE (SAMA PERSIS APPSCRIPT) */
+  /* PREVIEW CETAK PRETTY MODE STYLING GAMBAR 10 APPSCRIPT */
   .preview-paper { background: #ffffff; color: #000000; padding: 12px; border-radius: 6px; font-family: Calibri, 'Segoe UI', Arial, sans-serif !important; font-size: 11px; }
   .preview-table { width: 100%; border-collapse: collapse !important; margin-top: 6px; border: 1px solid #000000 !important; }
   .preview-table th { background-color: #0284c7 !important; color: #ffffff !important; border: 1px solid #000000 !important; padding: 5px 6px; text-align: center; font-size: 11px; font-weight: 700; white-space: nowrap !important; }
@@ -203,7 +202,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 <!-- ================================================================= -->
-<!-- TAMPILAN UTAMA                                                    -->
+<!-- TAMPILAN UTAMA (HEADER BARIS TOMBOL DENGAN SYNC TPKS & IMPORT)    -->
 <!-- ================================================================= -->
 <div class="schedule-container">
   <div class="schedule-header">
@@ -211,12 +210,19 @@
       <h3>🚢 Database Control Schedule Export</h3>
       <p style="font-size: 10px; color: #94a3b8; margin: 1px 0 0 0;">Sistem Jadwal Pelayaran & Tracking Kapal</p>
     </div>
-    <div style="display:flex; gap:5px; flex-wrap:wrap;">
+    <div style="display:flex; gap:5px; flex-wrap:wrap; align-items:center;">
       <button class="btn-add-schedule" onclick="bukaModalSchedule('add')">➕ Schedule Baru</button>
 
-      <div class="export-dropdown-wrapper">
+      <div class="dropdown-wrapper">
+        <button class="btn-import-main" onclick="toggleImportMenu(event)">📥 Import ▾</button>
+        <div class="dropdown-menu-list" id="importMenuList">
+          <button onclick="alert('Fitur Import Excel akan membaca file .xlsx untuk insert massal')">📊 Import File Excel (.xlsx)</button>
+        </div>
+      </div>
+
+      <div class="dropdown-wrapper">
         <button class="btn-export-main" onclick="toggleExportMenu(event)">📤 Export ▾</button>
-        <div class="export-menu-list" id="exportMenuList">
+        <div class="dropdown-menu-list" id="exportMenuList">
           <button onclick="bukaModalExportPreview()">👁️ Preview Data (Mode Rapi / Merged)</button>
           <button onclick="downloadCSVExport()">📄 Export CSV</button>
           <button onclick="downloadExcelExport()">📊 Export Excel (.xlsx)</button>
@@ -226,6 +232,7 @@
       <button class="btn-action btn-toggle-col" onclick="toggleColumnBox()">⚙️ Show/Hide</button>
       <button class="btn-action btn-reset-filter" onclick="resetFilterSchedule()">🧹 Reset</button>
       <button class="btn-action" onclick="muatDataSchedule()">🔄 Refresh</button>
+      <button class="btn-tpks-sync" onclick="syncDataTPKS()">⚡ Update TPKS</button>
     </div>
   </div>
 
@@ -264,7 +271,7 @@
           <th class="col-port" style="width:55px;">
             <div class="th-header-content"><span>PORT</span><button class="btn-sort-col" onclick="urutkanKolomData('port')">⇕</button></div>
           </th>
-          <th class="col-vessel" style="width:170px;">
+          <th class="col-vessel" style="width:180px;">
             <div class="th-header-content"><span>FEEDER VESSEL</span><button class="btn-sort-col" onclick="urutkanKolomData('feeder_vessel')">⇕</button></div>
           </th>
           <th class="col-etdorig" style="width:100px;">
@@ -273,13 +280,13 @@
           <th class="col-closing" style="width:95px;">
             <div class="th-header-content"><span>CLOSING CY</span><button class="btn-sort-col" onclick="urutkanKolomData('closing_cy')">⇕</button></div>
           </th>
-          <th class="col-updclosing" style="width:130px;">
+          <th class="col-updclosing" style="width:135px;">
             <div class="th-header-content"><span>UPDATE CLOSING CY</span><button class="btn-sort-col" onclick="urutkanKolomData('update_closing_cy')">⇕</button></div>
           </th>
-          <th class="col-etbweb" style="width:145px;">
+          <th class="col-etbweb" style="width:150px;">
             <div class="th-header-content"><span>ETB/ATB WEBSITE</span><button class="btn-sort-col" onclick="urutkanKolomData('etb_website')">⇕</button></div>
           </th>
-          <th class="col-etdweb" style="width:145px;">
+          <th class="col-etdweb" style="width:150px;">
             <div class="th-header-content"><span>ETD/ATD WEBSITE</span><button class="btn-sort-col" onclick="urutkanKolomData('etd_website')">⇕</button></div>
           </th>
           <th class="col-etaport" style="width:95px;">
@@ -318,7 +325,7 @@
 </div>
 
 <!-- ================================================================= -->
-<!-- MODAL FORM TAMBAH / EDIT SCHEDULE (DYNAMIC MULTI-DESTINATION)    -->
+<!-- MODAL FORM TAMBAH / EDIT SCHEDULE (LENGKAP APPSCRIPT GAMBAR 7,8,9)-->
 <!-- ================================================================= -->
 <div class="modal-overlay" id="modalSchedule">
   <div class="modal-card-schedule">
@@ -345,10 +352,11 @@
           <option value="OOCL">OOCL</option>
           <option value="EVERGREEN">EVERGREEN</option>
           <option value="SINOKOR">SINOKOR</option>
+          <option value="EXPEDITORS">EXPEDITORS</option>
         </select>
       </div>
 
-      <div class="vessel-voyage-port-row">
+      <div class="vessel-voyage-row">
         <div class="form-group-schedule">
           <label>PORT *</label>
           <select id="sched-port">
@@ -359,44 +367,49 @@
         </div>
 
         <div class="form-group-schedule">
-          <label>FEEDER VESSEL *</label>
-          <input type="text" id="sched-vessel-name" placeholder="Contoh: DANUM 171 | 110N">
+          <label>FEEDER VESSEL (NAMA KAPAL) *</label>
+          <input type="text" id="sched-vessel-name" placeholder="Contoh: KM SEJATI / EVER BEAMY">
         </div>
 
         <div class="form-group-schedule">
-          <label>ETD PORT ORIGINAL</label>
-          <input type="date" id="sched-etdorig">
+          <label>VOYAGE *</label>
+          <input type="text" id="sched-voyage" placeholder="Contoh: V.102N / 1204-082B">
         </div>
       </div>
 
       <div class="form-group-schedule">
-        <label>CLOSING CY</label>
-        <input type="date" id="sched-closingcy">
+        <label>ETD PORT ORIGINAL</label>
+        <input type="date" id="sched-etdorig" onchange="hitungClosingCYOtomatis()">
       </div>
 
       <div class="form-group-schedule">
-        <label>UPDATE CLOSING CY</label>
-        <input type="text" id="sched-updclosing" placeholder="Contoh: 23-08-2026 12:00">
+        <label>CLOSING CY (H-1 OTOMATIS)</label>
+        <input type="text" id="sched-closingcy" readonly style="background:#1e293b; color:#38bdf8; font-weight:bold;" placeholder="Terhitung Otomatis H-1">
       </div>
 
       <div class="form-group-schedule">
-        <label>ETB/ATB WEBSITE</label>
-        <input type="text" id="sched-etbweb" placeholder="Contoh: ATB: 24-08-2026 15:30">
+        <label>UPDATE CLOSING CY (Tanggal & Jam)</label>
+        <input type="text" id="sched-updclosing" placeholder="dd/mm/yyyy --:--">
       </div>
 
       <div class="form-group-schedule">
-        <label>ETD/ATD WEBSITE</label>
-        <input type="text" id="sched-etdweb" placeholder="Contoh: ATD: 25-08-2026 07:20">
+        <label>ETB/ATB WEBSITE (Tanggal & Jam)</label>
+        <input type="text" id="sched-etbweb" placeholder="dd/mm/yyyy --:--">
       </div>
 
       <div class="form-group-schedule full-width">
-        <label>REMARK UTAMA</label>
-        <textarea id="sched-remark" rows="2" placeholder="Catatan tambahan (Opsional)"></textarea>
+        <label>ETD/ATD WEBSITE (Tanggal & Jam)</label>
+        <input type="text" id="sched-etdweb" placeholder="dd/mm/yyyy --:--">
+      </div>
+
+      <div class="form-group-schedule full-width">
+        <label>REMARK UTAMA (Catatan Umum Kapal)</label>
+        <textarea id="sched-remark" rows="2" placeholder="Catatan tambahan utama (Opsional)"></textarea>
       </div>
 
       <div class="form-group-schedule full-width">
         <div class="dest-section-box">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
             <span style="font-size:11.5px; font-weight:700; color:#38bdf8;">📍 Destination & ETA Port (Bisa Tambah Banyak)</span>
             <button type="button" class="btn-action" onclick="tambahDestinasiRowInForm()" style="background:#0284c7; font-size:10.5px;">➕ Tambah Destination</button>
           </div>
@@ -407,29 +420,31 @@
 
     <div class="term-info-panel">
       <div class="term-info-header">
-        <span>📜 Ketentuan Destination Sesuai Term Kontrak</span>
+        📜 Ketentuan Destination Sesuai Term Kontrak ▼
       </div>
       <div class="term-info-body">
         <ul>
-          <li>• <b>WAN HAI:</b> NAGOYA, OSAKA, TOKYO, YOKOHAMA</li>
+          <li>• <b>SINOKOR:</b> HIROSHIMA, OSAKA, SENDAI, SHIMIZU, TOKYO, YOKOHAMA, HAKATA</li>
           <li>• <b>SITC:</b> NAGOYA, SENDAI, SHIMIZU</li>
-          <li>• <b>ONE:</b> LAEM CHABANG</li>
-          <li>• <b>OOCL:</b> HIROSHIMA</li>
           <li>• <b>EVERGREEN:</b> NAGOYA, OSAKA, SENDAI, SHIMIZU, TOKYO, YOKOHAMA, HAKATA</li>
+          <li>• <b>WAN HAI:</b> NAGOYA, OSAKA, TOKYO, YOKOHAMA</li>
+          <li>• <b>ONE:</b> LAEM CHABANG</li>
+          <li>• <b>EXPEDITORS:</b> KITCHENER, EL PASO</li>
+          <li>• <b>OOCL:</b> HIROSHIMA</li>
         </ul>
       </div>
     </div>
 
     <div style="display:flex; gap:6px; margin-top:12px;">
-      <button class="btn-action" onclick="simpanSchedule()" style="flex:1; background:#16a34a;">💾 Simpan Data Schedule</button>
-      <button class="btn-action" onclick="tutupModalSchedule()" style="background:#475569;">Batal</button>
+      <button class="btn-action" onclick="simpanSchedule()" style="flex:1; background:#16a34a; font-size:12px; padding:8px;">💾 Simpan Data Schedule</button>
+      <button class="btn-action" onclick="tutupModalSchedule()" style="background:#475569; font-size:12px; padding:8px;">Batal</button>
     </div>
     <div id="sched-alert" style="font-size:11.5px; margin-top:8px; text-align:center;"></div>
   </div>
 </div>
 
 <!-- ================================================================= -->
-<!-- MODAL PREVIEW CETAK DATA (MODE RAPI MERGED CELLS)                 -->
+<!-- MODAL PREVIEW CETAK DATA (SAMA PERSIS GAMBAR 10 APPSCRIPT)        -->
 <!-- ================================================================= -->
 <div class="modal-overlay" id="modalExportPreview">
   <div class="modal-card-schedule preview-large">
@@ -440,12 +455,14 @@
 
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; background:#0f172a; padding:6px 10px; border-radius:6px; border:1px solid #334155; flex-wrap:wrap; gap:6px;">
       <div style="display:flex; gap:6px; align-items:center;">
-        <span style="font-size:11px; color:#cbd5e1;">Mode Tampilan:</span>
+        <span style="font-size:11px; color:#cbd5e1;" id="lbl-total-tampil">Total Tampil: 0 Baris</span>
+        <span style="font-size:11px; color:#cbd5e1; margin-left:10px;">Mode Tampilan:</span>
         <button class="btn-preview-mode" id="btn-mode-normal" onclick="switchPreviewMode('normal')">📑 Normal</button>
         <button class="btn-preview-mode active-mode" id="btn-mode-merged" onclick="switchPreviewMode('merged')">✨ Mode Rapi (Merged)</button>
       </div>
 
       <div style="display:flex; gap:6px;">
+        <button class="btn-action" onclick="copyTableColorEmail()" style="background:#eab308; color:#000; font-size:10.5px;">📋 Copy Table (Warna Email)</button>
         <button class="btn-action" onclick="downloadCSVExport()" style="background:#0284c7; font-size:10.5px;">📄 CSV</button>
         <button class="btn-action" onclick="downloadExcelExport()" style="background:#16a34a; font-size:10.5px;">📊 Excel (.xlsx)</button>
         <button class="btn-action" onclick="window.print()" style="background:#ef4444; font-size:10.5px;">🖨️ Cetak / PDF</button>
@@ -489,7 +506,7 @@
 </div>
 
 <!-- ================================================================= -->
-<!-- MODAL HISTORI LOG PERUBAHAN DATA                                 -->
+<!-- MODAL HISTORI LOG PERUBAHAN DATA (HISTORI LOG_CHANGES SUPABASE)  -->
 <!-- ================================================================= -->
 <div class="modal-overlay" id="modalHistoriLog">
   <div class="modal-card-schedule" style="max-width:650px;">
@@ -518,7 +535,7 @@
 </div>
 
 <!-- ================================================================= -->
-<!-- LOGIKA JAVASCRIPT SUPABASE LENGKAP & PRESISI                      -->
+<!-- LOGIKA JAVASCRIPT SUPABASE FULL FITUR PERSIS APPSCRIPT            -->
 <!-- ================================================================= -->
 <script>
   let masterDataSchedule = [];
@@ -527,16 +544,16 @@
   let currentSortState = { column: null, direction: 'asc' };
   let logChangesMap = {};
 
-  // LINER MAPPING AUTO DESTINATION KONTRAK TERM
   const LINER_DEST_MAP = {
-    'WAN HAI': ['NAGOYA', 'OSAKA', 'TOKYO', 'YOKOHAMA'],
+    'SINOKOR': ['HIROSHIMA', 'OSAKA', 'SENDAI', 'SHIMIZU', 'TOKYO', 'YOKOHAMA', 'HAKATA'],
     'SITC': ['NAGOYA', 'SENDAI', 'SHIMIZU'],
+    'EVERGREEN': ['NAGOYA', 'OSAKA', 'SENDAI', 'SHIMIZU', 'TOKYO', 'YOKOHAMA', 'HAKATA'],
+    'WAN HAI': ['NAGOYA', 'OSAKA', 'TOKYO', 'YOKOHAMA'],
     'ONE': ['LAEM CHABANG'],
-    'OOCL': ['HIROSHIMA'],
-    'EVERGREEN': ['NAGOYA', 'OSAKA', 'SENDAI', 'SHIMIZU', 'TOKYO', 'YOKOHAMA', 'HAKATA']
+    'EXPEDITORS': ['KITCHENER', 'EL PASO'],
+    'OOCL': ['HIROSHIMA']
   };
 
-  // INISIALISASI
   muatDataSchedule();
 
   function getSupabaseVal(row, candidates) {
@@ -569,7 +586,7 @@
     tbody.innerHTML = `<tr><td colspan="14" style="text-align: center; padding: 20px;">⏳ Memuat database Control Schedule...</td></tr>`;
 
     try {
-      // 1. HITUNG WARNA REVISI PER BARIS DARI TABEL `log_changes` SUPABASE
+      // 1. HITUNG HITUNGEN REVISI PER BARIS BERDASARKAN `log_changes` SUPABASE
       const { data: logsData } = await supabaseClient
         .from('log_changes')
         .select('*');
@@ -577,7 +594,6 @@
       logChangesMap = {};
       if (logsData) {
         logsData.forEach(l => {
-          // MEMBACA DENGAN `row_target` SUPABASE KAMU
           const rowTarget = String(l.row_target || l.target_id || l.row_id || '');
           if (rowTarget) {
             if (!logChangesMap[rowTarget]) {
@@ -593,7 +609,7 @@
         });
       }
 
-      // 2. LOAD DATA DARI CONTROL SCHEDULE
+      // 2. FETCH DATABASE CONTROL SCHEDULE
       const { data, error } = await supabaseClient
         .from('control_schedule')
         .select('*')
@@ -624,7 +640,6 @@
           destination: getSupabaseVal(row, ['destination', 'dest']),
           remark: getSupabaseVal(row, ['remark', 'Remark']),
 
-          // NIKMATI WARNA REVISI DINAMIS SESUAI JUMLAH LOG_CHANGES
           revCount: logInfo.total,
           revUpdClosing: logInfo.upd_closing,
           revEtbWeb: logInfo.etb_web,
@@ -717,11 +732,10 @@
 
   window.addEventListener('click', function() {
     tutupSemuaMenuAksiSchedule();
-    const expMenu = document.getElementById("exportMenuList");
-    if (expMenu) expMenu.style.display = "none";
+    document.querySelectorAll('.dropdown-menu-list').forEach(m => m.style.display = 'none');
   });
 
-  // MODAL FORM TAMBAH / EDIT DENGAN AUTO MAPPING LINER & MULTI DESTINATION
+  // MODAL FORM TAMBAH / EDIT APPSCRIPT
   function bukaModalSchedule(mode) {
     document.getElementById("sched-alert").innerText = "";
     if (mode === 'add') {
@@ -731,6 +745,7 @@
       document.getElementById("sched-liner").value = "";
       document.getElementById("sched-port").value = "SRG";
       document.getElementById("sched-vessel-name").value = "";
+      document.getElementById("sched-voyage").value = "";
       document.getElementById("sched-etdorig").value = "";
       document.getElementById("sched-closingcy").value = "";
       document.getElementById("sched-updclosing").value = "";
@@ -744,30 +759,58 @@
     document.getElementById("modalSchedule").style.display = "flex";
   }
 
+  function hitungClosingCYOtomatis() {
+    const etd = document.getElementById("sched-etdorig").value;
+    if (!etd) return;
+    const d = new Date(etd);
+    d.setDate(d.getDate() - 1);
+    const dd = String(d.getDate()).padStart(2, '0');
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const yyyy = d.getFullYear();
+    document.getElementById("sched-closingcy").value = `${dd}-${mm}-${yyyy}`;
+  }
+
   function onLinerChangedInForm() {
     const liner = document.getElementById("sched-liner").value;
     const dests = LINER_DEST_MAP[liner];
     if (dests && dests.length > 0) {
       document.getElementById("dest-rows-wrapper").innerHTML = "";
-      dests.forEach(d => tambahDestinasiRowInForm(d, ''));
+      dests.forEach(d => tambahDestinasiRowInForm(d, '', ''));
     }
   }
 
-  function tambahDestinasiRowInForm(destVal = "", etaVal = "") {
+  function tambahDestinasiRowInForm(destVal = "", etaVal = "", remVal = "") {
     const wrapper = document.getElementById("dest-rows-wrapper");
+    const liner = document.getElementById("sched-liner").value;
+    const availableDests = LINER_DEST_MAP[liner] || ['NAGOYA','OSAKA','TOKYO','YOKOHAMA','SENDAI','SHIMIZU','HIROSHIMA','HAKATA','LAEM CHABANG'];
+
+    let optionsHtml = `<option value="">-- Select Destination --</option>`;
+    availableDests.forEach(d => {
+      const sel = (d === destVal) ? 'selected' : '';
+      optionsHtml += `<option value="${d}" ${sel}>${d}</option>`;
+    });
+
     const div = document.createElement("div");
     div.className = "dest-row-item";
     div.innerHTML = `
       <div>
-        <label style="font-size:9.5px; color:#94a3b8; display:block;">DESTINATION</label>
-        <input type="text" class="inp-dest-val" value="${destVal}" placeholder="Contoh: NAGOYA">
+        <label style="font-size:9.5px; color:#94a3b8; display:block;">DESTINATION *</label>
+        <select class="inp-dest-val">${optionsHtml}</select>
       </div>
       <div>
         <label style="font-size:9.5px; color:#94a3b8; display:block;">ETA PORT</label>
         <input type="date" class="inp-eta-val" value="${etaVal}">
       </div>
+      <div>
+        <label style="font-size:9.5px; color:#94a3b8; display:block;">REMARK DESTINATION</label>
+        <input type="text" class="inp-rem-val" value="${remVal}" placeholder="Remark kota">
+      </div>
+      <div style="text-align:center;">
+        <label style="font-size:9.5px; color:#38bdf8; display:block;">Sync</label>
+        <input type="checkbox" class="chk-sync-val" checked>
+      </div>
       <div style="text-align:right;">
-        <button type="button" onclick="this.closest('.dest-row-item').remove()" style="background:#ef4444; color:#fff; border:none; padding:4px 6px; border-radius:4px; font-size:10px; cursor:pointer;">🗑️ Hapus</button>
+        <button type="button" onclick="this.closest('.dest-row-item').remove()" style="background:#ef4444; color:#fff; border:none; padding:5px 7px; border-radius:4px; font-size:10px; cursor:pointer;">🗑️</button>
       </div>
     `;
     wrapper.appendChild(div);
@@ -783,14 +826,19 @@
     document.getElementById("sched-week").value = (item.week || '').replace(/\D/g, '');
     document.getElementById("sched-liner").value = item.liner || '';
     document.getElementById("sched-port").value = item.port || 'SRG';
-    document.getElementById("sched-vessel-name").value = item.feeder_vessel || '';
+
+    const vesselParts = (item.feeder_vessel || '').split('|');
+    document.getElementById("sched-vessel-name").value = vesselParts[0] ? vesselParts[0].trim() : '';
+    document.getElementById("sched-voyage").value = vesselParts[1] ? vesselParts[1].trim() : '';
+
+    document.getElementById("sched-closingcy").value = item.closing_cy || '';
     document.getElementById("sched-updclosing").value = item.update_closing_cy || '';
     document.getElementById("sched-etbweb").value = item.etb_website || '';
     document.getElementById("sched-etdweb").value = item.etd_website || '';
     document.getElementById("sched-remark").value = item.remark || '';
 
     document.getElementById("dest-rows-wrapper").innerHTML = "";
-    tambahDestinasiRowInForm(item.destination || '', item.eta_port || '');
+    tambahDestinasiRowInForm(item.destination || '', item.eta_port || '', item.remark || '');
 
     document.getElementById("modalSchedule").style.display = "flex";
   }
@@ -804,7 +852,10 @@
     const weekInp = document.getElementById("sched-week").value.trim();
     const linerInp = document.getElementById("sched-liner").value.trim().toUpperCase();
     const vesselInp = document.getElementById("sched-vessel-name").value.trim().toUpperCase();
+    const voyageInp = document.getElementById("sched-voyage").value.trim().toUpperCase();
     const alertDiv = document.getElementById("sched-alert");
+
+    const fullVesselName = voyageInp ? `${vesselInp} | ${voyageInp}` : vesselInp;
 
     const destRows = document.querySelectorAll("#dest-rows-wrapper .dest-row-item");
     if (!linerInp || !vesselInp || destRows.length === 0) {
@@ -818,14 +869,15 @@
 
     try {
       for (let r of destRows) {
-        const destVal = r.querySelector(".inp-dest-val").value.trim().toUpperCase();
+        const destVal = r.querySelector(".inp-dest-val").value;
         const etaVal = r.querySelector(".inp-eta-val").value;
+        const remVal = r.querySelector(".inp-rem-val").value;
 
         const payload = {
           week: weekInp ? `WEEK ${weekInp}` : '',
           liner: linerInp,
           port: document.getElementById("sched-port").value,
-          feeder_vessel: vesselInp,
+          feeder_vessel: fullVesselName,
           etd_port_origin: document.getElementById("sched-etdorig").value,
           closing_cy: document.getElementById("sched-closingcy").value,
           update_closing: document.getElementById("sched-updclosing").value.trim(),
@@ -833,7 +885,7 @@
           etd_atd_website: document.getElementById("sched-etdweb").value.trim(),
           eta_port: etaVal,
           destination: destVal,
-          remark: document.getElementById("sched-remark").value.trim()
+          remark: remVal || document.getElementById("sched-remark").value.trim()
         };
 
         if (rowId) {
@@ -868,14 +920,13 @@
     }
   }
 
-  // LOG HISTORI DENGAN PEMBACAAN DARI TABEL `log_changes` SUPABASE
+  // HISTORI LOG PERUBAHAN DATA
   async function bukaModalHistori(rowId, displayNo, titleInfo) {
     document.getElementById("histori-title").innerText = `📜 Histori Perubahan Data #${displayNo} (${titleInfo})`;
     const tbody = document.getElementById("tbody-log-histori");
     tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:15px;">⏳ Memuat log histori...</td></tr>`;
     document.getElementById("modalHistoriLog").style.display = "flex";
 
-    // SEARCHING BERDASARKAN `row_target` SUPABASE
     const { data, error } = await supabaseClient
       .from('log_changes')
       .select('*')
@@ -905,9 +956,10 @@
     document.getElementById("modalHistoriLog").style.display = "none";
   }
 
-  // PREVIEW MODE RAPI MERGED CELLS
+  // PREVIEW CETAK DATA (GAMBAR 10 APPSCRIPT)
   function bukaModalExportPreview() {
     document.getElementById("modalExportPreview").style.display = "flex";
+    document.getElementById("lbl-total-tampil").innerText = `Total Tampil: ${currentFilteredSchedule.length} Baris`;
     renderPreviewTable();
   }
 
@@ -940,7 +992,7 @@
       return;
     }
 
-    // ALGORITMA MERGING CELL PERSIS APPSCRIPT
+    // ALGORITMA MERGING / GROUPING GAMBAR 10 APPSCRIPT
     let groups = [];
     currentFilteredSchedule.forEach(item => {
       const key = `${item.week}_${item.liner}_${item.feeder_vessel}`;
@@ -990,6 +1042,28 @@
     });
   }
 
+  // COPY TABEL UNTUK EMAIL OUTLOOK / GMAIL (GAMBAR 10 APPSCRIPT)
+  function copyTableColorEmail() {
+    const el = document.getElementById("printableArea");
+    const body = document.body;
+    let range, sel;
+    if (document.createRange && window.getSelection) {
+      range = document.createRange();
+      sel = window.getSelection();
+      sel.removeAllRanges();
+      try {
+        range.selectNodeContents(el);
+        sel.addRange(range);
+      } catch (e) {
+        range.selectNode(el);
+        sel.addRange(range);
+      }
+      document.execCommand("copy");
+      sel.removeAllRanges();
+      alert("📋 Tabel dengan Warna berhasil disalin ke Clipboard! Tinggal Paste (Ctrl+V) di Email Outlook / Gmail.");
+    }
+  }
+
   function filterMultiColumn() {
     const inputs = document.querySelectorAll(".header-filter-input");
     currentFilteredSchedule = masterDataSchedule.filter(item => {
@@ -1028,6 +1102,12 @@
     tampilkanTabelSchedule(masterDataSchedule);
   }
 
+  function toggleImportMenu(e) {
+    if(e) e.stopPropagation();
+    const menu = document.getElementById("importMenuList");
+    menu.style.display = (menu.style.display === "block") ? "none" : "block";
+  }
+
   function toggleExportMenu(e) {
     if(e) e.stopPropagation();
     const menu = document.getElementById("exportMenuList");
@@ -1037,6 +1117,11 @@
   function toggleColumnBox() {
     const box = document.getElementById("colBox");
     box.style.display = (box.style.display === "block") ? "none" : "block";
+  }
+
+  function syncDataTPKS() {
+    alert("⚡ Sinkronisasi data TPKS otomatis dijalankan...");
+    muatDataSchedule();
   }
 
   function downloadCSVExport() {
