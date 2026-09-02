@@ -520,10 +520,10 @@
   </div>
 
   <script>
-// PERBAIKAN: Perhatikan 'kvv' (memakai v dua kali)
-const SUPABASE_URL = 'https://kmpvhpiraqkvvljsbrhm.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImttcHZocGlyYXFrdnZsanNicmhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgyNzQwODAsImV4cCI6MjEwMzg1MDA4MH0.-3c9mri3vvfFscxiw5b4YAiFhHy1KGc2uNjvTLEISNU';
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY););
+    // INITIALIZE SUPABASE CLIENT
+    const SUPABASE_URL = 'https://kmpvhpiraqkvvljsbrhm.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImttcHZocGlyYXFrdnZsanNicmhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgyNzQwODAsImV4cCI6MjEwMzg1MDA4MH0.-3c9mri3vvfFscxiw5b4YAiFhHy1KGc2uNjvTLEISNU';
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     let GLOBAL_PERM_DATA = {};
     let GLOBAL_USER_LIST = [];
