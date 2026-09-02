@@ -51,7 +51,7 @@
   .col-checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 6px; font-size: 11px; color: #cbd5e1; }
   .col-checkbox-grid label { display: flex; align-items: center; gap: 5px; cursor: pointer; }
 
-  /* AREA TABEL SCROLLBAR UTAMA (Lebar Kolom Disesuaikan) */
+  /* AREA TABEL UTAMA */
   .table-responsive-schedule {
     flex: 1 1 auto; width: 100%; min-height: 150px; overflow-x: auto !important; overflow-y: auto !important;
     border: 1px solid #253346; border-radius: 8px 8px 0 0; position: relative; background: #141d2b;
@@ -177,6 +177,9 @@
   .form-group-schedule input, .form-group-schedule select, .form-group-schedule textarea {
     padding: 7px 9px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #fff; font-size: 11.5px; outline: none; transition: 0.2s;
   }
+  .form-group-schedule input:disabled, .form-group-schedule select:disabled {
+    background: #1e293b !important; color: #64748b !important; cursor: not-allowed; border-color: #334155;
+  }
 
   .vessel-voyage-port-row {
     grid-column: span 2; display: grid; grid-template-columns: 90px 1.5fr 1fr; gap: 8px; align-items: flex-start;
@@ -265,8 +268,9 @@
       <button class="btn-action btn-toggle-col" onclick="toggleColumnBox()">⚙️ Show/Hide</button>
       <button class="btn-action btn-reset-filter" onclick="resetFilterSchedule()">🧹 Reset</button>
       <button class="btn-action" onclick="muatDataSchedule()">🔄 Refresh</button>
-      <!-- MEMAKSA TERIMA RESPON DIALOG CONFIRM -->
-      <button class="btn-tpks-sync" onclick="return syncDataTPKS()">⚡ Update TPKS</button>
+
+      <!-- TOMBOL UPDATE TPKS TERKUNCI -->
+      <button type="button" class="btn-tpks-sync" id="btnTpksSyncExec">⚡ Update TPKS</button>
     </div>
   </div>
 
@@ -404,7 +408,7 @@
 </div>
 
 <!-- ================================================================= -->
-<!-- MODAL FORM TAMBAH / EDIT GROUP KAPAL                              -->
+<!-- MODAL FORM TAMBAH / EDIT GROUP KAPAL (NATIVE DATEPICKER)          -->
 <!-- ================================================================= -->
 <div class="modal-overlay" id="modalSchedule">
   <div class="modal-card-schedule">
@@ -456,13 +460,10 @@
         </div>
       </div>
 
-      <!-- DATE PICKER + BISA KETIK MANUAL -->
+      <!-- DATEPICKER NATIVE ELEGAN -->
       <div class="form-group-schedule">
-        <label>ETD PORT ORIGINAL (DD-MM-YYYY)</label>
-        <div style="display:flex; gap:4px;">
-          <input type="text" id="sched-etdorig" placeholder="dd-mm-yyyy" style="flex:1;">
-          <input type="date" style="width:36px; padding:2px; background:#0f172a; border:1px solid #334155; border-radius:6px; cursor:pointer;" onchange="document.getElementById('sched-etdorig').value=formatDateToDDMMYYYY(this.value); autoHitungClosingCYFrontend();">
-        </div>
+        <label>ETD PORT ORIGINAL</label>
+        <input type="date" id="sched-etdorig" onchange="autoHitungClosingCYFrontend()">
       </div>
 
       <div class="form-group-schedule">
@@ -471,27 +472,18 @@
       </div>
 
       <div class="form-group-schedule">
-        <label>UPDATE CLOSING CY (Format: dd-mm-yyyy hh:mm)</label>
-        <div style="display:flex; gap:4px;">
-          <input type="text" id="sched-updclosing" placeholder="dd-mm-yyyy hh:mm" style="flex:1;">
-          <input type="datetime-local" style="width:36px; padding:2px; background:#0f172a; border:1px solid #334155; border-radius:6px; cursor:pointer;" onchange="document.getElementById('sched-updclosing').value=formatDateTimeToDDMMYYYYHHMM(this.value);">
-        </div>
+        <label>UPDATE CLOSING CY</label>
+        <input type="datetime-local" id="sched-updclosing">
       </div>
 
       <div class="form-group-schedule">
-        <label>ETB/ATB WEBSITE (Format: dd-mm-yyyy hh:mm)</label>
-        <div style="display:flex; gap:4px;">
-          <input type="text" id="sched-etbweb" placeholder="dd-mm-yyyy hh:mm / ATB: dd-mm-yyyy hh:mm" style="flex:1;">
-          <input type="datetime-local" style="width:36px; padding:2px; background:#0f172a; border:1px solid #334155; border-radius:6px; cursor:pointer;" onchange="document.getElementById('sched-etbweb').value=formatDateTimeToDDMMYYYYHHMM(this.value);">
-        </div>
+        <label>ETB/ATB WEBSITE</label>
+        <input type="datetime-local" id="sched-etbweb">
       </div>
 
       <div class="form-group-schedule full-width">
-        <label>ETD/ATD WEBSITE (Format: dd-mm-yyyy hh:mm)</label>
-        <div style="display:flex; gap:4px;">
-          <input type="text" id="sched-etdweb" placeholder="dd-mm-yyyy hh:mm / ETD: dd-mm-yyyy hh:mm" style="flex:1;">
-          <input type="datetime-local" style="width:36px; padding:2px; background:#0f172a; border:1px solid #334155; border-radius:6px; cursor:pointer;" onchange="document.getElementById('sched-etdweb').value=formatDateTimeToDDMMYYYYHHMM(this.value);">
-        </div>
+        <label>ETD/ATD WEBSITE</label>
+        <input type="datetime-local" id="sched-etdweb">
       </div>
 
       <div class="form-group-schedule full-width">
@@ -644,7 +636,7 @@
 </div>
 
 <!-- ================================================================= -->
-<!-- JAVASCRIPT LOGIC ENGINE                                          -->
+<!-- JAVASCRIPT LOGIC ENGINE PRESISI APPSCRIPT                         -->
 <!-- ================================================================= -->
 <script>
   let masterDataSchedule = [];
@@ -653,6 +645,7 @@
   let currentPreviewMode = 'rapi';
   let parsedImportRows = [];
   let logChangesMap = {};
+  let isEditMode = false;
 
   let currentPage = 1;
   let pageSize = 20;
@@ -666,6 +659,22 @@
     "EXPEDITORS": ["KITCHENER", "EL PASO"],
     "OOCL": ["HIROSHIMA"]
   };
+
+  // EVENT LISTENER TOMBOL TPKS MANUAL TERKUNCI DENGAN EVENT BINDING
+  document.addEventListener('DOMContentLoaded', function() {
+    const btnTpks = document.getElementById("btnTpksSyncExec");
+    if (btnTpks) {
+      btnTpks.addEventListener("click", function(evt) {
+        evt.preventDefault();
+        evt.stopPropagation();
+
+        const isUserAgree = window.confirm("⚡ Jalankan sinkronisasi otomatis status kapal TPKS (Port SRG)?");
+        if (isUserAgree) {
+          eksekusiSyncDataTPKS();
+        }
+      });
+    }
+  });
 
   muatDataSchedule();
 
@@ -712,23 +721,41 @@
     return prefix ? `${prefix} ${clean}` : clean;
   }
 
-  function formatDateToDDMMYYYY(dateVal) {
-    if (!dateVal) return '';
-    const p = dateVal.split('-');
-    if (p.length === 3) return `${p[2]}-${p[1]}-${p[0]}`;
-    return dateVal;
+  /* UTILITY PARSER DARI DD-MM-YYYY / ISO TO INPUT DATE / DATETIME-LOCAL */
+  function parseToInputDate(valStr) {
+    if (!valStr || valStr === '-' || valStr.trim() === '') return '';
+    let clean = valStr.replace(/^(ATB:|ETD:|ATD:)\s*/i, '').trim().split(' ')[0];
+    let p = clean.split(/[-/]/);
+    if (p.length === 3) {
+      if (p[0].length === 4) return `${p[0]}-${String(p[1]).padStart(2,'0')}-${String(p[2]).padStart(2,'0')}`;
+      let y = p[2].length === 2 ? "20" + p[2] : p[2];
+      return `${y}-${String(p[1]).padStart(2,'0')}-${String(p[0]).padStart(2,'0')}`;
+    }
+    return '';
   }
 
-  function formatDateTimeToDDMMYYYYHHMM(dtVal) {
-    if (!dtVal) return '';
-    const parts = dtVal.split('T');
-    if (parts.length === 2) {
-      const dParts = parts[0].split('-');
-      if (dParts.length === 3) {
-        return `${dParts[2]}-${dParts[1]}-${dParts[0]} ${parts[1]}`;
-      }
-    }
-    return dtVal;
+  function parseToInputDateTimeLocal(valStr) {
+    if (!valStr || valStr === '-' || valStr.trim() === '') return '';
+    let clean = valStr.replace(/^(ATB:|ETD:|ATD:)\s*/i, '').trim();
+    let parts = clean.split(' ');
+    let datePart = parseToInputDate(parts[0]);
+    let timePart = parts[1] ? parts[1].substring(0,5) : '00:00';
+    return datePart ? `${datePart}T${timePart}` : '';
+  }
+
+  function formatInputDateToDDMMYYYY(isoDateStr) {
+    if (!isoDateStr) return '';
+    let p = isoDateStr.split('-');
+    if (p.length === 3) return `${String(p[2]).padStart(2,'0')}-${String(p[1]).padStart(2,'0')}-${p[0]}`;
+    return isoDateStr;
+  }
+
+  function formatInputDateTimeToDDMMYYYYHHMM(isoDateTimeStr) {
+    if (!isoDateTimeStr) return '';
+    let parts = isoDateTimeStr.split('T');
+    let dateFormatted = formatInputDateToDDMMYYYY(parts[0]);
+    let timeFormatted = parts[1] ? parts[1].substring(0,5) : '';
+    return timeFormatted ? `${dateFormatted} ${timeFormatted}` : dateFormatted;
   }
 
   function parseDateForSorting(dateStr) {
@@ -1014,12 +1041,13 @@
   });
 
   function autoHitungClosingCYFrontend() {
-    const etdVal = document.getElementById("sched-etdorig").value;
+    const etdVal = document.getElementById("sched-etdorig").value; // Format yyyy-mm-dd
     const targetInp = document.getElementById("sched-closingcy");
     if (!etdVal) { targetInp.value = ""; return; }
+
     const parts = etdVal.split("-");
     if(parts.length === 3) {
-      const d = new Date(parts[2], parts[1] - 1, parts[0]);
+      const d = new Date(parts[0], parts[1] - 1, parts[2]);
       d.setDate(d.getDate() - 1);
       const day = ("0" + d.getDate()).slice(-2);
       const month = ("0" + (d.getMonth() + 1)).slice(-2);
@@ -1029,15 +1057,17 @@
   }
 
   function onLinerChanged() {
+    if (isEditMode) return; // Mencegah mereset dropdown jika sedang dalam mode edit
     const liner = document.getElementById("sched-liner").value;
     const dests = masterTermMap[liner];
     if (dests && dests.length > 0) {
       document.getElementById("dest-rows-wrapper").innerHTML = "";
-      dests.forEach(d => tambahDestinasiRowInForm(d, '', '', true));
+      dests.forEach(d => tambahDestinasiRowInForm(d, '', '', true, false));
     }
   }
 
-  function tambahDestinasiRowInForm(selectedDest = "", etaValue = "", remarkValue = "", syncCheck = true) {
+  /* KUNCI PROTEKSI DESTINATION PADA MODE EDIT SESUAI PERLAKUAN APPSCRIPT */
+  function tambahDestinasiRowInForm(selectedDest = "", etaValue = "", remarkValue = "", syncCheck = true, lockDestination = false) {
     const wrapper = document.getElementById("dest-rows-wrapper");
     const liner = document.getElementById("sched-liner").value;
     const allowedList = masterTermMap[liner] || ["NAGOYA","OSAKA","TOKYO","YOKOHAMA","SENDAI","SHIMIZU","HIROSHIMA","HAKATA","LAEM CHABANG"];
@@ -1048,20 +1078,20 @@
       optionsHtml += `<option value="${d}" ${sel}>${d}</option>`;
     });
 
+    const isDisabled = lockDestination ? 'disabled="disabled"' : '';
+    const isoEtaVal = parseToInputDate(etaValue);
+
     const div = document.createElement("div");
     div.className = "dest-row-item";
 
     div.innerHTML = `
       <div>
         <label style="font-size:9.5px; color:#94a3b8; display:block;">DESTINATION *</label>
-        <select class="inp-dest-val">${optionsHtml}</select>
+        <select class="inp-dest-val" ${isDisabled}>${optionsHtml}</select>
       </div>
       <div>
         <label style="font-size:9.5px; color:#94a3b8; display:block;">ETA PORT</label>
-        <div style="display:flex; gap:3px;">
-          <input type="text" class="inp-eta-val" value="${etaValue}" placeholder="dd-mm-yyyy" style="flex:1;">
-          <input type="date" style="width:30px; padding:2px; background:#0f172a; border:1px solid #334155; border-radius:4px; cursor:pointer;" onchange="this.previousElementSibling.value=formatDateToDDMMYYYY(this.value)">
-        </div>
+        <input type="date" class="inp-eta-val" value="${isoEtaVal}">
       </div>
       <div>
         <label style="font-size:9.5px; color:#94a3b8; display:block;">REMARK DESTINATION</label>
@@ -1072,7 +1102,7 @@
         <input type="checkbox" class="chk-sync-remark" ${syncCheck ? 'checked' : ''} onchange="onToggleSyncRemark(this)">
       </div>
       <div style="text-align:right;">
-        <button type="button" onclick="this.closest('.dest-row-item').remove()" style="background:#ef4444; color:#fff; border:none; padding:5px 7px; border-radius:4px; font-size:10px; cursor:pointer;">🗑️</button>
+        ${lockDestination ? '' : `<button type="button" onclick="this.closest('.dest-row-item').remove()" style="background:#ef4444; color:#fff; border:none; padding:5px 7px; border-radius:4px; font-size:10px; cursor:pointer;">🗑️</button>`}
       </div>
     `;
     wrapper.appendChild(div);
@@ -1106,28 +1136,35 @@
   function bukaModalSchedule(mode) {
     document.getElementById("sched-alert").innerText = "";
     if (mode === 'add') {
+      isEditMode = false;
       document.getElementById("modal-schedule-title").innerText = "🚢 Form Tambah Control Schedule";
       document.getElementById("sched-group-ids").value = "";
       document.getElementById("sched-week").value = "";
       document.getElementById("sched-liner").value = "";
+      document.getElementById("sched-liner").disabled = false;
       document.getElementById("sched-port").value = "SRG";
       document.getElementById("sched-vessel-name").value = "";
+      document.getElementById("sched-vessel-name").disabled = false;
       document.getElementById("sched-voyage").value = "";
+      document.getElementById("sched-voyage").disabled = false;
       document.getElementById("sched-etdorig").value = "";
       document.getElementById("sched-closingcy").value = "";
       document.getElementById("sched-updclosing").value = "";
       document.getElementById("sched-etbweb").value = "";
       document.getElementById("sched-etdweb").value = "";
       document.getElementById("sched-remark").value = "";
+      document.getElementById("btn-add-dest-row").style.display = "block";
 
       document.getElementById("dest-rows-wrapper").innerHTML = "";
-      tambahDestinasiRowInForm();
+      tambahDestinasiRowInForm("", "", "", true, false);
     }
     document.getElementById("modalSchedule").style.display = "flex";
   }
 
+  /* EDIT MODE: MEMPROTEKSI DESTINATION DAN MEMUAT INPUT DATE NATIVE */
   function editScheduleByGlobalId(targetId) {
     tutupSemuaMenuAksiSchedule();
+    isEditMode = true;
     const itemTarget = masterDataSchedule.find(x => String(x.id) === String(targetId));
     if (!itemTarget) return;
 
@@ -1142,6 +1179,7 @@
     document.getElementById("modal-schedule-title").innerText = `✏️ Edit Grup Kapal: ${itemTarget.feeder_vessel} (${groupItems.length} Destinasi)`;
     document.getElementById("sched-week").value = (itemTarget.week || '').replace(/\D/g, '');
     document.getElementById("sched-liner").value = itemTarget.liner || '';
+    document.getElementById("sched-liner").disabled = true; // Kunci Liner saat mode edit
     document.getElementById("sched-port").value = itemTarget.port || 'SRG';
 
     let vName = itemTarget.feeder_vessel || "";
@@ -1152,24 +1190,30 @@
       vVoy = parts.slice(1).join("|").trim();
     }
     document.getElementById("sched-vessel-name").value = vName;
+    document.getElementById("sched-vessel-name").disabled = true; // Kunci Feeder Vessel saat mode edit
     document.getElementById("sched-voyage").value = vVoy;
 
-    document.getElementById("sched-etdorig").value = itemTarget.etd_original || '';
+    document.getElementById("sched-etdorig").value = parseToInputDate(itemTarget.etd_original);
     document.getElementById("sched-closingcy").value = itemTarget.closing_cy || '';
-    document.getElementById("sched-updclosing").value = itemTarget.update_closing_cy || '';
-    document.getElementById("sched-etbweb").value = itemTarget.etb_website || '';
-    document.getElementById("sched-etdweb").value = itemTarget.etd_website || '';
+    document.getElementById("sched-updclosing").value = parseToInputDateTimeLocal(itemTarget.update_closing_cy);
+    document.getElementById("sched-etbweb").value = parseToInputDateTimeLocal(itemTarget.etb_website);
+    document.getElementById("sched-etdweb").value = parseToInputDateTimeLocal(itemTarget.etd_website);
     document.getElementById("sched-remark").value = itemTarget.remark || '';
+    
+    // Sembunyikan tombol Tambah Destination saat edit agar susunan destination konsisten
+    document.getElementById("btn-add-dest-row").style.display = "none";
 
     document.getElementById("dest-rows-wrapper").innerHTML = "";
     groupItems.forEach(g => {
-      tambahDestinasiRowInForm(g.destination || '', g.eta_port || '', g.remark || '', false);
+      tambahDestinasiRowInForm(g.destination || '', g.eta_port || '', g.remark || '', false, true); // Lock destination diaktifkan
     });
 
     document.getElementById("modalSchedule").style.display = "flex";
   }
 
   function tutupModalSchedule() {
+    document.getElementById("sched-liner").disabled = false;
+    document.getElementById("sched-vessel-name").disabled = false;
     document.getElementById("modalSchedule").style.display = "none";
   }
 
@@ -1222,20 +1266,26 @@
 
       for (let r of destRows) {
         const destVal = r.querySelector(".inp-dest-val").value;
-        const etaVal = r.querySelector(".inp-eta-val").value;
+        const etaIsoVal = r.querySelector(".inp-eta-val").value;
         const remVal = r.querySelector(".inp-dest-remark").value;
+
+        const etdOrigFormatted = formatInputDateToDDMMYYYY(document.getElementById("sched-etdorig").value);
+        const updClosingFormatted = formatInputDateTimeToDDMMYYYYHHMM(document.getElementById("sched-updclosing").value);
+        const etbWebFormatted = formatInputDateTimeToDDMMYYYYHHMM(document.getElementById("sched-etbweb").value);
+        const etdWebFormatted = formatInputDateTimeToDDMMYYYYHHMM(document.getElementById("sched-etdweb").value);
+        const etaFormatted = formatInputDateToDDMMYYYY(etaIsoVal);
 
         const payload = {
           week: weekInp ? `WEEK ${weekInp}` : '',
           liner: linerInp,
           port: document.getElementById("sched-port").value,
           feeder_vessel: fullVesselName,
-          etd_port_origin: document.getElementById("sched-etdorig").value,
+          etd_port_origin: etdOrigFormatted,
           closing_cy: document.getElementById("sched-closingcy").value,
-          update_closing: document.getElementById("sched-updclosing").value.trim(),
-          etb_atb_website: document.getElementById("sched-etbweb").value.trim(),
-          etd_atd_website: document.getElementById("sched-etdweb").value.trim(),
-          eta_port: etaVal,
+          update_closing: updClosingFormatted,
+          etb_atb_website: etbWebFormatted ? (etbWebFormatted.toUpperCase().includes('ATB') ? etbWebFormatted : `ATB: ${etbWebFormatted}`) : '',
+          etd_atd_website: etdWebFormatted ? (etdWebFormatted.toUpperCase().includes('ETD') || etdWebFormatted.toUpperCase().includes('ATD') ? etdWebFormatted : `ETD: ${etdWebFormatted}`) : '',
+          eta_port: etaFormatted,
           destination: destVal,
           remark: remVal || document.getElementById("sched-remark").value.trim()
         };
@@ -1314,45 +1364,35 @@
     document.getElementById("modalHistoriLog").style.display = "none";
   }
 
-  /* SINKRONISASI TPKS DENGAN BLOK CONFIRM KETAT */
-  async function syncDataTPKS() {
-    const isConfirmed = window.confirm("⚡ Jalankan sinkronisasi otomatis status kapal TPKS (Port SRG)?");
-    
-    // Hentikan fungsi jika user klik Batal/Cancel
-    if (!isConfirmed) {
-      return false;
-    }
-
+  /* EKSKUSI SYNC TPKS TERISOLASI DARI CONFIRM DIALOG */
+  async function eksekusiSyncDataTPKS() {
     try {
       const { data: srgRows } = await supabaseClient.from('control_schedule').select('*').eq('port', 'SRG');
       if (!srgRows || srgRows.length === 0) {
         alert("ℹ️ Tidak ditemukan baris kapal dengan PORT 'SRG' untuk di-sync.");
-        return false;
+        return;
       }
 
       let updatedVessels = [];
-      const now = new Date(2026, 8, 2, 23, 8); // Format 2 digit: 02-09-2026 23:08
+      const now = new Date(2026, 8, 2, 23, 8); // Format 2-digit: 02-09-2026 23:08
       const dateStr = `${String(now.getDate()).padStart(2,'0')}-${String(now.getMonth()+1).padStart(2,'0')}-${now.getFullYear()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
 
       for (let row of srgRows) {
         let isModified = false;
         let updatePayload = {};
 
-        // 1. UPDATE CLOSING CY
         const oldUpdClos = row.update_closing || row.update_closing_cy || '';
         if (!oldUpdClos || oldUpdClos === '-' || oldUpdClos.trim() === '') {
           updatePayload.update_closing = dateStr;
           isModified = true;
         }
 
-        // 2. ETB/ATB WEBSITE
         const oldEtb = row.etb_atb_website || '';
         if (!oldEtb || oldEtb === '-' || oldEtb.trim() === '') {
           updatePayload.etb_atb_website = `ATB: ${dateStr}`;
           isModified = true;
         }
 
-        // 3. ETD/ATD WEBSITE
         const oldEtd = row.etd_atd_website || '';
         if (!oldEtd || oldEtd === '-' || oldEtd.trim() === '') {
           updatePayload.etd_atd_website = `ETD: ${dateStr}`;
