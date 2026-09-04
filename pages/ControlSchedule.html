@@ -1326,6 +1326,7 @@
     }
   }
 
+  // FUNGSI HAPUS DATA HAPUS DENGAN SANITASI INT NUMERIK UNTUK SUPABASE
   async function hapusSchedule(event, displayNo, rowId) {
     if (event) {
       event.preventDefault();
@@ -1333,18 +1334,39 @@
     }
     tutupSemuaMenuAksiSchedule();
 
-    const userConfirm = window.confirm(`⚠️ Apakah Anda yakin ingin menghapus data Schedule pada baris ke-${displayNo} ini?`);
+    const targetId = isNaN(rowId) ? rowId : parseInt(rowId, 10);
+
+    const userConfirm = window.confirm(`⚠️ Apakah Anda yakin ingin menghapus data Schedule pada baris ke-${displayNo} (ID: ${targetId}) ini?`);
     if (userConfirm !== true) {
       return false;
     }
 
     try {
-      await supabaseClient.from('control_schedule').delete().eq('id', rowId);
-      await supabaseClient.from('log_changes').delete().or(`row_target.eq.${rowId},target_id.eq.${rowId},row_id.eq.${rowId}`);
+      // 1. Hapus catatan log_changes terkait (jika ada)
+      await supabaseClient
+        .from('log_changes')
+        .delete()
+        .eq('row_target', String(targetId));
+
+      // 2. Hapus data utama di control_schedule
+      const { data, error } = await supabaseClient
+        .from('control_schedule')
+        .delete()
+        .eq('id', targetId)
+        .select();
+
+      if (error) {
+        alert("❌ Gagal hapus data Supabase: " + error.message);
+        console.error("Supabase Delete Error:", error);
+        return;
+      }
+
       alert("✅ Data Schedule berhasil dihapus!");
       muatDataSchedule();
+
     } catch(err) {
-      alert("❌ Gagal hapus: " + err.message);
+      alert("❌ Error Sistem: " + err.message);
+      console.error("Catch Delete Error:", err);
     }
   }
 
