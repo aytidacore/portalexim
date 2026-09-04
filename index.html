@@ -7,7 +7,6 @@
   <title>NexPortal-EXIM</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   
-  <!-- SDK SUPABASE -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
@@ -28,8 +27,9 @@
     ::-webkit-scrollbar { display: none; }
     html, body, div { -ms-overflow-style: none; scrollbar-width: none; }
 
+    /* Mencegah kedip / flicker dengan display: none bawaan */
     #login-screen {
-      display: flex; 
+      display: none; 
       justify-content: center; 
       align-items: flex-end; 
       height: 100vh;
@@ -275,7 +275,6 @@
 </head>
 <body>
 
-  <!-- LOGIN SCREEN -->
   <div id="login-screen">
     <div class="login-box">
       <h2>NexPortal-EXIM</h2>
@@ -296,7 +295,6 @@
     </div>
   </div>
 
-  <!-- DASHBOARD MAIN -->
   <div id="dashboard-screen">
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
     
@@ -309,7 +307,6 @@
       </div>
       <ul class="nav-menu">
         
-        <!-- MENU 1: OVERTIME -->
         <li class="menu-item" id="group-overtime" data-menu-item="LaporanOvertime">
           <button class="dropdown-btn" onclick="toggleDropdown('menu-overtime', this)">
             <span>⏱️ <span class="menu-label">OVERTIME</span></span>
@@ -320,7 +317,6 @@
           </div>
         </li>
 
-        <!-- MENU 2: EXPORT -->
         <li class="menu-item" id="group-export" data-menu-item="ControlSchedule,ControlBooking,PlanShipmentJepara,PlanShipmentTugu,PlanShipmentAir">
           <button class="dropdown-btn" onclick="toggleDropdown('menu-export', this)">
             <span>📦 <span class="menu-label">EXPORT</span></span>
@@ -335,7 +331,6 @@
           </div>
         </li>
 
-        <!-- MENU 3: LAINNYA -->
         <li class="menu-item" id="group-lainnya" data-menu-item="BlankPage">
           <button class="dropdown-btn" onclick="toggleDropdown('menu-lainnya', this)">
             <span>📂 <span class="menu-label">LAINNYA</span></span>
@@ -384,7 +379,6 @@
     </div>
   </div>
 
-  <!-- MODAL POPUP UBAH PASSWORD SAYA -->
   <div class="modal-overlay" id="modalPassword">
     <div class="modal-card">
       <h3 id="modal-title">🔑 Ubah Kata Sandi Saya</h3>
@@ -409,7 +403,6 @@
     </div>
   </div>
 
-  <!-- MODAL DEVELOPER: KELOLA ALL USER -->
   <div class="modal-overlay" id="modalDevUser">
     <div class="modal-card modal-card-lg">
       <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -464,7 +457,6 @@
     </div>
   </div>
 
-  <!-- MODAL DEVELOPER: PERMISSION MANAGER -->
   <div class="modal-overlay" id="modalDevPerm">
     <div class="modal-card modal-card-lg">
       <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -477,13 +469,11 @@
         <button class="perm-tab-btn" id="tab-btn-user" onclick="switchPermTab('user')">👤 Custom Per Username</button>
       </div>
 
-      <!-- TAB 1: PERMISSION PER ROLE -->
       <div id="perm-view-role">
         <p style="font-size:11px; color:#94a3b8; margin-bottom:8px;">Atur hak akses bawaan/default berdasarkan Role Pengguna (User / Admin).</p>
         <div id="perm-container-role" class="perm-grid-compact"></div>
       </div>
 
-      <!-- TAB 2: PERMISSION PER USERNAME -->
       <div id="perm-view-user" style="display:none;">
         <div style="display:flex; gap:10px; margin-bottom:10px; align-items:center;">
           <select id="perm-user-select" onchange="devRenderUserPermForm()" style="flex:1; padding:8px; background:#0f172a; border:1px solid #334155; color:#38bdf8; border-radius:6px; font-size:12px; font-weight:600;">
@@ -501,7 +491,6 @@
     </div>
   </div>
 
-  <!-- TOAST NOTIFIKASI -->
   <div class="modal-overlay" id="globalToastOverlay" style="z-index: 99999999 !important; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); align-items: flex-start; padding-top: 30px;">
     <div id="globalNexprtToast" style="background: #1e293b; border: 1px solid #38bdf8; border-left: 5px solid #38bdf8; color: #ffffff; padding: 16px 20px; border-radius: 10px; box-shadow: 0 20px 40px rgba(0,0,0,0.9); width: 92%; max-width: 440px; font-family: Calibri, 'Segoe UI', Arial, sans-serif !important; transition: all 0.3s ease;">
       <div style="font-size: 13.5px; font-weight: bold; color: #38bdf8; margin-bottom: 8px;" id="globalToastTitle">
@@ -1166,23 +1155,20 @@
       });
     }
 
-    function cekSession() {
+    // PENGECEKAN SESI LANGSUNG SECARA SYNC UNTUK MENCEGAH KEDIP LOGIN
+    function cekSessionInstant() {
       const user = sessionStorage.getItem("user_session");
       const role = sessionStorage.getItem("user_role");
       const allowedMenus = JSON.parse(sessionStorage.getItem("allowed_menus") || "[]");
       const lastActivity = sessionStorage.getItem("last_activity");
       const currentTime = new Date().getTime();
 
-      if (user && lastActivity) {
-        if (currentTime - lastActivity > TIMEOUT_60_MENIT) {
-          alert("⏰ Sesi Anda telah berakhir karena tidak ada aktivitas selama 60 menit.");
-          logout();
-        } else {
-          sessionStorage.setItem("last_activity", currentTime);
-          tampilkanDashboard(user, role, allowedMenus);
-        }
+      if (user && lastActivity && (currentTime - lastActivity <= TIMEOUT_60_MENIT)) {
+        sessionStorage.setItem("last_activity", currentTime);
+        tampilkanDashboard(user, role, allowedMenus);
       } else {
-        logout();
+        document.getElementById("login-screen").style.display = "flex";
+        document.getElementById("dashboard-screen").style.display = "none";
       }
     }
 
@@ -1196,8 +1182,9 @@
     window.addEventListener("keypress", perbaruiAktivitas);
     window.addEventListener("click", perbaruiAktivitas);
 
-    window.onload = function() {
-      cekSession();
+    // EKSEKUSI CEK SESI SECARA INSTAN
+    document.addEventListener("DOMContentLoaded", function() {
+      cekSessionInstant();
       setInterval(function() {
         const lastActivity = sessionStorage.getItem("last_activity");
         if (lastActivity && (new Date().getTime() - lastActivity > TIMEOUT_60_MENIT)) {
@@ -1205,7 +1192,7 @@
           logout();
         }
       }, 60000); 
-    };
+    });
 
     function logout() {
       sessionStorage.clear();
@@ -1331,9 +1318,9 @@
           <div class="ceisa-pagination-bar">
             <span class="ceisa-page-total">Total ${totalItems}</span>
             <div class="ceisa-page-btn-group">
-              <button class="ceisa-page-btn" ${prevDisabled} onclick="NexPagination.goToPage('${menuName}', ${state.currentPage - 1}, '${containerId}')">&lt;</button>
+              <button class="ceisa-page-btn" ${prevDisabled} onclick="NexPagination.goToPage('${menuName}', ${state.currentPage - 1}, '${containerId}')"><</button>
               ${btnPagesHtml}
-              <button class="ceisa-page-btn" ${nextDisabled} onclick="NexPagination.goToPage('${menuName}', ${state.currentPage + 1}, '${containerId}')">&gt;</button>
+              <button class="ceisa-page-btn" ${nextDisabled} onclick="NexPagination.goToPage('${menuName}', ${state.currentPage + 1}, '${containerId}')">></button>
             </div>
             <select class="ceisa-page-select" onchange="NexPagination.changePageSize('${menuName}', this.value, '${containerId}')">
               <option value="10" ${state.pageSize == 10 ? 'selected' : ''}>10 / page</option>
