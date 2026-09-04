@@ -856,29 +856,22 @@
             - Diurutkan Descending (Keberangkatan paling baru di posisi atas kategori ATD).
          ========================================================================= */
       masterDataSchedule.sort((a, b) => {
-        // Cek status ATD
         const isAtdA = String(a.etd_website || '').toUpperCase().includes("ATD");
         const isAtdB = String(b.etd_website || '').toUpperCase().includes("ATD");
 
-        // Ambil Tanggal Acuan (ETD Website lebih prioritas dibanding ETD Original)
         const dateA = parseDateForSorting((a.etd_website && a.etd_website !== '-' && !isAtdA) ? a.etd_website : a.etd_original);
         const dateB = parseDateForSorting((b.etd_website && b.etd_website !== '-' && !isAtdB) ? b.etd_website : b.etd_original);
 
-        // Kategori Past jika sudah ATD atau Tanggalnya < Hari Ini
         const isPastA = isAtdA || (dateA < today);
         const isPastB = isAtdB || (dateB < today);
 
-        // 1. Jika A Aktif dan B Past -> A harus di atas B
         if (!isPastA && isPastB) return -1;
-        // 2. Jika A Past dan B Aktif -> B harus di atas A
         if (isPastA && !isPastB) return 1;
 
-        // 3. Jika Keduanya Aktif (Mendatang) -> Urutkan dari Tanggal Terdekat ke Hari Ini
         if (!isPastA && !isPastB) {
           return dateA - dateB;
         }
 
-        // 4. Jika Keduanya Past (ATD) -> Urutkan dari ATD Terbaru
         return dateB - dateA;
       });
 
@@ -934,7 +927,6 @@
       const isAtbRed = String(item.etb_website || '').toUpperCase().includes("ATB") ? "text-actual-red" : "";
       const isAtdRed = String(item.etd_website || '').toUpperCase().includes("ATD") ? "text-actual-red" : "";
 
-      // Identifikasi Kapal Masa Lalu / ATD
       let isAtd = String(item.etd_website || '').toUpperCase().includes("ATD");
       let dateEtd = parseDateForSorting(item.etd_website !== '-' ? item.etd_website : item.etd_original);
       let isPastDate = isAtd || (dateEtd < today);
@@ -1326,7 +1318,7 @@
     }
   }
 
-  // FUNGSI HAPUS DATA HAPUS DENGAN SANITASI INT NUMERIK UNTUK SUPABASE
+  // FUNGSI HAPUS SCHEDULE (ASYNC SAFE & NATIVE CONFIRM TOAST BYPASS)
   async function hapusSchedule(event, displayNo, rowId) {
     if (event) {
       event.preventDefault();
@@ -1336,19 +1328,14 @@
 
     const targetId = isNaN(rowId) ? rowId : parseInt(rowId, 10);
 
-    const userConfirm = window.confirm(`⚠️ Apakah Anda yakin ingin menghapus data Schedule pada baris ke-${displayNo} (ID: ${targetId}) ini?`);
-    if (userConfirm !== true) {
+    const confirmFunc = window.nativeConfirm || window.confirm;
+    const isConfirmed = await confirmFunc(`⚠️ Apakah Anda yakin ingin menghapus data Schedule pada baris ke-${displayNo} (ID: ${targetId}) ini?`);
+
+    if (!isConfirmed) {
       return false;
     }
 
     try {
-      // 1. Hapus catatan log_changes terkait (jika ada)
-      await supabaseClient
-        .from('log_changes')
-        .delete()
-        .eq('row_target', String(targetId));
-
-      // 2. Hapus data utama di control_schedule
       const { data, error } = await supabaseClient
         .from('control_schedule')
         .delete()
@@ -1359,6 +1346,15 @@
         alert("❌ Gagal hapus data Supabase: " + error.message);
         console.error("Supabase Delete Error:", error);
         return;
+      }
+
+      try {
+        await supabaseClient
+          .from('log_changes')
+          .delete()
+          .eq('row_target', String(targetId));
+      } catch (logErr) {
+        console.warn("Gagal hapus log_changes:", logErr);
       }
 
       alert("✅ Data Schedule berhasil dihapus!");
@@ -1418,8 +1414,9 @@
       event.stopPropagation();
     }
 
-    const isUserProceed = window.confirm("⚡ Jalankan sinkronisasi otomatis status kapal TPKS (Port SRG)?");
-    if (isUserProceed !== true) {
+    const confirmFunc = window.nativeConfirm || window.confirm;
+    const isUserProceed = await confirmFunc("⚡ Jalankan sinkronisasi otomatis status kapal TPKS (Port SRG)?");
+    if (!isUserProceed) {
       return false;
     }
 
