@@ -266,7 +266,7 @@
       <button type="button" class="btn-action btn-reset-filter" onclick="resetFilterSchedule()">🧹 Reset</button>
       <button type="button" class="btn-action" onclick="muatDataSchedule()">🔄 Refresh</button>
 
-      <!-- TOMBOL UPDATE TPKS PASTI WORK -->
+      <!-- TOMBOL UPDATE TPKS -->
       <button type="button" class="btn-tpks-sync" onclick="syncDataTPKS(event)">⚡ Update TPKS</button>
     </div>
   </div>
@@ -457,7 +457,6 @@
         </div>
       </div>
 
-      <!-- DATEPICKER NATIVE ELEGAN -->
       <div class="form-group-schedule">
         <label>ETD PORT ORIGINAL</label>
         <input type="date" id="sched-etdorig" onchange="autoHitungClosingCYFrontend()">
@@ -843,33 +842,44 @@
         };
       });
 
-      // HARI INI
+      // TANGGAL HARI INI
       const now = new Date();
       const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-      /* LOGIKA SORTING PRESISI APPSCRIPT:
-         1. Prioritas Utama: "ETD/ATD WEBSITE" (jika terisi) atau "ETD ORIGINAL"
-         2. Tanggal Paling Mendekati Hari ini (>= Hari ini) ditaruh PALING ATAS
-         3. Status Kapal yang sudah ATD / Tanggal Lewat (Past) ditaruh PALING BAWAH
-      */
+      /* =========================================================================
+         LOGIKA SORTING ATURAN PRESISI APPSCRIPT:
+         1. Kategori ACTIVE (Mendatang / ETD): Ditaruh di ATAS.
+            - Prioritas Tanggal Acuan: "ETD/ATD WEBSITE" (jika terisi ETD) -> jika kosong pakai "ETD ORIGINAL".
+            - Diurutkan Ascending (Tanggal paling mendekati hari ini di urutan #1).
+         2. Kategori PAST / ATD (Sudah Berangkat / Lewat Tanggal): Ditaruh di PALING BAWAH.
+            - Terdeteksi mengandung kata "ATD:" / "ATD " atau tanggal < hari ini.
+            - Diurutkan Descending (Keberangkatan paling baru di posisi atas kategori ATD).
+         ========================================================================= */
       masterDataSchedule.sort((a, b) => {
-        let isAtdA = String(a.etd_website || '').toUpperCase().includes("ATD");
-        let isAtdB = String(b.etd_website || '').toUpperCase().includes("ATD");
+        // Cek status ATD
+        const isAtdA = String(a.etd_website || '').toUpperCase().includes("ATD");
+        const isAtdB = String(b.etd_website || '').toUpperCase().includes("ATD");
 
-        let dateA = parseDateForSorting(a.etd_website !== '-' ? a.etd_website : a.etd_original);
-        let dateB = parseDateForSorting(b.etd_website !== '-' ? b.etd_website : b.etd_original);
+        // Ambil Tanggal Acuan (ETD Website lebih prioritas dibanding ETD Original)
+        const dateA = parseDateForSorting((a.etd_website && a.etd_website !== '-' && !isAtdA) ? a.etd_website : a.etd_original);
+        const dateB = parseDateForSorting((b.etd_website && b.etd_website !== '-' && !isAtdB) ? b.etd_website : b.etd_original);
 
-        let isPastA = isAtdA || dateA < today;
-        let isPastB = isAtdB || dateB < today;
+        // Kategori Past jika sudah ATD atau Tanggalnya < Hari Ini
+        const isPastA = isAtdA || (dateA < today);
+        const isPastB = isAtdB || (dateB < today);
 
+        // 1. Jika A Aktif dan B Past -> A harus di atas B
         if (!isPastA && isPastB) return -1;
+        // 2. Jika A Past dan B Aktif -> B harus di atas A
         if (isPastA && !isPastB) return 1;
 
+        // 3. Jika Keduanya Aktif (Mendatang) -> Urutkan dari Tanggal Terdekat ke Hari Ini
         if (!isPastA && !isPastB) {
-          return dateA - dateB; 
+          return dateA - dateB;
         }
 
-        return dateB - dateA; 
+        // 4. Jika Keduanya Past (ATD) -> Urutkan dari ATD Terbaru
+        return dateB - dateA;
       });
 
       currentFilteredSchedule = [...masterDataSchedule];
@@ -1316,7 +1326,6 @@
     }
   }
 
-  /* PROSES HAPUS DENGAN PROTEKSI STOP 100% JIKA BATAL */
   async function hapusSchedule(event, displayNo, rowId) {
     if (event) {
       event.preventDefault();
@@ -1381,7 +1390,6 @@
     document.getElementById("modalHistoriLog").style.display = "none";
   }
 
-  /* FUNGSI SINKRONISASI TPKS DIJAMIN BISA DIKLIK */
   window.syncDataTPKS = async function(event) {
     if (event) {
       event.preventDefault();
@@ -1568,7 +1576,6 @@
     });
   }
 
-  /* CETAK PDF LANDSCAPE TERSTRUKTUR & RAPI (EKSKLUSIF STYLE APPSCRIPT) */
   function cetakPDFJendelaBaru() {
     const contentArea = document.getElementById("printableArea").innerHTML;
     const printWindow = window.open('', '_blank', 'width=1250,height=850');
