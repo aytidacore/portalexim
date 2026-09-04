@@ -62,7 +62,7 @@
   .table-responsive-schedule::-webkit-scrollbar-thumb { background: #38bdf8 !important; border-radius: 6px; border: 2px solid #0f172a; }
   .table-responsive-schedule::-webkit-scrollbar-thumb:hover { background: #0284c7 !important; }
 
-  .custom-table { width: 100%; border-collapse: separate; border-spacing: 0; text-align: left; font-size: 11.5px; min-width: 1780px; user-select: text !important; }
+  .custom-table { width: 100%; border-collapse: separate; border-spacing: 0; text-align: left; font-size: 11.5px; min-width: 1780px; }
   
   .custom-table thead tr.th-title-row th { 
     background-color: #0f172a !important; color: #38bdf8 !important; padding: 6px 5px; 
@@ -98,6 +98,20 @@
 
   .custom-table tbody tr:nth-child(even) td { background: #141d2b; color: #cbd5e1; }
   .custom-table tbody tr:hover td { background: #253346; color: #ffffff; }
+
+  /* Styling Khusus Baris ATD / Past Date (Non-Selectable & Dimmed) */
+  .custom-table tbody tr.row-past-atd td {
+    background: #0f172a !important;
+    color: #64748b !important;
+    opacity: 0.7;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    cursor: default !important;
+  }
+  .custom-table tbody tr.row-past-atd:hover td {
+    background: #1e293b !important;
+    color: #94a3b8 !important;
+  }
 
   .badge-liner { background: rgba(2, 132, 199, 0.25); color: #38bdf8; padding: 1px 5px; border-radius: 4px; font-weight: 700; display: inline-block; }
   .badge-week { background: rgba(147, 51, 234, 0.25); color: #c084fc; padding: 1px 5px; border-radius: 4px; font-weight: 600; }
@@ -829,19 +843,33 @@
         };
       });
 
-      const today = new Date(2026, 8, 3);
+      // HARI INI
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
+      /* LOGIKA SORTING PRESISI APPSCRIPT:
+         1. Prioritas Utama: "ETD/ATD WEBSITE" (jika terisi) atau "ETD ORIGINAL"
+         2. Tanggal Paling Mendekati Hari ini (>= Hari ini) ditaruh PALING ATAS
+         3. Status Kapal yang sudah ATD / Tanggal Lewat (Past) ditaruh PALING BAWAH
+      */
       masterDataSchedule.sort((a, b) => {
-        let dateA = parseDateForSorting(a.etd_website);
-        let dateB = parseDateForSorting(b.etd_website);
+        let isAtdA = String(a.etd_website || '').toUpperCase().includes("ATD");
+        let isAtdB = String(b.etd_website || '').toUpperCase().includes("ATD");
 
-        let isPastA = dateA < today;
-        let isPastB = dateB < today;
+        let dateA = parseDateForSorting(a.etd_website !== '-' ? a.etd_website : a.etd_original);
+        let dateB = parseDateForSorting(b.etd_website !== '-' ? b.etd_website : b.etd_original);
+
+        let isPastA = isAtdA || dateA < today;
+        let isPastB = isAtdB || dateB < today;
 
         if (!isPastA && isPastB) return -1;
         if (isPastA && !isPastB) return 1;
 
-        return Math.abs(dateA - today) - Math.abs(dateB - today);
+        if (!isPastA && !isPastB) {
+          return dateA - dateB; 
+        }
+
+        return dateB - dateA; 
       });
 
       currentFilteredSchedule = [...masterDataSchedule];
@@ -874,6 +902,9 @@
       pagedData = currentFilteredSchedule.slice(startIdx, endIdx);
     }
 
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
     pagedData.forEach((item, index) => {
       const tr = document.createElement("tr");
 
@@ -892,6 +923,15 @@
 
       const isAtbRed = String(item.etb_website || '').toUpperCase().includes("ATB") ? "text-actual-red" : "";
       const isAtdRed = String(item.etd_website || '').toUpperCase().includes("ATD") ? "text-actual-red" : "";
+
+      // Identifikasi Kapal Masa Lalu / ATD
+      let isAtd = String(item.etd_website || '').toUpperCase().includes("ATD");
+      let dateEtd = parseDateForSorting(item.etd_website !== '-' ? item.etd_website : item.etd_original);
+      let isPastDate = isAtd || (dateEtd < today);
+
+      if (isPastDate) {
+        tr.className = "row-past-atd";
+      }
 
       const fnDblClick = `bukaModalHistori('${item.id}', ${actualDisplayNo}, '${(item.feeder_vessel || 'Vessel').replace(/'/g, "\\'")}')`;
 
@@ -1371,7 +1411,7 @@
       }
 
       let updatedVessels = [];
-      const now = new Date(2026, 8, 3, 6, 52);
+      const now = new Date();
       const dateStr = `${String(now.getDate()).padStart(2,'0')}-${String(now.getMonth()+1).padStart(2,'0')}-${now.getFullYear()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
 
       for (let row of srgRows) {
@@ -1528,22 +1568,47 @@
     });
   }
 
-  /* SOLUSI KETAT CETAK PDF APPSCRIPT: MEMBUA JENDELA BARU TANPA TERPOTONG */
+  /* CETAK PDF LANDSCAPE TERSTRUKTUR & RAPI (EKSKLUSIF STYLE APPSCRIPT) */
   function cetakPDFJendelaBaru() {
     const contentArea = document.getElementById("printableArea").innerHTML;
-    const printWindow = window.open('', '_blank', 'width=1200,height=800');
+    const printWindow = window.open('', '_blank', 'width=1250,height=850');
     
     printWindow.document.write(`
       <!DOCTYPE html>
       <html>
       <head>
-        <title>Cetak Control Schedule Export</title>
+        <title>Control Schedule Export - NexPortal EXIM</title>
         <style>
-          @page { size: landscape; margin: 10mm; }
-          body { font-family: Calibri, Arial, sans-serif; background: #fff; color: #000; margin: 0; padding: 10px; }
-          table { width: 100%; border-collapse: collapse !important; }
-          th, td { border: 1px solid #000 !important; padding: 4px 6px; font-size: 10px; }
-          th { background-color: #0284c7 !important; color: #fff !important; text-align: center; }
+          @page { 
+            size: A4 landscape; 
+            margin: 8mm 6mm 8mm 6mm; 
+          }
+          body { 
+            font-family: Calibri, 'Segoe UI', Arial, sans-serif !important; 
+            background: #ffffff; 
+            color: #000000; 
+            margin: 0; 
+            padding: 8px; 
+            -webkit-print-color-adjust: exact !important; 
+            print-color-adjust: exact !important; 
+          }
+          table { width: 100%; border-collapse: collapse !important; margin-bottom: 4px; }
+          .preview-table th { 
+            background-color: #0284c7 !important; 
+            color: #ffffff !important; 
+            border: 1px solid #000000 !important; 
+            padding: 5px 4px; 
+            font-size: 10px; 
+            font-weight: bold; 
+            text-align: center;
+          }
+          .preview-table td { 
+            border: 1px solid #000000 !important; 
+            padding: 4px 5px; 
+            font-size: 9.5px; 
+            color: #000000; 
+            text-align: center; 
+          }
           tr { page-break-inside: avoid !important; }
         </style>
       </head>
@@ -1553,7 +1618,7 @@
           setTimeout(() => {
             window.print();
             window.close();
-          }, 600);
+          }, 500);
         <\/script>
       </body>
       </html>
