@@ -228,6 +228,42 @@
 
   .upload-dropzone { border: 2px dashed #0284c7; border-radius: 8px; padding: 20px; text-align: center; background: #0f172a; cursor: pointer; transition: 0.3s; margin-top: 8px; }
   .upload-dropzone:hover { background: rgba(2, 132, 199, 0.1); }
+
+  /* STYLING DIALOG POPUP NEXPORTAL-EXIM (GAMBAR 2) */
+  .nexportal-dialog-overlay {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(4px);
+    display: flex; justify-content: center; align-items: center; z-index: 99999999 !important;
+  }
+  .nexportal-dialog-card {
+    background: #182232; border: 1.5px solid #38bdf8; border-left: 6px solid #4ade80;
+    border-radius: 12px; width: 90%; max-width: 460px; padding: 18px 20px;
+    box-shadow: 0 20px 35px rgba(0,0,0,0.8); display: flex; flex-direction: column; gap: 14px;
+    animation: nexportalPopIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  @keyframes nexportalPopIn {
+    0% { transform: scale(0.92); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .nexportal-dialog-header {
+    color: #4ade80; font-size: 13px; font-weight: 700; margin: 0; font-family: system-ui, -apple-system, sans-serif;
+  }
+  .nexportal-dialog-body {
+    color: #f1f5f9; font-size: 12.5px; line-height: 1.5; font-weight: 500; font-family: system-ui, -apple-system, sans-serif;
+  }
+  .nexportal-dialog-actions {
+    display: flex; justify-content: flex-end; gap: 10px; margin-top: 4px;
+  }
+  .nexportal-btn-ok {
+    background: #0284c7; color: #ffffff; border: none; padding: 6px 18px;
+    border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; transition: 0.2s;
+  }
+  .nexportal-btn-ok:hover { background: #0369a1; }
+  .nexportal-btn-cancel {
+    background: #334155; color: #cbd5e1; border: 1px solid #475569; padding: 6px 16px;
+    border-radius: 8px; font-weight: 600; font-size: 12px; cursor: pointer; transition: 0.2s;
+  }
+  .nexportal-btn-cancel:hover { background: #475569; color: #ffffff; }
 </style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -656,6 +692,63 @@
     "OOCL": ["HIROSHIMA"]
   };
 
+  /* =========================================================================
+     HELPER CUSTOM DIALOG UI NEXPORTAL-EXIM (PERSIS GAMBAR 2)
+     ========================================================================= */
+  function showCustomConfirm(message) {
+    return new Promise((resolve) => {
+      const overlay = document.createElement("div");
+      overlay.className = "nexportal-dialog-overlay";
+
+      overlay.innerHTML = `
+        <div class="nexportal-dialog-card">
+          <h4 class="nexportal-dialog-header">NexPortal-EXIM says:</h4>
+          <div class="nexportal-dialog-body">${message}</div>
+          <div class="nexportal-dialog-actions">
+            <button type="button" class="nexportal-btn-ok" id="npConfirmBtnOk">OK</button>
+            <button type="button" class="nexportal-btn-cancel" id="npConfirmBtnCancel">Cancel</button>
+          </div>
+        </div>
+      `;
+
+      document.body.appendChild(overlay);
+
+      overlay.querySelector("#npConfirmBtnOk").onclick = () => {
+        overlay.remove();
+        resolve(true);
+      };
+
+      overlay.querySelector("#npConfirmBtnCancel").onclick = () => {
+        overlay.remove();
+        resolve(false);
+      };
+    });
+  }
+
+  function showCustomAlert(message) {
+    return new Promise((resolve) => {
+      const overlay = document.createElement("div");
+      overlay.className = "nexportal-dialog-overlay";
+
+      overlay.innerHTML = `
+        <div class="nexportal-dialog-card">
+          <h4 class="nexportal-dialog-header">NexPortal-EXIM says:</h4>
+          <div class="nexportal-dialog-body">${message}</div>
+          <div class="nexportal-dialog-actions">
+            <button type="button" class="nexportal-btn-ok" id="npAlertBtnOk">OK</button>
+          </div>
+        </div>
+      `;
+
+      document.body.appendChild(overlay);
+
+      overlay.querySelector("#npAlertBtnOk").onclick = () => {
+        overlay.remove();
+        resolve(true);
+      };
+    });
+  }
+
   muatDataSchedule();
 
   function getSupabaseVal(row, candidates) {
@@ -842,19 +935,9 @@
         };
       });
 
-      // TANGGAL HARI INI
       const now = new Date();
       const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-      /* =========================================================================
-         LOGIKA SORTING ATURAN PRESISI APPSCRIPT:
-         1. Kategori ACTIVE (Mendatang / ETD): Ditaruh di ATAS.
-            - Prioritas Tanggal Acuan: "ETD/ATD WEBSITE" (jika terisi ETD) -> jika kosong pakai "ETD ORIGINAL".
-            - Diurutkan Ascending (Tanggal paling mendekati hari ini di urutan #1).
-         2. Kategori PAST / ATD (Sudah Berangkat / Lewat Tanggal): Ditaruh di PALING BAWAH.
-            - Terdeteksi mengandung kata "ATD:" / "ATD " atau tanggal < hari ini.
-            - Diurutkan Descending (Keberangkatan paling baru di posisi atas kategori ATD).
-         ========================================================================= */
       masterDataSchedule.sort((a, b) => {
         const isAtdA = String(a.etd_website || '').toUpperCase().includes("ATD");
         const isAtdB = String(b.etd_website || '').toUpperCase().includes("ATD");
@@ -1318,7 +1401,9 @@
     }
   }
 
-  // FUNGSI HAPUS SCHEDULE (ASYNC SAFE & NATIVE CONFIRM TOAST BYPASS)
+  /* =========================================================================
+     FUNGSI HAPUS SCHEDULE MENGGUNAKAN CUSTOM DIALOG NEXPORTAL-EXIM (GAMBAR 2)
+     ========================================================================= */
   async function hapusSchedule(event, displayNo, rowId) {
     if (event) {
       event.preventDefault();
@@ -1328,8 +1413,7 @@
 
     const targetId = isNaN(rowId) ? rowId : parseInt(rowId, 10);
 
-    const confirmFunc = window.nativeConfirm || window.confirm;
-    const isConfirmed = await confirmFunc(`⚠️ Apakah Anda yakin ingin menghapus data Schedule pada baris ke-${displayNo} (ID: ${targetId}) ini?`);
+    const isConfirmed = await showCustomConfirm(`⚠️ Apakah Anda yakin ingin menghapus data Schedule pada baris ke-${displayNo} (ID: ${targetId}) ini?`);
 
     if (!isConfirmed) {
       return false;
@@ -1343,7 +1427,7 @@
         .select();
 
       if (error) {
-        alert("❌ Gagal hapus data Supabase: " + error.message);
+        await showCustomAlert("❌ Gagal hapus data Supabase: " + error.message);
         console.error("Supabase Delete Error:", error);
         return;
       }
@@ -1357,11 +1441,11 @@
         console.warn("Gagal hapus log_changes:", logErr);
       }
 
-      alert("✅ Data Schedule berhasil dihapus!");
+      await showCustomAlert("✅ Data Schedule berhasil dihapus!");
       muatDataSchedule();
 
     } catch(err) {
-      alert("❌ Error Sistem: " + err.message);
+      await showCustomAlert("❌ Error Sistem: " + err.message);
       console.error("Catch Delete Error:", err);
     }
   }
@@ -1414,26 +1498,25 @@
       event.stopPropagation();
     }
 
-    const confirmFunc = window.nativeConfirm || window.confirm;
-    const isUserProceed = await confirmFunc("⚡ Jalankan sinkronisasi otomatis status kapal TPKS (Port SRG)?");
+    const isUserProceed = await showCustomConfirm("⚡ Jalankan sinkronisasi otomatis status kapal TPKS (Port SRG)?");
     if (!isUserProceed) {
       return false;
     }
 
     try {
       if (typeof supabaseClient === 'undefined' || !supabaseClient) {
-        alert("❌ Error: Koneksi database Supabase belum siap. Silakan muat ulang halaman.");
+        await showCustomAlert("❌ Error: Koneksi database Supabase belum siap. Silakan muat ulang halaman.");
         return false;
       }
 
       const { data: srgRows, error: fetchErr } = await supabaseClient.from('control_schedule').select('*').eq('port', 'SRG');
       if (fetchErr) {
-        alert("❌ Gagal mengambil data TPKS: " + fetchErr.message);
+        await showCustomAlert("❌ Gagal mengambil data TPKS: " + fetchErr.message);
         return false;
       }
 
       if (!srgRows || srgRows.length === 0) {
-        alert("ℹ️ Tidak ditemukan baris kapal dengan PORT 'SRG' untuk di-sync.");
+        await showCustomAlert("ℹ️ Tidak ditemukan baris kapal dengan PORT 'SRG' untuk di-sync.");
         return false;
       }
 
@@ -1475,14 +1558,14 @@
 
       if (updatedVessels.length > 0) {
         let msgList = updatedVessels.map((v, i) => `${i + 1}. ${v}`).join("\n");
-        alert(`⚡ SINKRONISASI TPKS BERHASIL!\n\nBerikut ${updatedVessels.length} Kapal yang berhasil diperbarui:\n\n${msgList}`);
+        await showCustomAlert(`⚡ SINKRONISASI TPKS BERHASIL!\n\nBerikut ${updatedVessels.length} Kapal yang berhasil diperbarui:\n\n${msgList}`);
       } else {
-        alert("⚡ Status Web TPKS sudah yang terbaru. Tidak ada perubahan data kapal.");
+        await showCustomAlert("⚡ Status Web TPKS sudah yang terbaru. Tidak ada perubahan data kapal.");
       }
 
       muatDataSchedule();
     } catch(err) {
-      alert("❌ Error sync TPKS: " + err.message);
+      await showCustomAlert("❌ Error sync TPKS: " + err.message);
     }
   };
 
@@ -1671,10 +1754,10 @@
         const blobHtml = new Blob([fullOfficeHtml], { type: 'text/html' });
         const blobText = new Blob([cloneArea.innerText], { type: 'text/plain' });
         await navigator.clipboard.write([new ClipboardItem({ 'text/html': blobHtml, 'text/plain': blobText })]);
-        alert("✅ Berhasil Di-copy!");
+        await showCustomAlert("✅ Berhasil Di-copy!");
       }
     } catch (err) {
-      alert("❌ Gagal menyalin: " + err.message);
+      await showCustomAlert("❌ Gagal menyalin: " + err.message);
     }
   }
 
