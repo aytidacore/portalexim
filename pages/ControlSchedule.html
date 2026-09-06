@@ -991,7 +991,7 @@
 
   function tutupModalHistori() { document.getElementById("modalHistoriLog").style.display = "none"; }
 
-  /* --- FUNGSI SINKRONISASI UPDATE TPKS (PENCOCOKAN KETAT NAMA KAPAL + VOYAGE SUPABASE) --- */
+  /* --- FUNGSI PARSER PRESISI DENGAN REGEX UNTUK PELINDO IBSTPKS --- */
   window.syncDataTPKS = async function(event) {
     if (event) { event.preventDefault(); event.stopPropagation(); }
     document.getElementById("textareaTpksHtml").value = "";
@@ -1017,7 +1017,6 @@
         return; 
       }
 
-      // Ambil seluruh baris schedule dari Supabase
       const { data: srgRows, error: fetchErr } = await supabaseClient.from('control_schedule').select('*').eq('port', 'SRG');
       if (fetchErr || !srgRows || !srgRows.length) { 
         await showCustomAlert("ℹ️ Tidak ditemukan baris kapal PORT 'SRG' di database Supabase."); 
@@ -1027,8 +1026,15 @@
       const doc = new DOMParser().parseFromString(htmlVal, "text/html");
       let parsedTpksVessels = [];
 
-      // Telusuri blok kartu informasi kapal pada layout Pelindo
-      doc.querySelectorAll("div, article, section, li").forEach(block => {
+      // Fungsi bantuan merubah format tgl "07/09/2026 13:00" -> "07-09-2026 13:00"
+      const formatPelindoDate = (str) => {
+        if (!str) return '';
+        let clean = str.trim().replace(/\//g, '-');
+        return clean;
+      };
+
+      // Menelusuri seluruh blok/kartu informasi kapal di web Pelindo
+      doc.querySelectorAll("div, article, section, li, td").forEach(block => {
         const textFull = block.innerText ? block.innerText.trim() : '';
         const boldElem = block.querySelector("b") || block.querySelector("strong");
 
@@ -1039,17 +1045,25 @@
           if (cleanVName.length > 2 && !cleanVName.includes("VESSEL") && !cleanVName.includes("SCHEDULE")) {
             let vItem = { name: cleanVName, voyage: '', etb: '', atb: '', etd: '', atd: '', closing: '' };
 
+            // Menggunakan RegEx Presisi untuk mengekstrak data dari string HTML
+            let atbMatch = textFull.match(/ATB\s*:\s*(\d{2}[\/-]\d{2}[\/-]\d{4}\s+\d{2}:\d{2})/i);
+            let etbMatch = textFull.match(/ETB\s*:\s*(\d{2}[\/-]\d{2}[\/-]\d{4}\s+\d{2}:\d{2})/i);
+            let atdMatch = textFull.match(/ATD\s*:\s*(\d{2}[\/-]\d{2}[\/-]\d{4}\s+\d{2}:\d{2})/i);
+            let etdMatch = textFull.match(/ETD\s*:\s*(\d{2}[\/-]\d{2}[\/-]\d{4}\s+\d{2}:\d{2})/i);
+            let closingMatch = textFull.match(/Closing\s*Time\s*:\s*(\d{2}[\/-]\d{2}[\/-]\d{4}\s+\d{2}:\d{2})/i);
+
+            if (atbMatch) vItem.atb = formatPelindoDate(atbMatch[1]);
+            if (etbMatch) vItem.etb = formatPelindoDate(etbMatch[1]);
+            if (atdMatch) vItem.atd = formatPelindoDate(atdMatch[1]);
+            if (etdMatch) vItem.etd = formatPelindoDate(etdMatch[1]);
+            if (closingMatch) vItem.closing = formatPelindoDate(closingMatch[1]);
+
+            // Ekstrak voyage (seperti "2618S / 2619N" atau "CS2050N")
             let lines = textFull.split("\n").map(l => l.trim()).filter(Boolean);
             lines.forEach(line => {
-              // Ambil nomor Voyage dari teks kartu Pelindo
               if ((line.includes("/") || (line.includes("S") && line.includes("N"))) && !line.includes("Booking") && !line.includes("Actual") && line.length < 30) {
                 vItem.voyage = line.replace(/\s+/g, '').toUpperCase();
               }
-              if (line.startsWith("ATB :") || line.startsWith("ATB:")) vItem.atb = line.replace(/ATB\s*:\s*/i, "").trim();
-              if (line.startsWith("ETB :") || line.startsWith("ETB:")) vItem.etb = line.replace(/ETB\s*:\s*/i, "").trim();
-              if (line.startsWith("ATD :") || line.startsWith("ATD:")) vItem.atd = line.replace(/ATD\s*:\s*/i, "").trim();
-              if (line.startsWith("ETD :") || line.startsWith("ETD:")) vItem.etd = line.replace(/ETD\s*:\s*/i, "").trim();
-              if (line.includes("Closing Time")) vItem.closing = line.replace(/Closing Time\s*:\s*/gi, "").trim();
             });
 
             if (vItem.name && !parsedTpksVessels.some(existing => existing.name === vItem.name && existing.voyage === vItem.voyage)) {
@@ -1060,32 +1074,28 @@
       });
 
       if (!parsedTpksVessels.length) {
-        await showCustomAlert("⚠️ HTML berhasil dimuat, tetapi parser tidak menemukan kartu kapal Pelindo. Pastikan menyalin seluruh halaman (Ctrl+U).");
+        await showCustomAlert("⚠️ HTML berhasil dimuat, namun parser tidak menemukan data kapal. Pastikan kamu menyalin seluruh halaman utama (Ctrl+U).");
         return;
       }
 
       let updatedVesselsList = [];
 
       for (let row of srgRows) {
-        // Mendapatkan gabungan Feeder Vessel & Voyage dari Supabase (misal: "SITC DECHENG 2619N")
         let fullDbVessel = String(row.feeder_vessel || '').trim().toUpperCase();
         let dbVoyageOnly = String(row.voyage || '').trim().toUpperCase();
 
-        // Cari kecocokan presisi berdasarkan Nama Kapal & Voyage
+        // Mencocokkan nama kapal & voyage dari Supabase dengan data Pelindo
         let matched = parsedTpksVessels.find(v => {
-          // 1. Ekstrak kata-kata utama nama kapal
           let vNameWords = v.name.split(" ").filter(w => w.length > 1);
           let isNameMatch = vNameWords.every(word => fullDbVessel.includes(word));
 
-          // 2. Ekstrak dan cocokkan Voyage
           let isVoyageMatch = true;
           let dbVoyClean = dbVoyageOnly.replace(/[^A-Z0-9]/gi, '');
           let tpksVoyClean = v.voyage.replace(/[^A-Z0-9]/gi, '');
 
           if (dbVoyClean && tpksVoyClean) {
             isVoyageMatch = tpksVoyClean.includes(dbVoyClean) || dbVoyClean.includes(tpksVoyClean);
-          } else if (!dbVoyageOnly) {
-            // Jika kolom voyage Supabase terpisah kosong, cek apakah angka voyage ada di dalam string feeder_vessel
+          } else {
             let nums = tpksVoyClean.match(/\d+/g);
             if (nums) {
               isVoyageMatch = nums.some(n => fullDbVessel.includes(n));
@@ -1098,14 +1108,14 @@
         if (matched) {
           let isMod = false, updatePayload = {};
 
-          // Update Closing CY
+          // 1. Update Closing CY
           if (matched.closing && row.update_closing !== matched.closing) {
             updatePayload.update_closing = matched.closing; 
             isMod = true;
             await catatLogChangesServer(row.id, "system Pelindo", "UPDATE", "UPDATE CLOSING CY", row.update_closing, matched.closing);
           }
 
-          // Update ETB / ATB
+          // 2. Update ETB / ATB Website
           let newEtbAtb = matched.atb ? `ATB: ${matched.atb}` : (matched.etb ? `ETB: ${matched.etb}` : '');
           if (newEtbAtb && row.etb_atb_website !== newEtbAtb) {
             updatePayload.etb_atb_website = newEtbAtb; 
@@ -1113,7 +1123,7 @@
             await catatLogChangesServer(row.id, "system Pelindo", "UPDATE", "ETB/ATB WEBSITE", row.etb_atb_website, newEtbAtb);
           }
 
-          // Update ETD / ATD
+          // 3. Update ETD / ATD Website
           let newEtdAtd = matched.atd ? `ATD: ${matched.atd}` : (matched.etd ? `ETD: ${matched.etd}` : '');
           if (newEtdAtd && row.etd_atd_website !== newEtdAtd) {
             updatePayload.etd_atd_website = newEtdAtd; 
@@ -1273,7 +1283,7 @@
   function downloadExcelExport() {
     let html = `<table border="1"><tr><th>NO</th><th>WEEK</th><th>LINER</th><th>PORT</th><th>FEEDER VESSEL</th><th>ETD ORIGINAL</th><th>CLOSING CY</th><th>UPDATE CLOSING CY</th><th>ETB/ATB WEBSITE</th><th>ETD/ATD WEBSITE</th><th>ETA PORT</th><th>DESTINATION</th><th>REMARK</th></tr>`;
     currentFilteredSchedule.forEach((item, i) => { html += `<tr><td>${i+1}</td><td>${item.week}</td><td>${item.liner}</td><td>${item.port}</td><td>${item.feeder_vessel}</td><td>${item.etd_original}</td><td>${item.closing_cy}</td><td>${item.update_closing_cy}</td><td>${item.etb_website}</td><td>${item.etd_website}</td><td>${item.eta_port}</td><td>${item.destination}</td><td>${item.remark}</td></tr>`; });
-    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([html], { type: 'application/vnd.ms-excel' })); a.download = "ControlSchedule_Planner.xls"; a.click();
+    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([html], { type: 'text/csv' })); a.download = "ControlSchedule_Planner.xls"; a.click();
   }
 
   document.querySelectorAll('.col-toggle').forEach(chk => {
