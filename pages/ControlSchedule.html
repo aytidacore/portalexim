@@ -987,49 +987,36 @@
         return false; 
       }
 
-      // 1. Ambil data kapal khusus PORT 'SRG' dari Supabase
       const { data: srgRows, error: fetchErr } = await supabaseClient.from('control_schedule').select('*').eq('port', 'SRG');
       if (fetchErr || !srgRows || !srgRows.length) { 
         if (!isAutoCron) await showCustomAlert("ℹ️ Tidak ditemukan baris kapal PORT 'SRG' di database."); 
         return false; 
       }
 
-      // 2. Ambil HTML TPKS via Apps Script Web App Utama
+      // Ambil data JSON dari Apps Script Web App
       let tpksRawHtml = '';
       try {
         if (window.APPSCRIPT_TPKS_URL && window.APPSCRIPT_TPKS_URL.trim() !== '') {
           const resAppScript = await fetch(window.APPSCRIPT_TPKS_URL);
           if (resAppScript.ok) {
-            tpksRawHtml = await resAppScript.text();
+            const jsonRes = await resAppScript.json();
+            if (jsonRes.status === "success") {
+              tpksRawHtml = jsonRes.html;
+            }
           }
         }
       } catch (e) {
-        console.warn("Gagal fetch via Apps Script:", e);
-      }
-
-      // Fallback cadangan jika Apps Script gagal
-      if (!tpksRawHtml || tpksRawHtml.trim() === '' || tpksRawHtml.includes("Error fetching TPKS")) {
-        try {
-          const targetUrl = 'https://webaccess.tpks.co.id/tpks_vessel_schedule/';
-          const resProxy = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`);
-          if (resProxy.ok) {
-            const jsonRes = await resProxy.json();
-            tpksRawHtml = jsonRes.contents || '';
-          }
-        } catch (e) {
-          console.warn("Gagal fetch via proxy:", e);
-        }
+        console.warn("Gagal fetch via Apps Script JSON:", e);
       }
 
       if (!tpksRawHtml || tpksRawHtml.trim() === '') {
-        if (!isAutoCron) await showCustomAlert("⚠️ Gagal mengambil HTML dari Web TPKS. Pastikan Apps Script Web App aktif.");
+        if (!isAutoCron) await showCustomAlert("⚠️ Gagal mengambil HTML dari Web TPKS melalui Apps Script.");
         return false;
       }
 
       const debugDiv = document.getElementById("tpks-source-data");
       if (debugDiv) debugDiv.innerHTML = tpksRawHtml;
 
-      // 3. Parsing DOM HTML Semua Grup Web TPKS (Confirmed, Open Stack, Schedule, History)
       const doc = new DOMParser().parseFromString(tpksRawHtml, "text/html");
       let parsedTpksVessels = [];
 
@@ -1063,7 +1050,6 @@
         return false;
       }
 
-      // 4. Match & Sync ke Supabase
       let updatedVesselsList = [];
 
       for (let row of srgRows) {
@@ -1115,7 +1101,6 @@
         }
       }
 
-      // 5. Tampilkan Notifikasi Hasil
       if (updatedVesselsList.length > 0) {
         if (!isAutoCron) await showCustomAlert(`⚡ SINKRONISASI TPKS BERHASIL!\n\nBerikut ${updatedVesselsList.length} Kapal yang diperbarui datanya dari TPKS:\n\n${updatedVesselsList.map((v, i) => `${i + 1}. ${v}`).join("\n")}`);
       } else if (!isAutoCron) { 
