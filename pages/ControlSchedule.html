@@ -994,26 +994,30 @@
         return false; 
       }
 
-      // 2. Ambil HTML TPKS via Apps Script / Proxy
-      let tpksRawHtml = document.getElementById("tpks-source-data")?.innerHTML || window.tpksHtmlData || '';
+      // 2. Ambil HTML TPKS via Apps Script Web App Utama
+      let tpksRawHtml = '';
+      try {
+        if (window.APPSCRIPT_TPKS_URL && window.APPSCRIPT_TPKS_URL.trim() !== '') {
+          const resAppScript = await fetch(window.APPSCRIPT_TPKS_URL);
+          if (resAppScript.ok) {
+            tpksRawHtml = await resAppScript.text();
+          }
+        }
+      } catch (e) {
+        console.warn("Gagal fetch via Apps Script:", e);
+      }
 
-      if (!tpksRawHtml || tpksRawHtml.trim() === '') {
+      // Fallback cadangan jika Apps Script gagal
+      if (!tpksRawHtml || tpksRawHtml.trim() === '' || tpksRawHtml.includes("Error fetching TPKS")) {
         try {
-          if (window.APPSCRIPT_TPKS_URL && window.APPSCRIPT_TPKS_URL.trim() !== '') {
-            const resAppScript = await fetch(window.APPSCRIPT_TPKS_URL);
-            if (resAppScript.ok) tpksRawHtml = await resAppScript.text();
-          } 
-          
-          if (!tpksRawHtml || tpksRawHtml.trim() === '') {
-            const targetUrl = 'https://webaccess.tpks.co.id/tpks_vessel_schedule/';
-            const resProxy = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`);
-            if (resProxy.ok) {
-              const jsonRes = await resProxy.json();
-              tpksRawHtml = jsonRes.contents || '';
-            }
+          const targetUrl = 'https://webaccess.tpks.co.id/tpks_vessel_schedule/';
+          const resProxy = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`);
+          if (resProxy.ok) {
+            const jsonRes = await resProxy.json();
+            tpksRawHtml = jsonRes.contents || '';
           }
         } catch (e) {
-          console.warn("Gagal mengambil data TPKS via network:", e);
+          console.warn("Gagal fetch via proxy:", e);
         }
       }
 
@@ -1021,6 +1025,9 @@
         if (!isAutoCron) await showCustomAlert("⚠️ Gagal mengambil HTML dari Web TPKS. Pastikan Apps Script Web App aktif.");
         return false;
       }
+
+      const debugDiv = document.getElementById("tpks-source-data");
+      if (debugDiv) debugDiv.innerHTML = tpksRawHtml;
 
       // 3. Parsing DOM HTML Semua Grup Web TPKS (Confirmed, Open Stack, Schedule, History)
       const doc = new DOMParser().parseFromString(tpksRawHtml, "text/html");
@@ -1038,7 +1045,7 @@
           let lines = blockText.split("\n").map(l => l.trim()).filter(Boolean);
           lines.forEach(line => {
             if (line.includes("/")) {
-              vItem.voyage = line.replace(/\s+/g, '').toUpperCase(); // Menyimpan voyage seperti "2618S/2619N"
+              vItem.voyage = line.replace(/\s+/g, '').toUpperCase();
             }
             if (line.startsWith("ATB :")) vItem.atb = line.replace("ATB :", "").trim();
             if (line.startsWith("ETB :")) vItem.etb = line.replace("ETB :", "").trim();
@@ -1052,7 +1059,7 @@
       });
 
       if (!parsedTpksVessels.length) {
-        if (!isAutoCron) await showCustomAlert("⚠️ Gagal mengekstrak data dari HTML Web TPKS.");
+        if (!isAutoCron) await showCustomAlert("⚠️ HTML TPKS berhasil dimuat, tetapi struktur elemen kapal gagal dikenali oleh parser.");
         return false;
       }
 
@@ -1108,7 +1115,7 @@
         }
       }
 
-      // 5. Tampilkan Notifikasi
+      // 5. Tampilkan Notifikasi Hasil
       if (updatedVesselsList.length > 0) {
         if (!isAutoCron) await showCustomAlert(`⚡ SINKRONISASI TPKS BERHASIL!\n\nBerikut ${updatedVesselsList.length} Kapal yang diperbarui datanya dari TPKS:\n\n${updatedVesselsList.map((v, i) => `${i + 1}. ${v}`).join("\n")}`);
       } else if (!isAutoCron) { 
