@@ -991,7 +991,7 @@
 
   function tutupModalHistori() { document.getElementById("modalHistoriLog").style.display = "none"; }
 
-  /* --- FUNGSI PARSER PRESISI DENGAN REGEX UNTUK PELINDO IBSTPKS --- */
+  /* --- FUNGSI PARSER KETAT & TERISOLASI UNTUK WEB PELINDO IBSTPKS --- */
   window.syncDataTPKS = async function(event) {
     if (event) { event.preventDefault(); event.stopPropagation(); }
     document.getElementById("textareaTpksHtml").value = "";
@@ -1017,77 +1017,84 @@
         return; 
       }
 
+      // 1. Ambil data kapal PORT 'SRG' dari Supabase
       const { data: srgRows, error: fetchErr } = await supabaseClient.from('control_schedule').select('*').eq('port', 'SRG');
       if (fetchErr || !srgRows || !srgRows.length) { 
         await showCustomAlert("ℹ️ Tidak ditemukan baris kapal PORT 'SRG' di database Supabase."); 
         return; 
       }
 
+      // 2. Parse HTML
       const doc = new DOMParser().parseFromString(htmlVal, "text/html");
       let parsedTpksVessels = [];
 
-      // Fungsi bantuan merubah format tgl "07/09/2026 13:00" -> "07-09-2026 13:00"
-      const formatPelindoDate = (str) => {
-        if (!str) return '';
-        let clean = str.trim().replace(/\//g, '-');
-        return clean;
-      };
+      const cleanDateStr = (str) => str ? str.trim().replace(/\//g, '-') : '';
 
-      // Menelusuri seluruh blok/kartu informasi kapal di web Pelindo
-      doc.querySelectorAll("div, article, section, li, td").forEach(block => {
-        const textFull = block.innerText ? block.innerText.trim() : '';
-        const boldElem = block.querySelector("b") || block.querySelector("strong");
+      // 3. Ambil setiap elemen tebal yang menjadi Judul Kapal pada Pelindo TPKS
+      const vesselTitleNodes = Array.from(doc.querySelectorAll("b, strong, .vessel-name"));
 
-        if (boldElem && (textFull.includes("ETB") || textFull.includes("ETD") || textFull.includes("Closing Time") || textFull.includes("ATB") || textFull.includes("ATD"))) {
-          let rawName = boldElem.innerText.trim();
-          let cleanVName = rawName.replace(/\s*\([A-Z0-9]+\)\s*/gi, '').replace(/\s*\(ID[0-9]+\)\s*/gi, '').trim().toUpperCase();
+      vesselTitleNodes.forEach(node => {
+        let rawTitle = node.innerText ? node.innerText.trim() : '';
+        if (!rawTitle || rawTitle.length < 3 || /CONFIRMED|ALONGSIDE|OPEN STACK|SCHEDULE|HISTORY/i.test(rawTitle)) return;
 
-          if (cleanVName.length > 2 && !cleanVName.includes("VESSEL") && !cleanVName.includes("SCHEDULE")) {
-            let vItem = { name: cleanVName, voyage: '', etb: '', atb: '', etd: '', atd: '', closing: '' };
+        // Misal: "SITC DECHENG (STDC060)" -> "SITC DECHENG"
+        let vesselNameClean = rawTitle.replace(/\s*\([^)]*\)/g, '').trim().toUpperCase();
 
-            // Menggunakan RegEx Presisi untuk mengekstrak data dari string HTML
-            let atbMatch = textFull.match(/ATB\s*:\s*(\d{2}[\/-]\d{2}[\/-]\d{4}\s+\d{2}:\d{2})/i);
-            let etbMatch = textFull.match(/ETB\s*:\s*(\d{2}[\/-]\d{2}[\/-]\d{4}\s+\d{2}:\d{2})/i);
-            let atdMatch = textFull.match(/ATD\s*:\s*(\d{2}[\/-]\d{2}[\/-]\d{4}\s+\d{2}:\d{2})/i);
-            let etdMatch = textFull.match(/ETD\s*:\s*(\d{2}[\/-]\d{2}[\/-]\d{4}\s+\d{2}:\d{2})/i);
-            let closingMatch = textFull.match(/Closing\s*Time\s*:\s*(\d{2}[\/-]\d{2}[\/-]\d{4}\s+\d{2}:\d{2})/i);
+        // Cari blok terdekat yang membungkus hanya data kapal tersebut
+        let containerBlock = node.closest("td, th, .card, .panel, .box, article, section, div") || node.parentElement;
+        if (!containerBlock) return;
 
-            if (atbMatch) vItem.atb = formatPelindoDate(atbMatch[1]);
-            if (etbMatch) vItem.etb = formatPelindoDate(etbMatch[1]);
-            if (atdMatch) vItem.atd = formatPelindoDate(atdMatch[1]);
-            if (etdMatch) vItem.etd = formatPelindoDate(etdMatch[1]);
-            if (closingMatch) vItem.closing = formatPelindoDate(closingMatch[1]);
+        let blockText = containerBlock.innerText || '';
 
-            // Ekstrak voyage (seperti "2618S / 2619N" atau "CS2050N")
-            let lines = textFull.split("\n").map(l => l.trim()).filter(Boolean);
-            lines.forEach(line => {
-              if ((line.includes("/") || (line.includes("S") && line.includes("N"))) && !line.includes("Booking") && !line.includes("Actual") && line.length < 30) {
-                vItem.voyage = line.replace(/\s+/g, '').toUpperCase();
-              }
-            });
+        // Pastikan blok ini mengandung informasi tanggal
+        if (!/ETB|ETD|Closing|ATB|ATD/i.test(blockText)) return;
 
-            if (vItem.name && !parsedTpksVessels.some(existing => existing.name === vItem.name && existing.voyage === vItem.voyage)) {
-              parsedTpksVessels.push(vItem);
-            }
+        let vItem = {
+          name: vesselNameClean,
+          voyage: '',
+          etb: '', atb: '', etd: '', atd: '', closing: ''
+        };
+
+        // RegEx Tanggal
+        let atbMatch = blockText.match(/ATB\s*:\s*(\d{2}[\/-]\d{2}[\/-]\d{4}(?:\s+\d{2}:\d{2})?)/i);
+        let etbMatch = blockText.match(/ETB\s*:\s*(\d{2}[\/-]\d{2}[\/-]\d{4}(?:\s+\d{2}:\d{2})?)/i);
+        let atdMatch = blockText.match(/ATD\s*:\s*(\d{2}[\/-]\d{2}[\/-]\d{4}(?:\s+\d{2}:\d{2})?)/i);
+        let etdMatch = blockText.match(/ETD\s*:\s*(\d{2}[\/-]\d{2}[\/-]\d{4}(?:\s+\d{2}:\d{2})?)/i);
+        let closingMatch = blockText.match(/Closing\s*Time\s*:\s*(\d{2}[\/-]\d{2}[\/-]\d{4}(?:\s+\d{2}:\d{2})?)/i);
+
+        if (atbMatch) vItem.atb = cleanDateStr(atbMatch[1]);
+        if (etbMatch) vItem.etb = cleanDateStr(etbMatch[1]);
+        if (atdMatch) vItem.atd = cleanDateStr(atdMatch[1]);
+        if (etdMatch) vItem.etd = cleanDateStr(etdMatch[1]);
+        if (closingMatch) vItem.closing = cleanDateStr(closingMatch[1]);
+
+        // Ekstrak voyage
+        let lines = blockText.split("\n").map(l => l.trim()).filter(Boolean);
+        lines.forEach(l => {
+          if ((l.includes("/") || /[0-9]+[A-Z]/i.test(l)) && !/ETB|ETD|ATB|ATD|Closing|Open|Booking|Actual/i.test(l) && l.length < 25) {
+            vItem.voyage = l.replace(/\s+/g, '').toUpperCase();
           }
+        });
+
+        if (vItem.name && !parsedTpksVessels.some(x => x.name === vItem.name && x.voyage === vItem.voyage)) {
+          parsedTpksVessels.push(vItem);
         }
       });
 
       if (!parsedTpksVessels.length) {
-        await showCustomAlert("⚠️ HTML berhasil dimuat, namun parser tidak menemukan data kapal. Pastikan kamu menyalin seluruh halaman utama (Ctrl+U).");
+        await showCustomAlert("⚠️ Parser tidak menemukan data kapal. Pastikan menyalin seluruh kode HTML dari ibstpks.pelindo.co.id/webaccess/ (tekan Ctrl+U).");
         return;
       }
 
+      // 4. Pencocokan dengan Supabase
       let updatedVesselsList = [];
 
       for (let row of srgRows) {
-        let fullDbVessel = String(row.feeder_vessel || '').trim().toUpperCase();
+        let fullDbVessel = String(row.feeder_vessel || '').trim().toUpperCase(); // Misal: "SITC DECHENG 2619N"
         let dbVoyageOnly = String(row.voyage || '').trim().toUpperCase();
 
-        // Mencocokkan nama kapal & voyage dari Supabase dengan data Pelindo
         let matched = parsedTpksVessels.find(v => {
-          let vNameWords = v.name.split(" ").filter(w => w.length > 1);
-          let isNameMatch = vNameWords.every(word => fullDbVessel.includes(word));
+          let isNameMatch = fullDbVessel.includes(v.name) || v.name.includes(fullDbVessel.split(" ")[0]);
 
           let isVoyageMatch = true;
           let dbVoyClean = dbVoyageOnly.replace(/[^A-Z0-9]/gi, '');
@@ -1097,9 +1104,7 @@
             isVoyageMatch = tpksVoyClean.includes(dbVoyClean) || dbVoyClean.includes(tpksVoyClean);
           } else {
             let nums = tpksVoyClean.match(/\d+/g);
-            if (nums) {
-              isVoyageMatch = nums.some(n => fullDbVessel.includes(n));
-            }
+            if (nums) isVoyageMatch = nums.some(n => fullDbVessel.includes(n));
           }
 
           return isNameMatch && isVoyageMatch;
@@ -1108,14 +1113,12 @@
         if (matched) {
           let isMod = false, updatePayload = {};
 
-          // 1. Update Closing CY
           if (matched.closing && row.update_closing !== matched.closing) {
             updatePayload.update_closing = matched.closing; 
             isMod = true;
             await catatLogChangesServer(row.id, "system Pelindo", "UPDATE", "UPDATE CLOSING CY", row.update_closing, matched.closing);
           }
 
-          // 2. Update ETB / ATB Website
           let newEtbAtb = matched.atb ? `ATB: ${matched.atb}` : (matched.etb ? `ETB: ${matched.etb}` : '');
           if (newEtbAtb && row.etb_atb_website !== newEtbAtb) {
             updatePayload.etb_atb_website = newEtbAtb; 
@@ -1123,7 +1126,6 @@
             await catatLogChangesServer(row.id, "system Pelindo", "UPDATE", "ETB/ATB WEBSITE", row.etb_atb_website, newEtbAtb);
           }
 
-          // 3. Update ETD / ATD Website
           let newEtdAtd = matched.atd ? `ATD: ${matched.atd}` : (matched.etd ? `ETD: ${matched.etd}` : '');
           if (newEtdAtd && row.etd_atd_website !== newEtdAtd) {
             updatePayload.etd_atd_website = newEtdAtd; 
