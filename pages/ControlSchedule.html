@@ -176,35 +176,20 @@
   }
   .modal-card-schedule.preview-large { max-width: 98vw !important; width: 1450px !important; }
 
-  /* --- PERBAIKAN UKURAN KONTROL & RAPIKAN LAYOUT GRID --- */
+  /* FORM GRID STYLING */
   .form-grid-schedule { display: flex; flex-direction: column; gap: 12px; }
 
-  /* BARIS 1: WEEK (80px), LINER (180px - FIXED), PORT (100px) */
-  .row-week-liner-port {
-    display: flex;
-    gap: 10px;
-    align-items: flex-start;
-  }
+  .row-week-liner-port { display: flex; gap: 10px; align-items: flex-start; }
   .row-week-liner-port .col-week { width: 90px; flex-shrink: 0; }
   .row-week-liner-port .col-liner { width: 180px; flex-shrink: 0; }
   .row-week-liner-port .col-port { width: 100px; flex-shrink: 0; }
 
-  /* BARIS 2: FEEDER VESSEL (220px), VOYAGE (130px), ETD ORIG (140px) */
-  .row-vessel-voyage-etd {
-    display: flex;
-    gap: 10px;
-    align-items: flex-start;
-  }
+  .row-vessel-voyage-etd { display: flex; gap: 10px; align-items: flex-start; }
   .row-vessel-voyage-etd .col-vessel { width: 220px; flex-shrink: 0; }
   .row-vessel-voyage-etd .col-voyage { width: 130px; flex-shrink: 0; }
   .row-vessel-voyage-etd .col-etdorig { width: 140px; flex-shrink: 0; }
 
-  /* BARIS 3: UPDATE CLOSING CY (170px), ETB/ATB (170px), ETD/ATD (170px) */
-  .row-web-updates {
-    display: flex;
-    gap: 10px;
-    align-items: flex-start;
-  }
+  .row-web-updates { display: flex; gap: 10px; align-items: flex-start; }
   .row-web-updates .col-web-item { width: 170px; flex-shrink: 0; }
 
   .form-group-schedule { display: flex; flex-direction: column; }
@@ -219,57 +204,43 @@
     background: #1e293b !important; color: #64748b !important; cursor: not-allowed; border-color: #334155;
   }
 
-  /* DESTINATION SECTION GRID (DIRESIZER LEBARNYA) */
   .dest-section-box { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 12px; margin-top: 4px; }
   
   .dest-row-item {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    margin-bottom: 8px;
-    background: #1e293b;
-    padding: 8px 10px;
-    border-radius: 6px;
-    border: 1px solid #334155;
+    display: flex; gap: 10px; align-items: center; margin-bottom: 8px;
+    background: #1e293b; padding: 8px 10px; border-radius: 6px; border: 1px solid #334155;
   }
   .dest-row-item .col-dest-val { width: 180px; flex-shrink: 0; }
   .dest-row-item .col-eta-val { width: 130px; flex-shrink: 0; }
-  .dest-row-item .col-remark-val { width: 180px; flex-shrink: 0; } /* REMARK TIDAK MELEBAR LAGI */
+  .dest-row-item .col-remark-val { width: 180px; flex-shrink: 0; }
 
   .chk-sync-remark { cursor: pointer; accent-color: #0284c7; width: 16px; height: 16px; margin-top: 2px; }
 
-  /* MEDIA QUERIES UNTUK TAMPILAN MOBILE / HP */
+  /* STYLING UNTUK EDIT LINER & TERM MANAGER */
+  .btn-edit-liner-term {
+    background: #eab308; color: #000; font-weight: 700; border: none; padding: 5px 12px;
+    border-radius: 6px; font-size: 11px; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 5px;
+  }
+  .btn-edit-liner-term:hover { background: #ca8a04; }
+
+  .edit-liner-row {
+    display: flex; gap: 10px; align-items: center; margin-bottom: 8px;
+    background: #0f172a; padding: 8px 12px; border-radius: 8px; border: 1px solid #334155;
+  }
+  .edit-liner-row .inp-liner-name { width: 160px; font-weight: bold; color: #38bdf8 !important; text-transform: uppercase; }
+  .edit-liner-row .inp-liner-term { flex: 1; text-transform: uppercase; }
+
+  /* MEDIA QUERIES MOBILE */
   @media (max-width: 768px) {
     .modal-card-schedule { padding: 12px; }
-    
-    .row-week-liner-port,
-    .row-vessel-voyage-etd,
-    .row-web-updates {
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .row-week-liner-port .col-week,
-    .row-week-liner-port .col-liner,
-    .row-week-liner-port .col-port,
-    .row-vessel-voyage-etd .col-vessel,
-    .row-vessel-voyage-etd .col-voyage,
-    .row-vessel-voyage-etd .col-etdorig,
-    .row-web-updates .col-web-item {
-      width: 100% !important;
-    }
-
-    .dest-row-item {
-      flex-direction: column;
-      align-items: stretch;
-      gap: 8px;
-    }
-
-    .dest-row-item .col-dest-val,
-    .dest-row-item .col-eta-val,
-    .dest-row-item .col-remark-val {
-      width: 100% !important;
-    }
+    .row-week-liner-port, .row-vessel-voyage-etd, .row-web-updates { flex-direction: column; gap: 8px; }
+    .row-week-liner-port .col-week, .row-week-liner-port .col-liner, .row-week-liner-port .col-port,
+    .row-vessel-voyage-etd .col-vessel, .row-vessel-voyage-etd .col-voyage, .row-vessel-voyage-etd .col-etdorig,
+    .row-web-updates .col-web-item { width: 100% !important; }
+    .dest-row-item { flex-direction: column; align-items: stretch; gap: 8px; }
+    .dest-row-item .col-dest-val, .dest-row-item .col-eta-val, .dest-row-item .col-remark-val { width: 100% !important; }
+    .edit-liner-row { flex-direction: column; align-items: stretch; }
+    .edit-liner-row .inp-liner-name { width: 100%; }
   }
 
   .term-info-panel { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 10px; margin-top: 10px; }
@@ -330,14 +301,14 @@
   }
   .nexportal-btn-cancel:hover { background: #475569; color: #ffffff; }
 
-  /* OVERRIDE STYLING FLATPICKR DATEPICKER INTERAKTIF */
+  /* OVERRIDE STYLING FLATPICKR */
   .flatpickr-calendar { background: #0f172a !important; border: 1px solid #38bdf8 !important; box-shadow: 0 10px 25px rgba(0,0,0,0.8) !important; font-family: Calibri, sans-serif !important; border-radius: 8px !important; z-index: 99999999 !important; }
   .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange { background: #0284c7 !important; border-color: #38bdf8 !important; }
   .flatpickr-day:hover { background: #1e293b !important; }
   .flatpickr-time input { color: #fff !important; }
 </style>
 
-<!-- DEPENDENCY FLATPICKR FOR INTERACTIVE DATE & TIME PICKER -->
+<!-- DEPENDENCY FLATPICKR -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -517,7 +488,7 @@
 
     <form id="form-schedule-modal" autocomplete="off" onsubmit="return false;">
       <div class="form-grid-schedule">
-        <!-- BARIS 1: WEEK (90px), LINER (180px - FIXED), PORT (100px) -->
+        <!-- BARIS 1: WEEK, LINER, PORT -->
         <div class="row-week-liner-port">
           <div class="form-group-schedule col-week">
             <label>WEEK</label>
@@ -527,14 +498,7 @@
           <div class="form-group-schedule col-liner">
             <label>LINER *</label>
             <select id="sched-liner" onchange="onLinerChanged()">
-              <option value="">-- Pilih Liner --</option>
-              <option value="SINOKOR">SINOKOR</option>
-              <option value="SITC">SITC</option>
-              <option value="EVERGREEN">EVERGREEN</option>
-              <option value="WAN HAI">WAN HAI</option>
-              <option value="ONE">ONE</option>
-              <option value="EXPEDITORS">EXPEDITORS</option>
-              <option value="OOCL">OOCL</option>
+              <!-- OPSI DROPDOWN LINER DIPERBARUI SECARA DINAMIS OLEH JS -->
             </select>
           </div>
 
@@ -548,7 +512,7 @@
           </div>
         </div>
 
-        <!-- BARIS 2: FEEDER VESSEL (220px), VOYAGE (130px), ETD PORT ORIGINAL (140px) -->
+        <!-- BARIS 2: FEEDER VESSEL, VOYAGE, ETD PORT ORIGINAL -->
         <div class="row-vessel-voyage-etd">
           <div class="form-group-schedule col-vessel">
             <label>FEEDER VESSEL (NAMA KAPAL) *</label>
@@ -603,19 +567,15 @@
       </div>
     </form>
 
+    <!-- PANEL TERM DAN TOMBOL EDIT DEVELOPER -->
     <div class="term-info-panel">
       <div class="term-info-header">
-        <span>📜 Ketentuan Destination Sesuai Term Kontrak</span>
+        <span>📜 Ketentuan Destination Sesuai Term Kontrak ▼</span>
+        <button type="button" class="btn-edit-liner-term" onclick="bukaModalEditLinerTerm()">✏️ Edit Liner & Term</button>
       </div>
       <div class="term-info-body">
-        <ul>
-          <li>• <b>SINOKOR:</b> HIROSHIMA, OSAKA, SENDAI, SHIMIZU, TOKYO, YOKOHAMA, HAKATA</li>
-          <li>• <b>SITC:</b> NAGOYA, SENDAI, SHIMIZU</li>
-          <li>• <b>EVERGREEN:</b> NAGOYA, OSAKA, SENDAI, SHIMIZU, TOKYO, YOKOHAMA, HAKATA</li>
-          <li>• <b>WAN HAI:</b> NAGOYA, OSAKA, TOKYO, YOKOHAMA</li>
-          <li>• <b>ONE:</b> LAEM CHABANG</li>
-          <li>• <b>EXPEDITORS:</b> KITCHENER, EL PASO</li>
-          <li>• <b>OOCL:</b> HIROSHIMA</li>
+        <ul id="term-info-list">
+          <!-- DAFTAR LINER & TERM DI-RENDER DINAMIS -->
         </ul>
       </div>
     </div>
@@ -625,6 +585,27 @@
       <button type="button" class="btn-action" onclick="tutupModalSchedule()" style="background:#475569; padding:9px; font-size:12px;">Batal</button>
     </div>
     <div id="sched-alert" style="font-size:11.5px; margin-top:8px; text-align:center;"></div>
+  </div>
+</div>
+
+<!-- MODAL DEVELOPER: EDIT TERM & KELOLA LINER -->
+<div class="modal-overlay" id="modalEditLinerTerm">
+  <div class="modal-card-schedule" style="max-width: 750px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid #334155; padding-bottom:8px;">
+      <h3 style="margin:0; font-size:15px; color:#38bdf8;">✏️ Edit Term & Kelola Liner (Developer)</h3>
+      <button type="button" class="btn-action" onclick="tambahRowLinerBaru()" style="background:#0284c7; font-size:11px;">➕ Tambah Liner Baru</button>
+    </div>
+
+    <p style="font-size:11px; color:#94a3b8; margin-top:0; margin-bottom:12px;">Format Destination: Pisahkan antar kota dengan tanda koma (,)</p>
+
+    <div id="wrapper-edit-liner-rows" style="max-height: 55vh; overflow-y: auto; padding-right: 4px;">
+      <!-- ROW AKAN DI-GENERATE DI SINI -->
+    </div>
+
+    <div style="display:flex; gap:8px; margin-top:16px;">
+      <button type="button" class="btn-action" onclick="simpanSemuaLinerTerm()" style="flex:1; background:#16a34a; padding:9px; font-size:12px; font-weight:700;">💾 Simpan Semua Liner & Term</button>
+      <button type="button" class="btn-action" onclick="tutupModalEditLinerTerm()" style="background:#475569; padding:9px; font-size:12px;">Batal</button>
+    </div>
   </div>
 </div>
 
@@ -742,12 +723,13 @@
   let currentPage = 1;
   let pageSize = 20;
 
-  const masterTermMap = {
+  // DATA MASTER LINER & TERM DYNAMIC
+  let masterTermMap = {
     "SINOKOR": ["HIROSHIMA", "OSAKA", "SENDAI", "SHIMIZU", "TOKYO", "YOKOHAMA", "HAKATA"],
     "SITC": ["NAGOYA", "SENDAI", "SHIMIZU"],
     "EVERGREEN": ["NAGOYA", "OSAKA", "SENDAI", "SHIMIZU", "TOKYO", "YOKOHAMA", "HAKATA"],
-    "WAN HAI": ["NAGOYA", "OSAKA", "TOKYO", "YOKOHAMA"],
     "ONE": ["LAEM CHABANG"],
+    "WAN HAI": ["NAGOYA", "OSAKA", "TOKYO", "YOKOHAMA"],
     "EXPEDITORS": ["KITCHENER", "EL PASO"],
     "OOCL": ["HIROSHIMA"]
   };
@@ -778,8 +760,84 @@
     });
   }
 
+  /* --- FUNGSI DINAMIS UNTUK RENDER KETENTUAN LINER & TERM --- */
+  function renderTermInfoList() {
+    const ul = document.getElementById("term-info-list");
+    if (!ul) return;
+    ul.innerHTML = "";
+
+    Object.keys(masterTermMap).forEach(liner => {
+      const dests = masterTermMap[liner].join(", ");
+      const li = document.createElement("li");
+      li.innerHTML = `• <b>${liner}:</b> ${dests}`;
+      ul.appendChild(li);
+    });
+
+    // Update Dropdown Liner Utama
+    const selectLiner = document.getElementById("sched-liner");
+    if (selectLiner) {
+      const currentVal = selectLiner.value;
+      let optsHtml = `<option value="">-- Pilih Liner --</option>`;
+      Object.keys(masterTermMap).forEach(liner => {
+        optsHtml += `<option value="${liner}">${liner}</option>`;
+      });
+      selectLiner.innerHTML = optsHtml;
+      selectLiner.value = currentVal;
+    }
+  }
+
+  function bukaModalEditLinerTerm() {
+    const container = document.getElementById("wrapper-edit-liner-rows");
+    container.innerHTML = "";
+
+    Object.keys(masterTermMap).forEach(liner => {
+      tambahRowLinerBaru(liner, masterTermMap[liner].join(", "));
+    });
+
+    document.getElementById("modalEditLinerTerm").style.display = "flex";
+  }
+
+  function tambahRowLinerBaru(linerName = "", termDests = "") {
+    const container = document.getElementById("wrapper-edit-liner-rows");
+    const div = document.createElement("div");
+    div.className = "edit-liner-row";
+
+    div.innerHTML = `
+      <input type="text" class="inp-liner-name" value="${linerName}" placeholder="Nama Liner" autocomplete="off">
+      <input type="text" class="inp-liner-term" value="${termDests}" placeholder="Contoh: NAGOYA, OSAKA, TOKYO" autocomplete="off">
+      <button type="button" onclick="this.closest('.edit-liner-row').remove();" style="background:#ef4444; color:#fff; border:none; padding:6px 10px; border-radius:6px; cursor:pointer;">🗑️</button>
+    `;
+
+    container.appendChild(div);
+  }
+
+  function simpanSemuaLinerTerm() {
+    const rows = document.querySelectorAll("#wrapper-edit-liner-rows .edit-liner-row");
+    let newMasterMap = {};
+
+    rows.forEach(r => {
+      const name = r.querySelector(".inp-liner-name").value.trim().toUpperCase();
+      const termsStr = r.querySelector(".inp-liner-term").value.trim().toUpperCase();
+
+      if (name) {
+        const destArr = termsStr ? termsStr.split(",").map(s => s.trim()).filter(s => s !== "") : [];
+        newMasterMap[name] = destArr;
+      }
+    });
+
+    masterTermMap = newMasterMap;
+    renderTermInfoList();
+    tutupModalEditLinerTerm();
+    showCustomAlert("✅ Master Liner & Term berhasil diperbarui!");
+  }
+
+  function tutupModalEditLinerTerm() {
+    document.getElementById("modalEditLinerTerm").style.display = "none";
+  }
+
   document.addEventListener("DOMContentLoaded", () => {
     initFlatpickrInputs();
+    renderTermInfoList();
   });
 
   function showCustomConfirm(message) {
