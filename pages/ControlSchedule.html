@@ -991,7 +991,7 @@
 
   function tutupModalHistori() { document.getElementById("modalHistoriLog").style.display = "none"; }
 
-  /* --- FUNGSI SINKRONISASI UPDATE TPKS (ROBUST PARSER UNTUK LAYOUT BARU PELINDO) --- */
+  /* --- FUNGSI SINKRONISASI UPDATE TPKS (PENCOCOKAN KETAT NAMA KAPAL + VOYAGE SUPABASE) --- */
   window.syncDataTPKS = async function(event) {
     if (event) { event.preventDefault(); event.stopPropagation(); }
     document.getElementById("textareaTpksHtml").value = "";
@@ -1017,24 +1017,22 @@
         return; 
       }
 
+      // Ambil seluruh baris schedule dari Supabase
       const { data: srgRows, error: fetchErr } = await supabaseClient.from('control_schedule').select('*').eq('port', 'SRG');
       if (fetchErr || !srgRows || !srgRows.length) { 
-        await showCustomAlert("ℹ️ Tidak ditemukan baris kapal PORT 'SRG' di database."); 
+        await showCustomAlert("ℹ️ Tidak ditemukan baris kapal PORT 'SRG' di database Supabase."); 
         return; 
       }
-
-      const debugDiv = document.getElementById("tpks-source-data");
-      if (debugDiv) debugDiv.innerHTML = htmlVal;
 
       const doc = new DOMParser().parseFromString(htmlVal, "text/html");
       let parsedTpksVessels = [];
 
-      // Parser robust: mencari semua card/elemen yang berisi teks jadwal Pelindo
-      doc.querySelectorAll("div, article, section, li, tr, td").forEach(block => {
+      // Telusuri blok kartu informasi kapal pada layout Pelindo
+      doc.querySelectorAll("div, article, section, li").forEach(block => {
         const textFull = block.innerText ? block.innerText.trim() : '';
         const boldElem = block.querySelector("b") || block.querySelector("strong");
 
-        if (boldElem && (textFull.includes("ATB") || textFull.includes("ETB") || textFull.includes("ETD") || textFull.includes("Closing Time"))) {
+        if (boldElem && (textFull.includes("ETB") || textFull.includes("ETD") || textFull.includes("Closing Time") || textFull.includes("ATB") || textFull.includes("ATD"))) {
           let rawName = boldElem.innerText.trim();
           let cleanVName = rawName.replace(/\s*\([A-Z0-9]+\)\s*/gi, '').replace(/\s*\(ID[0-9]+\)\s*/gi, '').trim().toUpperCase();
 
@@ -1043,10 +1041,9 @@
 
             let lines = textFull.split("\n").map(l => l.trim()).filter(Boolean);
             lines.forEach(line => {
-              if (line.includes("/") || (line.includes("S") && line.includes("N"))) {
-                if (!line.includes("Booking") && !line.includes("Actual") && line.length < 25) {
-                  vItem.voyage = line.replace(/\s+/g, '').toUpperCase();
-                }
+              // Ambil nomor Voyage dari teks kartu Pelindo
+              if ((line.includes("/") || (line.includes("S") && line.includes("N"))) && !line.includes("Booking") && !line.includes("Actual") && line.length < 30) {
+                vItem.voyage = line.replace(/\s+/g, '').toUpperCase();
               }
               if (line.startsWith("ATB :") || line.startsWith("ATB:")) vItem.atb = line.replace(/ATB\s*:\s*/i, "").trim();
               if (line.startsWith("ETB :") || line.startsWith("ETB:")) vItem.etb = line.replace(/ETB\s*:\s*/i, "").trim();
@@ -1055,7 +1052,7 @@
               if (line.includes("Closing Time")) vItem.closing = line.replace(/Closing Time\s*:\s*/gi, "").trim();
             });
 
-            if (vItem.name && !parsedTpksVessels.some(existing => existing.name === vItem.name)) {
+            if (vItem.name && !parsedTpksVessels.some(existing => existing.name === vItem.name && existing.voyage === vItem.voyage)) {
               parsedTpksVessels.push(vItem);
             }
           }
@@ -1063,31 +1060,52 @@
       });
 
       if (!parsedTpksVessels.length) {
-        await showCustomAlert("⚠️ HTML berhasil dimuat, tetapi parser gagal mengekstrak nama kapal. Pastikan kamu menyalin seluruh kode halaman utama (Ctrl+U).");
+        await showCustomAlert("⚠️ HTML berhasil dimuat, tetapi parser tidak menemukan kartu kapal Pelindo. Pastikan menyalin seluruh halaman (Ctrl+U).");
         return;
       }
 
       let updatedVesselsList = [];
 
       for (let row of srgRows) {
-        let dbVessel = String(row.feeder_vessel || '').trim().toUpperCase();
-        let dbVoyage = String(row.voyage || '').trim().toUpperCase();
+        // Mendapatkan gabungan Feeder Vessel & Voyage dari Supabase (misal: "SITC DECHENG 2619N")
+        let fullDbVessel = String(row.feeder_vessel || '').trim().toUpperCase();
+        let dbVoyageOnly = String(row.voyage || '').trim().toUpperCase();
 
+        // Cari kecocokan presisi berdasarkan Nama Kapal & Voyage
         let matched = parsedTpksVessels.find(v => {
-          let firstWord = dbVessel.split(" ")[0];
-          let isNameMatch = dbVessel.includes(v.name) || v.name.includes(dbVessel) || (firstWord.length > 2 && v.name.includes(firstWord));
-          return isNameMatch;
+          // 1. Ekstrak kata-kata utama nama kapal
+          let vNameWords = v.name.split(" ").filter(w => w.length > 1);
+          let isNameMatch = vNameWords.every(word => fullDbVessel.includes(word));
+
+          // 2. Ekstrak dan cocokkan Voyage
+          let isVoyageMatch = true;
+          let dbVoyClean = dbVoyageOnly.replace(/[^A-Z0-9]/gi, '');
+          let tpksVoyClean = v.voyage.replace(/[^A-Z0-9]/gi, '');
+
+          if (dbVoyClean && tpksVoyClean) {
+            isVoyageMatch = tpksVoyClean.includes(dbVoyClean) || dbVoyClean.includes(tpksVoyClean);
+          } else if (!dbVoyageOnly) {
+            // Jika kolom voyage Supabase terpisah kosong, cek apakah angka voyage ada di dalam string feeder_vessel
+            let nums = tpksVoyClean.match(/\d+/g);
+            if (nums) {
+              isVoyageMatch = nums.some(n => fullDbVessel.includes(n));
+            }
+          }
+
+          return isNameMatch && isVoyageMatch;
         });
 
         if (matched) {
           let isMod = false, updatePayload = {};
 
+          // Update Closing CY
           if (matched.closing && row.update_closing !== matched.closing) {
             updatePayload.update_closing = matched.closing; 
             isMod = true;
             await catatLogChangesServer(row.id, "system Pelindo", "UPDATE", "UPDATE CLOSING CY", row.update_closing, matched.closing);
           }
 
+          // Update ETB / ATB
           let newEtbAtb = matched.atb ? `ATB: ${matched.atb}` : (matched.etb ? `ETB: ${matched.etb}` : '');
           if (newEtbAtb && row.etb_atb_website !== newEtbAtb) {
             updatePayload.etb_atb_website = newEtbAtb; 
@@ -1095,6 +1113,7 @@
             await catatLogChangesServer(row.id, "system Pelindo", "UPDATE", "ETB/ATB WEBSITE", row.etb_atb_website, newEtbAtb);
           }
 
+          // Update ETD / ATD
           let newEtdAtd = matched.atd ? `ATD: ${matched.atd}` : (matched.etd ? `ETD: ${matched.etd}` : '');
           if (newEtdAtd && row.etd_atd_website !== newEtdAtd) {
             updatePayload.etd_atd_website = newEtdAtd; 
@@ -1104,16 +1123,15 @@
 
           if (isMod) {
             await supabaseClient.from('control_schedule').update(updatePayload).eq('id', row.id);
-            const vDisp = dbVoyage ? `${row.feeder_vessel} ${dbVoyage}` : row.feeder_vessel;
-            if (!updatedVesselsList.includes(vDisp)) updatedVesselsList.push(vDisp);
+            if (!updatedVesselsList.includes(fullDbVessel)) updatedVesselsList.push(fullDbVessel);
           }
         }
       }
 
       if (updatedVesselsList.length > 0) {
-        await showCustomAlert(`⚡ SINKRONISASI PELINDO BERHASIL!\n\nBerikut ${updatedVesselsList.length} Kapal yang berhasil diperbarui datanya untuk laporan Planner:\n\n${updatedVesselsList.map((v, i) => `${i + 1}. ${v}`).join("\n")}`);
+        await showCustomAlert(`⚡ SINKRONISASI PELINDO BERHASIL!\n\nBerikut ${updatedVesselsList.length} Kapal yang berhasil diperbarui datanya di Supabase:\n\n${updatedVesselsList.map((v, i) => `${i + 1}. ${v}`).join("\n")}`);
       } else { 
-        await showCustomAlert("⚡ Status Web Pelindo TPKS Semarang sudah sinkron (Tidak ada perubahan jadwal terbaru)."); 
+        await showCustomAlert("⚡ Status Web Pelindo TPKS Semarang sudah sinkron dengan database Supabase (Tidak ada perubahan jadwal baru)."); 
       }
 
       muatDataSchedule();
