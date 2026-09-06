@@ -119,16 +119,11 @@
   .modal-card-schedule { background: #1e293b; border: 1px solid #334155; padding: 18px; border-radius: 12px; width: 100%; max-width: 880px; max-height: 92vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); box-sizing: border-box; }
   .modal-card-schedule.preview-large { max-width: 98vw !important; width: 1450px !important; }
 
-  /* --- PERBAIKAN FORM GRID LENGKAP & SIMETRIS (PC/DESKTOP & HP) --- */
+  /* --- FORM GRID & LAYOUT --- */
   .form-grid-schedule { display: flex; flex-direction: column; gap: 12px; width: 100%; }
 
-  /* Baris 1: WEEK (100px), LINER (1fr), PORT (120px) */
   .row-week-liner-port { display: grid; grid-template-columns: 100px 1fr 120px; gap: 10px; width: 100%; }
-  
-  /* Baris 2: FEEDER VESSEL (2fr), VOYAGE (1.2fr), ETD PORT ORIGINAL (1.5fr) */
   .row-vessel-voyage-etd { display: grid; grid-template-columns: 2fr 1.2fr 1.5fr; gap: 10px; width: 100%; }
-
-  /* Baris 3: UPDATE CLOSING CY (1fr), ETB/ATB WEBSITE (1fr), ETD/ATD WEBSITE (1fr) */
   .row-web-updates { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; }
 
   .form-group-schedule { display: flex; flex-direction: column; width: 100%; }
@@ -139,19 +134,16 @@
   .form-group-schedule input:focus, .form-group-schedule select:focus, .form-group-schedule textarea:focus { border-color: #38bdf8; background: #141d2b; }
   .form-group-schedule input:disabled, .form-group-schedule select:disabled { background: #1e293b !important; color: #64748b !important; cursor: not-allowed; border-color: #334155; }
 
-  /* Multi-Destination Section Grid */
   .dest-section-box { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 12px; margin-top: 4px; width: 100%; box-sizing: border-box; }
   .dest-row-item { display: grid; grid-template-columns: 200px 140px 1fr 45px 35px; gap: 10px; align-items: center; margin-bottom: 8px; background: #1e293b; padding: 8px 10px; border-radius: 6px; border: 1px solid #334155; width: 100%; box-sizing: border-box; }
   .chk-sync-remark { cursor: pointer; accent-color: #0284c7; width: 16px; height: 16px; margin-top: 2px; }
 
-  /* Developer Edit Liner & Term Box */
   .btn-edit-liner-term { background: #eab308; color: #000; font-weight: 700; border: none; padding: 5px 12px; border-radius: 6px; font-size: 11px; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 5px; }
   .btn-edit-liner-term:hover { background: #ca8a04; }
   .edit-liner-row { display: flex; gap: 10px; align-items: center; margin-bottom: 8px; background: #0f172a; padding: 8px 12px; border-radius: 8px; border: 1px solid #334155; }
   .edit-liner-row .inp-liner-name { width: 160px; font-weight: bold; color: #38bdf8 !important; text-transform: uppercase; }
   .edit-liner-row .inp-liner-term { flex: 1; text-transform: uppercase; }
 
-  /* Term Panel */
   .term-info-panel { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 10px; margin-top: 10px; width: 100%; box-sizing: border-box; }
   .term-info-header { display: flex; justify-content: space-between; align-items: center; color: #eab308; font-size: 11px; font-weight: 600; }
   .term-info-body { display: block; margin-top: 6px; font-size: 10.5px; color: #cbd5e1; border-top: 1px dashed #334155; padding-top: 6px; }
@@ -159,7 +151,6 @@
   .term-info-body li { margin-bottom: 3px; line-height: 1.4; }
   .term-info-body b { color: #38bdf8; }
 
-  /* Preview Paper Styles */
   .preview-paper { background: #ffffff; color: #000000; padding: 10px; border-radius: 6px; font-family: Calibri, 'Segoe UI', Arial, sans-serif !important; font-size: 11px; overflow-x: auto; }
   .preview-table { width: 100%; border-collapse: collapse !important; margin-top: 6px; border: 1px solid #000000 !important; }
   .preview-table th { background-color: #0284c7 !important; color: #ffffff !important; border: 1px solid #000000 !important; padding: 5px 6px; text-align: center; font-size: 11px; font-weight: 700; white-space: nowrap !important; }
@@ -174,7 +165,6 @@
   .upload-dropzone { border: 2px dashed #0284c7; border-radius: 8px; padding: 20px; text-align: center; background: #0f172a; cursor: pointer; transition: 0.3s; margin-top: 8px; }
   .upload-dropzone:hover { background: rgba(2, 132, 199, 0.1); }
 
-  /* Dialog System Overlay */
   .nexportal-dialog-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: flex-start; padding-top: 5vh; z-index: 99999999 !important; }
   .nexportal-dialog-card { background: #182232; border: 1.5px solid #38bdf8; border-left: 6px solid #4ade80; border-radius: 12px; width: 90%; max-width: 460px; padding: 18px 20px; box-shadow: 0 20px 35px rgba(0,0,0,0.8); display: flex; flex-direction: column; gap: 14px; animation: nexportalPopIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
   @keyframes nexportalPopIn { 0% { transform: translateY(-20px) scale(0.95); opacity: 0; } 100% { transform: translateY(0) scale(1); opacity: 1; } }
@@ -263,7 +253,7 @@
     </div>
   </div>
 
-  <!-- TABEL DATABASE utama -->
+  <!-- TABEL DATABASE UTAMA -->
   <div class="table-responsive-schedule">
     <table class="custom-table" id="tableSchedule">
       <thead>
@@ -581,9 +571,61 @@
     return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
   }
 
+  /* --- FLATPICKR SYNC REALTIME SAAT mengetik manual --- */
   function initFlatpickrInputs() {
-    flatpickr(".fp-date", { dateFormat: "d-m-Y", allowInput: true, clickOpens: true, theme: "dark" });
-    flatpickr(".fp-datetime", { dateFormat: "d-m-Y H:i", enableTime: true, time_24hr: true, allowInput: true, clickOpens: true, theme: "dark" });
+    const syncCalendarOnInput = function(selectedDates, dateStr, instance) {
+      const val = instance.input.value.trim();
+      const cleanVal = val.replace(/^(ATB:|ETD:|ATD:)\s*/i, '').trim();
+      
+      // Sync format dd-mm-yyyy (10 karakter)
+      if (/^\d{2}-\d{2}-\d{4}$/.test(cleanVal)) {
+        const p = cleanVal.split('-');
+        const parsedDate = new Date(p[2], p[1] - 1, p[0]);
+        if (!isNaN(parsedDate.getTime())) {
+          instance.setDate(parsedDate, false);
+          instance.jumpToDate(parsedDate);
+        }
+      } 
+      // Sync format dd-mm-yyyy hh:mm (16 karakter)
+      else if (/^\d{2}-\d{2}-\d{4}\s\d{2}:\d{2}$/.test(cleanVal)) {
+        const parts = cleanVal.split(' ');
+        const p = parts[0].split('-');
+        const t = parts[1].split(':');
+        const parsedDate = new Date(p[2], p[1] - 1, p[0], t[0], t[1]);
+        if (!isNaN(parsedDate.getTime())) {
+          instance.setDate(parsedDate, false);
+          instance.jumpToDate(parsedDate);
+        }
+      }
+    };
+
+    flatpickr(".fp-date", {
+      dateFormat: "d-m-Y",
+      allowInput: true,
+      clickOpens: true,
+      theme: "dark",
+      onValueUpdate: syncCalendarOnInput,
+      onReady: function(selectedDates, dateStr, instance) {
+        instance.input.addEventListener("input", () => {
+          syncCalendarOnInput(selectedDates, instance.input.value, instance);
+        });
+      }
+    });
+
+    flatpickr(".fp-datetime", {
+      dateFormat: "d-m-Y H:i",
+      enableTime: true,
+      time_24hr: true,
+      allowInput: true,
+      clickOpens: true,
+      theme: "dark",
+      onValueUpdate: syncCalendarOnInput,
+      onReady: function(selectedDates, dateStr, instance) {
+        instance.input.addEventListener("input", () => {
+          syncCalendarOnInput(selectedDates, instance.input.value, instance);
+        });
+      }
+    });
   }
 
   function renderTermInfoList() {
