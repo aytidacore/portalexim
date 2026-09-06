@@ -176,7 +176,7 @@
   }
   .modal-card-schedule.preview-large { max-width: 98vw !important; width: 1450px !important; }
 
-  /* --- DESAIN LAYOUT GRID FORM DISESUAIKAN DAN PRESISI --- */
+  /* --- DESAIN LAYOUT GRID FORM PRESISI BARU --- */
   .form-grid-schedule { display: flex; flex-direction: column; gap: 10px; }
   .form-row-custom { display: flex; gap: 8px; align-items: flex-start; flex-wrap: nowrap; }
   
@@ -185,8 +185,8 @@
   .row-week-liner-port .col-liner-box { width: 180px; flex-shrink: 0; }
   .row-week-liner-port .col-port-box { width: 80px; flex-shrink: 0; }
 
-  /* BARIS 2: FEEDER VESSEL (sisa space), VOYAGE (120px), ETD ORIG (140px) */
-  .row-vessel-voyage-etd .col-vessel-box { flex: 1 1 auto; }
+  /* BARIS 2: FEEDER VESSEL (DICIUTKAN 200px), VOYAGE (120px), ETD ORIG (140px) */
+  .row-vessel-voyage-etd .col-vessel-box { width: 200px; flex-shrink: 0; }
   .row-vessel-voyage-etd .col-voyage-box { width: 120px; flex-shrink: 0; }
   .row-vessel-voyage-etd .col-etdorig-box { width: 140px; flex-shrink: 0; }
 
@@ -268,7 +268,7 @@
   }
   .nexportal-btn-cancel:hover { background: #475569; color: #ffffff; }
 
-  /* OVERRIDE STYLING FLATPICKR DATEPICKER INTERAKTIF CEISA BEACUKAI */
+  /* OVERRIDE STYLING FLATPICKR DATEPICKER INTERAKTIF ALA CEISA BEACUKAI */
   .flatpickr-calendar { background: #0f172a !important; border: 1px solid #38bdf8 !important; box-shadow: 0 10px 25px rgba(0,0,0,0.8) !important; font-family: Calibri, sans-serif !important; border-radius: 8px !important; z-index: 99999999 !important; }
   .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange { background: #0284c7 !important; border-color: #38bdf8 !important; }
   .flatpickr-day:hover { background: #1e293b !important; }
@@ -453,7 +453,6 @@
 
     <input type="hidden" id="sched-group-ids">
 
-    <!-- ATTRIBUT autocomplete="off" DIGUNAKAN UNTUK MEMATIKAN SAVED INFO BROWSER -->
     <form id="form-schedule-modal" autocomplete="off" onsubmit="return false;">
       <div class="form-grid-schedule">
         <!-- BARIS 1: WEEK (80px), LINER (180px), PORT (80px) -->
@@ -487,11 +486,11 @@
           </div>
         </div>
 
-        <!-- BARIS 2: FEEDER VESSEL, VOYAGE (120px), ETD PORT ORIGINAL (140px) -->
+        <!-- BARIS 2: FEEDER VESSEL (DICIUTKAN MENJADI 200px), VOYAGE (120px), ETD PORT ORIGINAL (140px) -->
         <div class="form-row-custom row-vessel-voyage-etd">
           <div class="form-group-schedule col-vessel-box">
             <label>FEEDER VESSEL (NAMA KAPAL) *</label>
-            <input type="text" id="sched-vessel-name" placeholder="Contoh: KM SEJATI / EVER BEAMY" autocomplete="off">
+            <input type="text" id="sched-vessel-name" placeholder="KM SEJATI / EVER BEAMY" autocomplete="off">
           </div>
 
           <div class="form-group-schedule col-voyage-box">
@@ -505,10 +504,9 @@
           </div>
         </div>
 
-        <!-- INPUT TERSEMBUNYI UNTUK CLOSING CY OTOMATIS -->
         <input type="hidden" id="sched-closingcy">
 
-        <!-- BARIS 3: UPDATE CLOSING CY, ETB/ATB WEBSITE, ETD/ATD WEBSITE (170px masing-masing) -->
+        <!-- BARIS 3: UPDATE CLOSING CY, ETB/ATB WEBSITE, ETD/ATD WEBSITE -->
         <div class="form-row-custom row-web-updates">
           <div class="form-group-schedule col-datetime-box">
             <label>UPDATE CLOSING CY</label>
@@ -700,7 +698,6 @@
     return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
   }
 
-  /* INISIALISASI FLATPICKR DATE/TIME PICKER INTERAKTIF DENGAN KETIK MANUAL SINKRON */
   function initFlatpickrInputs() {
     flatpickr(".fp-date", {
       dateFormat: "d-m-Y",
@@ -1174,15 +1171,24 @@
     }
   }
 
+  /* KETIKA LINER DIPILIH DARI MODAL TAMBAH: OTOMATIS POPULATE SEMUA DESTINATION SESUAI KONTRAK */
   function onLinerChanged() {
     if (isEditMode) return;
+    const liner = document.getElementById("sched-liner").value;
+    const dests = masterTermMap[liner] || [];
     document.getElementById("dest-rows-wrapper").innerHTML = "";
-    tambahDestinasiRowInForm("", "", "", true, false);
+    
+    if (dests.length > 0) {
+      dests.forEach(d => tambahDestinasiRowInForm(d, '', '', true, false));
+    } else {
+      tambahDestinasiRowInForm("", "", "", true, false);
+    }
   }
 
-  /* UPDATE SINKRONISASI DAFTAR DROPDOWN DESTINATION DENGAN PENYARINGAN KOTA YANG SUDAH DIPILIH */
+  /* MEMPERBAIKI PENYARINGAN DROPDOWN AGAR TIDAK MENGHILANG SAAT EDIT MODAL */
   function refreshAllDestinationOptions() {
-    const liner = document.getElementById("sched-liner").value;
+    const linerSelect = document.getElementById("sched-liner");
+    const liner = linerSelect ? (linerSelect.value || linerSelect.getAttribute("data-current-liner")) : "";
     const allowedList = masterTermMap[liner] || ["NAGOYA","OSAKA","TOKYO","YOKOHAMA","SENDAI","SHIMIZU","HIROSHIMA","HAKATA","LAEM CHABANG"];
 
     const selectedDestinations = [];
@@ -1191,7 +1197,7 @@
     });
 
     document.querySelectorAll("#dest-rows-wrapper .inp-dest-val").forEach(sel => {
-      const currentValue = sel.value;
+      const currentValue = sel.value || sel.getAttribute("data-initial-val");
       let optionsHtml = `<option value="">-- Select Destination --</option>`;
 
       allowedList.forEach(d => {
@@ -1202,9 +1208,9 @@
       });
 
       sel.innerHTML = optionsHtml;
+      if (currentValue) sel.value = currentValue;
     });
 
-    // CEK BATAS MAKSIMUM MULTI-DESTINATION SESUAI CONTRACT LINER
     const btnAdd = document.getElementById("btn-add-dest-row");
     if (selectedDestinations.length >= allowedList.length && allowedList.length > 0) {
       btnAdd.disabled = true;
@@ -1218,11 +1224,12 @@
   }
 
   function tambahDestinasiRowInForm(selectedDest = "", etaValue = "", remarkValue = "", syncCheck = true, lockDestination = false) {
-    const liner = document.getElementById("sched-liner").value;
+    const linerSelect = document.getElementById("sched-liner");
+    const liner = linerSelect ? (linerSelect.value || linerSelect.getAttribute("data-current-liner")) : "";
     const allowedList = masterTermMap[liner] || ["NAGOYA","OSAKA","TOKYO","YOKOHAMA","SENDAI","SHIMIZU","HIROSHIMA","HAKATA","LAEM CHABANG"];
 
     const existingRows = document.querySelectorAll("#dest-rows-wrapper .dest-row-item");
-    if (!selectedDest && existingRows.length >= allowedList.length && allowedList.length > 0) {
+    if (!selectedDest && existingRows.length >= allowedList.length && allowedList.length > 0 && !isEditMode) {
       showCustomAlert(`⚠️ Semua destination liner ${liner || ''} yang dipilih sudah terisi semua sesuai kontrak.`);
       return;
     }
@@ -1235,7 +1242,7 @@
     div.innerHTML = `
       <div>
         <label style="font-size:9.5px; color:#94a3b8; display:block;">DESTINATION *</label>
-        <select class="inp-dest-val" ${isDisabled} onchange="refreshAllDestinationOptions()"></select>
+        <select class="inp-dest-val" data-initial-val="${selectedDest}" ${isDisabled} onchange="refreshAllDestinationOptions()"></select>
       </div>
       <div>
         <label style="font-size:9.5px; color:#94a3b8; display:block;">ETA PORT</label>
@@ -1256,9 +1263,9 @@
 
     wrapper.appendChild(div);
 
+    const selectElem = div.querySelector(".inp-dest-val");
     if (selectedDest) {
-      const selectElem = div.querySelector(".inp-dest-val");
-      selectElem.value = selectedDest;
+      selectElem.setAttribute("data-initial-val", selectedDest);
     }
 
     refreshAllDestinationOptions();
@@ -1299,8 +1306,11 @@
       
       document.getElementById("sched-week").value = getCurrentWeekNumber();
       
-      document.getElementById("sched-liner").value = "";
-      document.getElementById("sched-liner").disabled = false;
+      const linerElem = document.getElementById("sched-liner");
+      linerElem.value = "";
+      linerElem.disabled = false;
+      linerElem.removeAttribute("data-current-liner");
+
       document.getElementById("sched-port").value = "SRG";
       document.getElementById("sched-vessel-name").value = "";
       document.getElementById("sched-vessel-name").disabled = false;
@@ -1337,8 +1347,12 @@
 
     document.getElementById("modal-schedule-title").innerText = `✏️ Edit Grup Kapal: ${itemTarget.feeder_vessel} (${groupItems.length} Destinasi)`;
     document.getElementById("sched-week").value = (itemTarget.week || '').replace(/\D/g, '');
-    document.getElementById("sched-liner").value = itemTarget.liner || '';
-    document.getElementById("sched-liner").disabled = true;
+    
+    const linerElem = document.getElementById("sched-liner");
+    linerElem.value = itemTarget.liner || '';
+    linerElem.setAttribute("data-current-liner", itemTarget.liner || '');
+    linerElem.disabled = true;
+
     document.getElementById("sched-port").value = itemTarget.port || 'SRG';
 
     let vName = itemTarget.vessel_name_only || itemTarget.feeder_vessel || "";
