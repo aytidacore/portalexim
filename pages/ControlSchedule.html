@@ -239,19 +239,19 @@
 
 <div id="tpks-source-data" style="display:none;"></div>
 
-<!-- MODAL PASTE HTML TPKS MANUAL (FALLBACK) -->
+<!-- MODAL PASTE HTML TPKS PELINDO -->
 <div class="modal-overlay" id="modalPasteTpks">
   <div class="modal-card-schedule" style="max-width: 650px;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-      <h3 style="color:#38bdf8; margin:0; font-size:14px;">📋 Paste HTML TPKS Manual</h3>
+      <h3 style="color:#38bdf8; margin:0; font-size:14px;">📋 Update Jadwal TPKS Pelindo</h3>
       <button type="button" onclick="tutupModalPasteTpks()" style="background:none; border:none; color:#ef4444; font-size:18px; cursor:pointer;">✖</button>
     </div>
     <p style="font-size:11px; color:#cbd5e1; line-height:1.4; margin-top:0;">
-      Server TPKS membatasi akses otomatis. Silakan buka <a href="https://webaccess.tpks.co.id/tpks_vessel_schedule/" target="_blank" style="color:#38bdf8;">webaccess.tpks.co.id/tpks_vessel_schedule/</a> di tab lain, tekan <b>Ctrl+U</b>, salin seluruh kodenya, lalu <i>paste</i> di bawah ini untuk persiapan laporan planner:
+      Buka <a href="https://ibstpks.pelindo.co.id/webaccess/" target="_blank" style="color:#38bdf8; font-weight:bold;">ibstpks.pelindo.co.id/webaccess/</a> di tab baru, tekan <b>Ctrl+U</b>, salin seluruh kode halamannya, lalu <i>paste</i> di bawah ini untuk memperbarui jadwal laporan ke planner:
     </p>
-    <textarea id="textareaTpksHtml" rows="10" placeholder="Paste kode HTML mentah dari halaman TPKS di sini..." style="width:100%; background:#0f172a; border:1px solid #334155; border-radius:6px; color:#fff; font-size:11px; padding:8px; box-sizing:border-box; outline:none; resize:vertical;"></textarea>
+    <textarea id="textareaTpksHtml" rows="10" placeholder="Paste kode HTML mentah dari halaman Pelindo TPKS di sini..." style="width:100%; background:#0f172a; border:1px solid #334155; border-radius:6px; color:#fff; font-size:11px; padding:8px; box-sizing:border-box; outline:none; resize:vertical;"></textarea>
     <div style="display:flex; gap:8px; margin-top:12px;">
-      <button type="button" class="btn-action" onclick="eksekusiSyncDanTutupModal()" style="flex:1; background:#16a34a; padding:8px; font-weight:700;">⚡ Proses Sinkronisasi Jadwal</button>
+      <button type="button" class="btn-action" onclick="eksekusiSyncDanTutupModal()" style="flex:1; background:#16a34a; padding:8px; font-weight:700;">⚡ Sinkronisasi & Perbarui Jadwal</button>
       <button type="button" class="btn-action" onclick="tutupModalPasteTpks()" style="background:#475569; padding:8px;">Batal</button>
     </div>
   </div>
@@ -486,9 +486,6 @@
 </div>
 
 <script>
-  // APPSCRIPT WEB APP URL AKTIF & RESMI:
-  window.APPSCRIPT_TPKS_URL = "https://script.google.com/macros/s/AKfycbwbvBqLZWpSZgfiRBwvkzfBohMvKu9gekISpZXnQuxAgBvm3z6xLRq4B0x6tScFEQej/exec";
-
   let masterDataSchedule = [], currentFilteredSchedule = [], logChangesMap = {}, parsedImportRows = [];
   let currentSortState = { column: null, direction: 'asc' }, currentPreviewMode = 'rapi';
   let isEditMode = false, currentPage = 1, pageSize = 20;
@@ -563,7 +560,7 @@
       if (payloadBatch.length > 0) { await supabaseClient.from('master_liners').insert(payloadBatch); }
       await muatMasterLinerDariSupabase();
       tutupModalEditLinerTerm();
-      showCustomAlert("✅ Master Liner & Term berhasil tersimpan ke Supabase dan aktif untuk seluruh user!");
+      showCustomAlert("✅ Master Liner & Term berhasil tersimpan ke Supabase!");
     } catch (err) { showCustomAlert("❌ Error Supabase: " + err.message); }
   }
 
@@ -994,9 +991,25 @@
 
   function tutupModalHistori() { document.getElementById("modalHistoriLog").style.display = "none"; }
 
-  /* --- FUNGSI SINKRONISASI WEB TPKS ON-DEMAND (UNTUK LAPORAN PLANNER) --- */
+  /* --- FUNGSI SINKRONISASI UPDATE TPKS (ON-DEMAND MANUAL PASTE PELINDO) --- */
   window.syncDataTPKS = async function(event) {
     if (event) { event.preventDefault(); event.stopPropagation(); }
+    document.getElementById("textareaTpksHtml").value = "";
+    document.getElementById("modalPasteTpks").style.display = "flex";
+  };
+
+  window.tutupModalPasteTpks = function() {
+    document.getElementById("modalPasteTpks").style.display = "none";
+  };
+
+  window.eksekusiSyncDanTutupModal = async function() {
+    const htmlVal = document.getElementById("textareaTpksHtml").value.trim();
+    if (!htmlVal) {
+      await showCustomAlert("⚠️ Kolom HTML masih kosong! Silakan paste kode HTML dari halaman Pelindo TPKS terlebih dahulu.");
+      return;
+    }
+
+    tutupModalPasteTpks();
 
     try {
       if (typeof supabaseClient === 'undefined' || !supabaseClient) { 
@@ -1010,155 +1023,107 @@
         return; 
       }
 
-      const btnSync = document.querySelector('.btn-tpks-sync');
-      const oldBtnText = btnSync ? btnSync.innerText : '⚡ Update TPKS';
-      if (btnSync) { btnSync.innerText = '⏳ Mengambil Data TPKS...'; btnSync.disabled = true; }
+      const debugDiv = document.getElementById("tpks-source-data");
+      if (debugDiv) debugDiv.innerHTML = htmlVal;
 
-      let tpksRawHtml = '';
-      try {
-        const resAppScript = await fetch(window.APPSCRIPT_TPKS_URL);
-        if (resAppScript.ok) {
-          const jsonRes = await resAppScript.json();
-          if (jsonRes.status === "success") {
-            tpksRawHtml = jsonRes.html;
+      const doc = new DOMParser().parseFromString(htmlVal, "text/html");
+      let parsedTpksVessels = [];
+
+      // Parser disesuaikan dengan layout baru ibstpks.pelindo.co.id/webaccess/
+      doc.querySelectorAll("div, tr, td, li").forEach(block => {
+        const boldTxt = block.querySelector("b") || block.querySelector("strong");
+        const blockText = block.innerText ? block.innerText.trim() : '';
+
+        if (boldTxt && (blockText.includes("ATB") || blockText.includes("ETB") || blockText.includes("ETD") || blockText.includes("Closing Time")) && !blockText.includes("Vessel Schedule")) {
+          let rawTitle = boldTxt.innerText.trim();
+          let cleanVName = rawTitle.replace(/\s*\([A-Z0-9]+\)\s*/gi, '').replace(/\s*\(ID[0-9]+\)\s*/gi, '').trim().toUpperCase();
+          
+          let vItem = { name: cleanVName, voyage: '', etb: '', atb: '', etd: '', atd: '', closing: '' };
+
+          let lines = blockText.split("\n").map(l => l.trim()).filter(Boolean);
+          lines.forEach(line => {
+            if (line.includes("/")) vItem.voyage = line.replace(/\s+/g, '').toUpperCase();
+            if (line.startsWith("ATB :")) vItem.atb = line.replace("ATB :", "").trim();
+            if (line.startsWith("ETB :")) vItem.etb = line.replace("ETB :", "").trim();
+            if (line.startsWith("ATD :")) vItem.atd = line.replace("ATD :", "").trim();
+            if (line.startsWith("ETD :")) vItem.etd = line.replace("ETD :", "").trim();
+            if (line.includes("Closing Time")) vItem.closing = line.replace(/Closing Time\s*:\s*/gi, "").trim();
+          });
+
+          if (vItem.name && !parsedTpksVessels.some(existing => existing.name === vItem.name && existing.voyage === vItem.voyage)) {
+            parsedTpksVessels.push(vItem);
           }
         }
-      } catch (e) {
-        console.warn("Gagal terhubung via Apps Script proxy:", e);
-      }
+      });
 
-      if (btnSync) { btnSync.innerText = oldBtnText; btnSync.disabled = false; }
-
-      // Jika Apps Script gagal/diblokir server TPKS, tampilkan modal Paste HTML Manual
-      if (!tpksRawHtml || tpksRawHtml.trim() === '' || tpksRawHtml.includes("Cloudflare") || tpksRawHtml.includes("Diblokir")) {
-        document.getElementById("textareaTpksHtml").value = "";
-        document.getElementById("modalPasteTpks").style.display = "flex";
+      if (!parsedTpksVessels.length) {
+        await showCustomAlert("⚠️ HTML berhasil dimuat, tetapi struktur elemen kapal gagal dikenali oleh parser. Pastikan kamu menyalin seluruh halaman (Ctrl+U).");
         return;
       }
 
-      await prosesDanSimpanDataTPKS(tpksRawHtml, srgRows);
+      let updatedVesselsList = [];
 
-    } catch(err) { 
-      const btnSync = document.querySelector('.btn-tpks-sync');
-      if (btnSync) { btnSync.innerText = '⚡ Update TPKS'; btnSync.disabled = false; }
-      await showCustomAlert("❌ Error sync TPKS: " + err.message); 
-    }
-  };
+      for (let row of srgRows) {
+        let dbVessel = String(row.feeder_vessel || '').trim().toUpperCase();
+        let dbVoyage = String(row.voyage || '').trim().toUpperCase();
 
-  window.eksekusiSyncDanTutupModal = async function() {
-    const htmlVal = document.getElementById("textareaTpksHtml").value.trim();
-    if (!htmlVal) {
-      await showCustomAlert("⚠️ Kolom HTML masih kosong! Silakan paste kode HTML TPKS terlebih dahulu.");
-      return;
-    }
+        let matched = parsedTpksVessels.find(v => {
+          let firstWord = dbVessel.split(" ")[0];
+          let isNameMatch = dbVessel.includes(v.name) || v.name.includes(dbVessel) || (firstWord.length > 2 && v.name.includes(firstWord));
 
-    tutupModalPasteTpks();
-    const { data: srgRows } = await supabaseClient.from('control_schedule').select('*').eq('port', 'SRG');
-    if (srgRows) {
-      await prosesDanSimpanDataTPKS(htmlVal, srgRows);
-    }
-  };
-
-  function tutupModalPasteTpks() {
-    document.getElementById("modalPasteTpks").style.display = "none";
-  }
-
-  async function prosesDanSimpanDataTPKS(htmlContent, srgRows) {
-    const debugDiv = document.getElementById("tpks-source-data");
-    if (debugDiv) debugDiv.innerHTML = htmlContent;
-
-    const doc = new DOMParser().parseFromString(htmlContent, "text/html");
-    let parsedTpksVessels = [];
-
-    doc.querySelectorAll("div, tr, .ves_along_sched").forEach(block => {
-      const boldTxt = block.querySelector("b") || block.querySelector("strong");
-      const blockText = block.innerText ? block.innerText.trim() : '';
-
-      if (boldTxt && !blockText.includes(":") && (blockText.includes("SITC") || blockText.includes("EVER") || blockText.includes("MERATUS") || blockText.includes("APL") || blockText.includes("WAN HAI") || blockText.includes("INTAN") || blockText.includes("GSL") || blockText.includes("SINAR") || blockText.includes("MTT"))) {
-        
-        let cleanVName = boldTxt.innerText.replace(/\s*\([A-Z0-9]+\)\s*/gi, '').trim().toUpperCase();
-        let vItem = { name: cleanVName, voyage: '', etb: '', atb: '', etd: '', atd: '', closing: '' };
-
-        let lines = blockText.split("\n").map(l => l.trim()).filter(Boolean);
-        lines.forEach(line => {
-          if (line.includes("/")) {
-            vItem.voyage = line.replace(/\s+/g, '').toUpperCase();
+          let isVoyageMatch = true;
+          if (dbVoyage && v.voyage) {
+            let cleanDbVoy = dbVoyage.replace(/[^A-Z0-9]/gi, '');
+            let cleanTpksVoy = v.voyage.replace(/[^A-Z0-9]/gi, '');
+            isVoyageMatch = cleanTpksVoy.includes(cleanDbVoy) || cleanDbVoy.includes(cleanTpksVoy);
           }
-          if (line.startsWith("ATB :")) vItem.atb = line.replace("ATB :", "").trim();
-          if (line.startsWith("ETB :")) vItem.etb = line.replace("ETB :", "").trim();
-          if (line.startsWith("ATD :")) vItem.atd = line.replace("ATD :", "").trim();
-          if (line.startsWith("ETD :")) vItem.etd = line.replace("ETD :", "").trim();
-          if (line.includes("Closing Time")) vItem.closing = line.replace(/Closing Time\s*:\s*/gi, "").trim();
+
+          return isNameMatch && isVoyageMatch;
         });
 
-        if (vItem.name) parsedTpksVessels.push(vItem);
-      }
-    });
+        if (matched) {
+          let isMod = false, updatePayload = {};
 
-    if (!parsedTpksVessels.length) {
-      await showCustomAlert("⚠️ HTML berhasil dimuat, tetapi struktur elemen kapal gagal dikenali oleh parser.");
-      return;
-    }
+          if (matched.closing && row.update_closing !== matched.closing) {
+            updatePayload.update_closing = matched.closing; 
+            isMod = true;
+            await catatLogChangesServer(row.id, "system Pelindo", "UPDATE", "UPDATE CLOSING CY", row.update_closing, matched.closing);
+          }
 
-    let updatedVesselsList = [];
+          let newEtbAtb = matched.atb ? `ATB: ${matched.atb}` : (matched.etb ? `ETB: ${matched.etb}` : '');
+          if (newEtbAtb && row.etb_atb_website !== newEtbAtb) {
+            updatePayload.etb_atb_website = newEtbAtb; 
+            isMod = true;
+            await catatLogChangesServer(row.id, "system Pelindo", "UPDATE", "ETB/ATB WEBSITE", row.etb_atb_website, newEtbAtb);
+          }
 
-    for (let row of srgRows) {
-      let dbVessel = String(row.feeder_vessel || '').trim().toUpperCase();
-      let dbVoyage = String(row.voyage || '').trim().toUpperCase();
+          let newEtdAtd = matched.atd ? `ATD: ${matched.atd}` : (matched.etd ? `ETD: ${matched.etd}` : '');
+          if (newEtdAtd && row.etd_atd_website !== newEtdAtd) {
+            updatePayload.etd_atd_website = newEtdAtd; 
+            isMod = true;
+            await catatLogChangesServer(row.id, "system Pelindo", "UPDATE", "ETD/ATD WEBSITE", row.etd_atd_website, newEtdAtd);
+          }
 
-      let matched = parsedTpksVessels.find(v => {
-        let firstWord = dbVessel.split(" ")[0];
-        let isNameMatch = dbVessel.includes(v.name) || v.name.includes(dbVessel) || (firstWord.length > 2 && v.name.includes(firstWord));
-
-        let isVoyageMatch = true;
-        if (dbVoyage && v.voyage) {
-          let cleanDbVoy = dbVoyage.replace(/[^A-Z0-9]/gi, '');
-          let cleanTpksVoy = v.voyage.replace(/[^A-Z0-9]/gi, '');
-          isVoyageMatch = cleanTpksVoy.includes(cleanDbVoy) || cleanDbVoy.includes(cleanTpksVoy);
-        }
-
-        return isNameMatch && isVoyageMatch;
-      });
-
-      if (matched) {
-        let isMod = false, updatePayload = {};
-
-        if (matched.closing && row.update_closing !== matched.closing) {
-          updatePayload.update_closing = matched.closing; 
-          isMod = true;
-          await catatLogChangesServer(row.id, "system TPKS", "UPDATE", "UPDATE CLOSING CY", row.update_closing, matched.closing);
-        }
-
-        let newEtbAtb = matched.atb ? `ATB: ${matched.atb}` : (matched.etb ? `ETB: ${matched.etb}` : '');
-        if (newEtbAtb && row.etb_atb_website !== newEtbAtb) {
-          updatePayload.etb_atb_website = newEtbAtb; 
-          isMod = true;
-          await catatLogChangesServer(row.id, "system TPKS", "UPDATE", "ETB/ATB WEBSITE", row.etb_atb_website, newEtbAtb);
-        }
-
-        let newEtdAtd = matched.atd ? `ATD: ${matched.atd}` : (matched.etd ? `ETD: ${matched.etd}` : '');
-        if (newEtdAtd && row.etd_atd_website !== newEtdAtd) {
-          updatePayload.etd_atd_website = newEtdAtd; 
-          isMod = true;
-          await catatLogChangesServer(row.id, "system TPKS", "UPDATE", "ETD/ATD WEBSITE", row.etd_atd_website, newEtdAtd);
-        }
-
-        if (isMod) {
-          await supabaseClient.from('control_schedule').update(updatePayload).eq('id', row.id);
-          const vDisp = dbVoyage ? `${row.feeder_vessel} ${dbVoyage}` : row.feeder_vessel;
-          if (!updatedVesselsList.includes(vDisp)) updatedVesselsList.push(vDisp);
+          if (isMod) {
+            await supabaseClient.from('control_schedule').update(updatePayload).eq('id', row.id);
+            const vDisp = dbVoyage ? `${row.feeder_vessel} ${dbVoyage}` : row.feeder_vessel;
+            if (!updatedVesselsList.includes(vDisp)) updatedVesselsList.push(vDisp);
+          }
         }
       }
-    }
 
-    if (updatedVesselsList.length > 0) {
-      await showCustomAlert(`⚡ SINKRONISASI TPKS BERHASIL!\n\nBerikut ${updatedVesselsList.length} Kapal yang diperbarui datanya untuk laporan Planner:\n\n${updatedVesselsList.map((v, i) => `${i + 1}. ${v}`).join("\n")}`);
-    } else { 
-      await showCustomAlert("⚡ Status Web TPKS Semarang sudah sinkron (Tidak ada perubahan jadwal terbaru)."); 
-    }
+      if (updatedVesselsList.length > 0) {
+        await showCustomAlert(`⚡ SINKRONISASI PELINDO TPKS BERHASIL!\n\nBerikut ${updatedVesselsList.length} Kapal yang diperbarui datanya untuk laporan Planner:\n\n${updatedVesselsList.map((v, i) => `${i + 1}. ${v}`).join("\n")}`);
+      } else { 
+        await showCustomAlert("⚡ Status Web Pelindo TPKS Semarang sudah sinkron (Tidak ada perubahan jadwal terbaru)."); 
+      }
 
-    muatDataSchedule();
-  }
+      muatDataSchedule();
+
+    } catch(err) {
+      await showCustomAlert("❌ Error proses sinkronisasi: " + err.message);
+    }
+  };
 
   function bukaModalExportPreview() { document.getElementById("modalExportPreview").style.display = "flex"; document.getElementById("preview-total-count").innerText = currentFilteredSchedule.length; renderExportPreviewContent(); }
   function tutupModalExportPreview() { document.getElementById("modalExportPreview").style.display = "none"; }
