@@ -171,50 +171,97 @@
     justify-content: center; align-items: center; z-index: 999999 !important; padding: 12px;
   }
   .modal-card-schedule {
-    background: #1e293b; border: 1px solid #334155; padding: 16px; border-radius: 12px;
-    width: 100%; max-width: 850px; max-height: 92vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5);
+    background: #1e293b; border: 1px solid #334155; padding: 18px; border-radius: 12px;
+    width: 100%; max-width: 880px; max-height: 92vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5);
   }
   .modal-card-schedule.preview-large { max-width: 98vw !important; width: 1450px !important; }
 
-  /* --- DESAIN LAYOUT GRID FORM PRESISI BARU --- */
-  .form-grid-schedule { display: flex; flex-direction: column; gap: 10px; }
-  .form-row-custom { display: flex; gap: 8px; align-items: flex-start; flex-wrap: nowrap; }
-  
-  /* BARIS 1: WEEK (80px), LINER (180px), PORT (80px) */
-  .row-week-liner-port .col-week-box { width: 80px; flex-shrink: 0; }
-  .row-week-liner-port .col-liner-box { width: 180px; flex-shrink: 0; }
-  .row-week-liner-port .col-port-box { width: 80px; flex-shrink: 0; }
+  /* --- DESAIN MODERN RESPONSIVE FORM GRID (DESKTOP & MOBILE) --- */
+  .form-grid-schedule { display: flex; flex-direction: column; gap: 12px; }
 
-  /* BARIS 2: FEEDER VESSEL (DICIUTKAN 200px), VOYAGE (120px), ETD ORIG (140px) */
-  .row-vessel-voyage-etd .col-vessel-box { width: 200px; flex-shrink: 0; }
-  .row-vessel-voyage-etd .col-voyage-box { width: 120px; flex-shrink: 0; }
-  .row-vessel-voyage-etd .col-etdorig-box { width: 140px; flex-shrink: 0; }
+  /* BARIS 1: WEEK, LINER, PORT */
+  .row-week-liner-port {
+    display: grid;
+    grid-template-columns: 100px 1fr 120px;
+    gap: 10px;
+  }
 
-  /* BARIS 3: TANGGAL & JAM PRESISI (170px masing-masing) */
-  .row-web-updates .col-datetime-box { width: 170px; flex-shrink: 0; }
+  /* BARIS 2: FEEDER VESSEL, VOYAGE, ETD PORT ORIGINAL */
+  .row-vessel-voyage-etd {
+    display: grid;
+    grid-template-columns: 2fr 1.2fr 1.5fr;
+    gap: 10px;
+  }
 
-  .form-group-schedule { display: flex; flex-direction: column; }
-  .form-group-schedule label { font-size: 11px; color: #94a3b8; margin-bottom: 3px; font-weight: 600; white-space: nowrap; }
+  /* BARIS 3: UPDATE CLOSING CY, ETB/ATB, ETD/ATD */
+  .row-web-updates {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  .form-group-schedule { display: flex; flex-direction: column; width: 100%; }
+  .form-group-schedule label { font-size: 11px; color: #94a3b8; margin-bottom: 4px; font-weight: 600; white-space: nowrap; }
   .form-group-schedule input, .form-group-schedule select, .form-group-schedule textarea {
-    padding: 7px 9px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #fff; font-size: 11.5px; outline: none; transition: 0.2s; box-sizing: border-box; width: 100%;
+    padding: 8px 10px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #fff; font-size: 11.5px; outline: none; transition: 0.2s; box-sizing: border-box; width: 100%;
+  }
+  .form-group-schedule input:focus, .form-group-schedule select:focus, .form-group-schedule textarea:focus {
+    border-color: #38bdf8; background: #141d2b;
   }
   .form-group-schedule input:disabled, .form-group-schedule select:disabled {
     background: #1e293b !important; color: #64748b !important; cursor: not-allowed; border-color: #334155;
   }
 
-  .dest-section-box { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 10px; margin-top: 4px; }
+  /* DESTINATION SECTION GRID */
+  .dest-section-box { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 12px; margin-top: 4px; }
+  
   .dest-row-item {
-    display: grid; grid-template-columns: 180px 140px 1fr auto auto; gap: 8px; align-items: center; margin-bottom: 6px;
-    background: #1e293b; padding: 6px 8px; border-radius: 6px; border: 1px solid #334155;
+    display: grid;
+    grid-template-columns: 200px 150px 1fr 50px 40px;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 8px;
+    background: #1e293b;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid #334155;
   }
 
-  .chk-sync-remark { cursor: pointer; accent-color: #0284c7; width: 15px; height: 15px; }
+  .chk-sync-remark { cursor: pointer; accent-color: #0284c7; width: 16px; height: 16px; margin-top: 2px; }
 
-  .term-info-panel { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 8px; margin-top: 10px; }
+  /* MEDIA QUERIES UNTUK TAMPILAN MOBILE / TAMPILAN LAYAR KECIL (HP) */
+  @media (max-width: 768px) {
+    .modal-card-schedule { padding: 12px; }
+    
+    .row-week-liner-port,
+    .row-vessel-voyage-etd,
+    .row-web-updates {
+      grid-template-columns: 1fr !important;
+      gap: 8px;
+    }
+
+    .dest-row-item {
+      grid-template-columns: 1fr !important;
+      gap: 8px;
+    }
+
+    .dest-row-item > div {
+      width: 100%;
+    }
+
+    .dest-row-item-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 4px;
+    }
+  }
+
+  .term-info-panel { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 10px; margin-top: 10px; }
   .term-info-header { display: flex; justify-content: space-between; align-items: center; color: #eab308; font-size: 11px; font-weight: 600; }
-  .term-info-body { display: block; margin-top: 5px; font-size: 10.5px; color: #cbd5e1; border-top: 1px dashed #334155; padding-top: 5px; }
+  .term-info-body { display: block; margin-top: 6px; font-size: 10.5px; color: #cbd5e1; border-top: 1px dashed #334155; padding-top: 6px; }
   .term-info-body ul { list-style: none; padding-left: 0; margin: 0; }
-  .term-info-body li { margin-bottom: 2px; line-height: 1.3; }
+  .term-info-body li { margin-bottom: 3px; line-height: 1.4; }
   .term-info-body b { color: #38bdf8; }
 
   .preview-paper { background: #ffffff; color: #000000; padding: 10px; border-radius: 6px; font-family: Calibri, 'Segoe UI', Arial, sans-serif !important; font-size: 11px; overflow-x: auto; }
@@ -268,7 +315,7 @@
   }
   .nexportal-btn-cancel:hover { background: #475569; color: #ffffff; }
 
-  /* OVERRIDE STYLING FLATPICKR DATEPICKER INTERAKTIF ALA CEISA BEACUKAI */
+  /* OVERRIDE STYLING FLATPICKR DATEPICKER INTERAKTIF */
   .flatpickr-calendar { background: #0f172a !important; border: 1px solid #38bdf8 !important; box-shadow: 0 10px 25px rgba(0,0,0,0.8) !important; font-family: Calibri, sans-serif !important; border-radius: 8px !important; z-index: 99999999 !important; }
   .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange { background: #0284c7 !important; border-color: #38bdf8 !important; }
   .flatpickr-day:hover { background: #1e293b !important; }
@@ -446,8 +493,8 @@
 
 <div class="modal-overlay" id="modalSchedule">
   <div class="modal-card-schedule">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-      <h3 id="modal-schedule-title">🚢 Form Control Schedule</h3>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid #334155; padding-bottom:8px;">
+      <h3 id="modal-schedule-title" style="margin:0; font-size:15px; color:#38bdf8;">🚢 Form Control Schedule</h3>
       <button type="button" onclick="tutupModalSchedule()" style="background:none; border:none; color:#ef4444; font-size:18px; cursor:pointer;">✖</button>
     </div>
 
@@ -455,14 +502,14 @@
 
     <form id="form-schedule-modal" autocomplete="off" onsubmit="return false;">
       <div class="form-grid-schedule">
-        <!-- BARIS 1: WEEK (80px), LINER (180px), PORT (80px) -->
-        <div class="form-row-custom row-week-liner-port">
-          <div class="form-group-schedule col-week-box">
+        <!-- BARIS 1: WEEK, LINER, PORT -->
+        <div class="row-week-liner-port">
+          <div class="form-group-schedule">
             <label>WEEK</label>
             <input type="number" id="sched-week" placeholder="Mg" autocomplete="off">
           </div>
 
-          <div class="form-group-schedule col-liner-box">
+          <div class="form-group-schedule">
             <label>LINER *</label>
             <select id="sched-liner" onchange="onLinerChanged()">
               <option value="">-- Pilih Liner --</option>
@@ -476,7 +523,7 @@
             </select>
           </div>
 
-          <div class="form-group-schedule col-port-box">
+          <div class="form-group-schedule">
             <label>PORT *</label>
             <select id="sched-port">
               <option value="SRG" selected>SRG</option>
@@ -486,19 +533,19 @@
           </div>
         </div>
 
-        <!-- BARIS 2: FEEDER VESSEL (DICIUTKAN MENJADI 200px), VOYAGE (120px), ETD PORT ORIGINAL (140px) -->
-        <div class="form-row-custom row-vessel-voyage-etd">
-          <div class="form-group-schedule col-vessel-box">
+        <!-- BARIS 2: FEEDER VESSEL, VOYAGE, ETD PORT ORIGINAL -->
+        <div class="row-vessel-voyage-etd">
+          <div class="form-group-schedule">
             <label>FEEDER VESSEL (NAMA KAPAL) *</label>
             <input type="text" id="sched-vessel-name" placeholder="KM SEJATI / EVER BEAMY" autocomplete="off">
           </div>
 
-          <div class="form-group-schedule col-voyage-box">
+          <div class="form-group-schedule">
             <label>VOYAGE *</label>
             <input type="text" id="sched-voyage" placeholder="Contoh: V.102N" autocomplete="off">
           </div>
 
-          <div class="form-group-schedule col-etdorig-box">
+          <div class="form-group-schedule">
             <label>ETD PORT ORIGINAL</label>
             <input type="text" id="sched-etdorig" class="fp-date" placeholder="dd-mm-yyyy" autocomplete="off" onchange="autoHitungClosingCYFrontend()">
           </div>
@@ -507,18 +554,18 @@
         <input type="hidden" id="sched-closingcy">
 
         <!-- BARIS 3: UPDATE CLOSING CY, ETB/ATB WEBSITE, ETD/ATD WEBSITE -->
-        <div class="form-row-custom row-web-updates">
-          <div class="form-group-schedule col-datetime-box">
+        <div class="row-web-updates">
+          <div class="form-group-schedule">
             <label>UPDATE CLOSING CY</label>
             <input type="text" id="sched-updclosing" class="fp-datetime" placeholder="dd-mm-yyyy hh:mm" autocomplete="off">
           </div>
 
-          <div class="form-group-schedule col-datetime-box">
+          <div class="form-group-schedule">
             <label>ETB/ATB WEBSITE</label>
             <input type="text" id="sched-etbweb" class="fp-datetime" placeholder="dd-mm-yyyy hh:mm" autocomplete="off">
           </div>
 
-          <div class="form-group-schedule col-datetime-box">
+          <div class="form-group-schedule">
             <label>ETD/ATD WEBSITE</label>
             <input type="text" id="sched-etdweb" class="fp-datetime" placeholder="dd-mm-yyyy hh:mm" autocomplete="off">
           </div>
@@ -531,7 +578,7 @@
 
         <div class="form-group-schedule">
           <div class="dest-section-box">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
               <span style="font-size:11.5px; font-weight:700; color:#38bdf8;">📍 Destination & ETA Port (Multi-Destination Kapal)</span>
               <button type="button" id="btn-add-dest-row" class="btn-action" onclick="tambahDestinasiRowInForm()" style="background:#0284c7; font-size:10.5px;">➕ Tambah Destination</button>
             </div>
@@ -558,9 +605,9 @@
       </div>
     </div>
 
-    <div style="display:flex; gap:6px; margin-top:12px;">
-      <button type="button" class="btn-action" onclick="simpanSchedule()" style="flex:1; background:#16a34a; padding:8px; font-size:12px;">💾 Simpan Data Schedule</button>
-      <button type="button" class="btn-action" onclick="tutupModalSchedule()" style="background:#475569; padding:8px; font-size:12px;">Batal</button>
+    <div style="display:flex; gap:8px; margin-top:14px;">
+      <button type="button" class="btn-action" onclick="simpanSchedule()" style="flex:1; background:#16a34a; padding:9px; font-size:12px; font-weight:700;">💾 Simpan Data Schedule</button>
+      <button type="button" class="btn-action" onclick="tutupModalSchedule()" style="background:#475569; padding:9px; font-size:12px;">Batal</button>
     </div>
     <div id="sched-alert" style="font-size:11.5px; margin-top:8px; text-align:center;"></div>
   </div>
@@ -1171,7 +1218,6 @@
     }
   }
 
-  /* KETIKA LINER DIPILIH DARI MODAL TAMBAH: OTOMATIS POPULATE SEMUA DESTINATION SESUAI KONTRAK */
   function onLinerChanged() {
     if (isEditMode) return;
     const liner = document.getElementById("sched-liner").value;
@@ -1185,7 +1231,6 @@
     }
   }
 
-  /* MEMPERBAIKI PENYARINGAN DROPDOWN AGAR TIDAK MENGHILANG SAAT EDIT MODAL */
   function refreshAllDestinationOptions() {
     const linerSelect = document.getElementById("sched-liner");
     const liner = linerSelect ? (linerSelect.value || linerSelect.getAttribute("data-current-liner")) : "";
@@ -1257,7 +1302,7 @@
         <input type="checkbox" class="chk-sync-remark" ${syncCheck ? 'checked' : ''} onchange="onToggleSyncRemark(this)">
       </div>
       <div style="text-align:right;">
-        ${lockDestination ? '' : `<button type="button" onclick="this.closest('.dest-row-item').remove(); refreshAllDestinationOptions();" style="background:#ef4444; color:#fff; border:none; padding:5px 7px; border-radius:4px; font-size:10px; cursor:pointer;">🗑️</button>`}
+        ${lockDestination ? '' : `<button type="button" onclick="this.closest('.dest-row-item').remove(); refreshAllDestinationOptions();" style="background:#ef4444; color:#fff; border:none; padding:5px 8px; border-radius:4px; font-size:10px; cursor:pointer;">🗑️</button>`}
       </div>
     `;
 
