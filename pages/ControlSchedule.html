@@ -472,7 +472,7 @@
 
   let masterTermMap = {};
 
-  // URL WEB APP APPS SCRIPT TERHUBUNG
+  // URL WEB APP APPS SCRIPT BERAKHIRAN /exec
   const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzT53uhZ7XSKrsJNpmHMseiPYhbdlCz9AwMvI62Urg8mFQ8RUVAhr1Y5X2S5IkBtX4t/exec";
 
   const getCurrentWeekNumber = () => {
@@ -893,7 +893,7 @@
     try {
       const now = new Date(), hari = ["minggu", "senin", "selasa", "rabu", "kamis", "jumat", "sabtu"];
       const ts = `${hari[now.getDay()]}, ${String(now.getDate()).padStart(2,'0')}-${String(now.getMonth()+1).padStart(2,'0')}-${now.getFullYear()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-      await supabaseClient.from('log_changes').insert([{ timestamp: ts, row_target: String(rowTarget), user: user || 'Aditya (Admin EXIM)', aksi: aksi, kolom: kolom, nilai_lama: String(oldVal || '-'), nilai_baru: String(newVal || '-') }]);
+      await supabaseClient.from('log_changes').insert([{ timestamp: ts, row_target: String(rowTarget), user: user || 'Aditya Febriansyah', aksi: aksi, kolom: kolom, nilai_lama: String(oldVal || '-'), nilai_baru: String(newVal || '-') }]);
     } catch(e) {}
   }
 
@@ -929,13 +929,13 @@
         else { const { data: n } = await supabaseClient.from('control_schedule').insert([payload]).select(); if (n?.[0]) targetRowId = n[0].id; }
 
         if (targetRowId) {
-          if (!existingIds.length) { await catatLogChangesServer(targetRowId, "Aditya (Admin EXIM)", "BARU", "ALL", "-", voyageInp ? `${vesselInp} ${voyageInp}` : vesselInp); }
+          if (!existingIds.length) { await catatLogChangesServer(targetRowId, "Aditya Febriansyah", "BARU", "ALL", "-", voyageInp ? `${vesselInp} ${voyageInp}` : vesselInp); }
           else {
             const clean = (s) => String(s || '').replace(/^(ATB:|ETD:|ATD:)\s*/i, '').trim();
-            if (clean(oldData.update_closing_cy) !== clean(updClosingFormatted) && updClosingFormatted) await catatLogChangesServer(targetRowId, "Aditya (Admin EXIM)", "UPDATE", "UPDATE CLOSING CY", oldData.update_closing_cy, updClosingFormatted);
-            if (clean(oldData.etb_website) !== clean(payload.etb_atb_website) && payload.etb_atb_website) await catatLogChangesServer(targetRowId, "Aditya (Admin EXIM)", "UPDATE", "ETB/ATB WEBSITE", oldData.etb_website, payload.etb_atb_website);
-            if (clean(oldData.etd_website) !== clean(payload.etd_atd_website) && payload.etd_atd_website) await catatLogChangesServer(targetRowId, "Aditya (Admin EXIM)", "UPDATE", "ETD/ATD WEBSITE", oldData.etd_website, payload.etd_atd_website);
-            if (clean(oldData.eta_port) !== clean(etaIsoVal) && etaIsoVal) await catatLogChangesServer(targetRowId, "Aditya (Admin EXIM)", "UPDATE", "ETA PORT", oldData.eta_port, etaIsoVal);
+            if (clean(oldData.update_closing_cy) !== clean(updClosingFormatted) && updClosingFormatted) await catatLogChangesServer(targetRowId, "Aditya Febriansyah", "UPDATE", "UPDATE CLOSING CY", oldData.update_closing_cy, updClosingFormatted);
+            if (clean(oldData.etb_website) !== clean(payload.etb_atb_website) && payload.etb_atb_website) await catatLogChangesServer(targetRowId, "Aditya Febriansyah", "UPDATE", "ETB/ATB WEBSITE", oldData.etb_website, payload.etb_atb_website);
+            if (clean(oldData.etd_website) !== clean(payload.etd_atd_website) && payload.etd_atd_website) await catatLogChangesServer(targetRowId, "Aditya Febriansyah", "UPDATE", "ETD/ATD WEBSITE", oldData.etd_website, payload.etd_atd_website);
+            if (clean(oldData.eta_port) !== clean(etaIsoVal) && etaIsoVal) await catatLogChangesServer(targetRowId, "Aditya Febriansyah", "UPDATE", "ETA PORT", oldData.eta_port, etaIsoVal);
           }
         }
       }
@@ -969,22 +969,22 @@
     const filtered = (data || []).filter(l => String(l.row_target || l.target_id || l.row_id || '').trim() === targetStr || String(l.row_target || '').trim() === titleInfo.trim());
 
     if (!filtered.length) { tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#94a3b8; padding:15px;">Belum ada catatan histori log untuk baris ini.</td></tr>`; return; }
-    tbody.innerHTML = filtered.map(l => `<tr><td>${l.timestamp || l.created_at || '-'}</td><td><b style="color:#38bdf8;">${l.user || 'Aditya (Admin EXIM)'}</b></td><td><b style="color:#f59e0b;">${l.column_name || l.kolom || 'UPDATE'}</b></td><td style="color:#f87171;">${l.nilai_lama || '-'}</td><td style="color:#4ade80;">${l.nilai_baru || '-'}</td></tr>`).join('');
+    tbody.innerHTML = filtered.map(l => `<tr><td>${l.timestamp || l.created_at || '-'}</td><td><b style="color:#38bdf8;">${l.user || 'Aditya Febriansyah'}</b></td><td><b style="color:#f59e0b;">${l.column_name || l.kolom || 'UPDATE'}</b></td><td style="color:#f87171;">${l.nilai_lama || '-'}</td><td style="color:#4ade80;">${l.nilai_baru || '-'}</td></tr>`).join('');
   }
 
   function tutupModalHistori() { document.getElementById("modalHistoriLog").style.display = "none"; }
 
-  /* --- FUNGSI UPDATE TPKS VIA APPS SCRIPT WEB ENDPOINT --- */
+  /* --- FUNGSI UPDATE TPKS VIA POST PROMPT --- */
   window.syncDataTPKS = async function(event) {
     if (event) { event.preventDefault(); event.stopPropagation(); }
 
-    if (!GAS_WEB_APP_URL || GAS_WEB_APP_URL.includes("URL_WEB_APP_GOOGLE_APPS_SCRIPT")) {
-      await showCustomAlert("⚠️ URL Apps Script belum dipasang! Masukkan Web App URL pada variabel GAS_WEB_APP_URL di dalam file HTML ini.");
+    if (!GAS_WEB_APP_URL || GAS_WEB_APP_URL.includes("PASANG_WEB_APP_URL")) {
+      await showCustomAlert("⚠️ URL Apps Script belum dipasang! Masukkan Web App URL yang berakhiran /exec pada variabel GAS_WEB_APP_URL di dalam file HTML ini.");
       return;
     }
 
-    const confirmRun = await showCustomConfirm("⚡ Apakah Anda ingin mengeksekusi sinkronisasi data jadwal TPKS Pelindo secara manual sekarang?");
-    if (!confirmRun) return;
+    const inputHtml = prompt("📋 Buka ibstpks.pelindo.co.id/webaccess/ di browser, tekan Ctrl+A lalu Ctrl+C (Copy), kemudian Paste (Ctrl+V) teks/HTML-nya di bawah ini:");
+    if (!inputHtml || inputHtml.trim() === "") return;
 
     // Loading overlay
     const overlay = document.createElement("div");
@@ -992,24 +992,28 @@
     overlay.id = "tpksLoadingDialog";
     overlay.innerHTML = `
       <div class="nexportal-dialog-card" style="text-align:center;">
-        <h4 class="nexportal-dialog-header">⚡ Mengambil Data Pelindo TPKS...</h4>
+        <h4 class="nexportal-dialog-header">⚡ Memproses Data Pelindo...</h4>
         <div class="nexportal-dialog-body" style="padding:15px 0;">
-          ⏳ Server sedang mengambil data terbaru dari Web Pelindo & memperbarui Supabase...
+          ⏳ Memperbarui data ke Supabase & mencatat histori revisi...
         </div>
       </div>`;
     document.body.appendChild(overlay);
 
     try {
-      const res = await fetch(GAS_WEB_APP_URL);
+      const res = await fetch(GAS_WEB_APP_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ html: inputHtml })
+      });
       const result = await res.json();
 
       document.getElementById("tpksLoadingDialog")?.remove();
 
       if (result.success) {
         if (result.updatedCount > 0) {
-          await showCustomAlert(`⚡ SINKRONISASI PELINDO BERHASIL!\n\nBerikut ${result.updatedCount} Kapal yang berhasil diperbarui datanya di Supabase:\n\n${result.updatedVessels.map((v, i) => `${i + 1}. ${v}`).join("\n")}`);
+          await showCustomAlert(`⚡ SINKRONISASI BERHASIL!\n\n${result.updatedCount} Kapal diperbarui:\n\n${result.updatedVessels.map((v, i) => `${i + 1}. ${v}`).join("\n")}`);
         } else {
-          await showCustomAlert("⚡ Status Web Pelindo TPKS Semarang sudah sinkron (Tidak ada perubahan jadwal terbaru pada kapal di Supabase).");
+          await showCustomAlert("⚡ Status Web Pelindo TPKS Semarang sudah sinkron (Tidak ada perubahan jadwal terbaru).");
         }
         muatDataSchedule();
       } else {
@@ -1018,7 +1022,7 @@
 
     } catch (err) {
       document.getElementById("tpksLoadingDialog")?.remove();
-      await showCustomAlert("❌ Error saat memanggil server Apps Script: " + err.message);
+      await showCustomAlert("❌ Error memanggil Apps Script: " + err.message);
     }
   };
 
@@ -1137,7 +1141,7 @@
         if (!r[1] && !r[3]) continue;
         const payload = { week: r[0] ? (String(r[0]).toUpperCase().includes("WEEK") ? r[0] : `WEEK ${r[0]}`) : '', liner: String(r[1] || '').toUpperCase(), port: String(r[2] || 'SRG').toUpperCase(), feeder_vessel: String(r[3] || '').toUpperCase(), etd_port_origin: r[4] || '', etb_atb_website: r[5] || '', etd_atd_website: r[6] || '', eta_port: r[7] || '', destination: String(r[8] || '').toUpperCase(), remark: r[9] || '', update_closing: r[10] || '', voyage: String(r[11] || '').toUpperCase() };
         const { data: ins } = await supabaseClient.from('control_schedule').insert([payload]).select();
-        if (ins?.[0]) await catatLogChangesServer(ins[0].id, "Aditya (Admin EXIM)", "BARU", "ALL", "-", payload.voyage ? `${payload.feeder_vessel} ${payload.voyage}` : payload.feeder_vessel);
+        if (ins?.[0]) await catatLogChangesServer(ins[0].id, "Aditya Febriansyah", "BARU", "ALL", "-", payload.voyage ? `${payload.feeder_vessel} ${payload.voyage}` : payload.feeder_vessel);
         added++;
       }
       statusDiv.style.color = "#4ade80"; statusDiv.innerText = `✅ Import Selesai! ${added} baris data ditambahkan.`;
