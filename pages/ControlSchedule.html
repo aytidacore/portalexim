@@ -176,17 +176,27 @@
   }
   .modal-card-schedule.preview-large { max-width: 98vw !important; width: 1450px !important; }
 
-  /* --- DESAIN LAYOUT GRID FORM DISESUAIKAN --- */
+  /* --- DESAIN LAYOUT GRID FORM DISESUAIKAN DAN PRESISI --- */
   .form-grid-schedule { display: flex; flex-direction: column; gap: 10px; }
-  .form-row-custom { display: grid; gap: 8px; align-items: flex-start; }
-  .row-week-liner-port { grid-template-columns: 100px 1.5fr 100px; }
-  .row-vessel-voyage-etd { grid-template-columns: 1.5fr 1fr 1.2fr; }
-  .row-web-updates { grid-template-columns: 1fr 1fr 1fr; }
+  .form-row-custom { display: flex; gap: 8px; align-items: flex-start; flex-wrap: nowrap; }
+  
+  /* BARIS 1: WEEK (80px), LINER (180px), PORT (80px) */
+  .row-week-liner-port .col-week-box { width: 80px; flex-shrink: 0; }
+  .row-week-liner-port .col-liner-box { width: 180px; flex-shrink: 0; }
+  .row-week-liner-port .col-port-box { width: 80px; flex-shrink: 0; }
+
+  /* BARIS 2: FEEDER VESSEL (sisa space), VOYAGE (120px), ETD ORIG (140px) */
+  .row-vessel-voyage-etd .col-vessel-box { flex: 1 1 auto; }
+  .row-vessel-voyage-etd .col-voyage-box { width: 120px; flex-shrink: 0; }
+  .row-vessel-voyage-etd .col-etdorig-box { width: 140px; flex-shrink: 0; }
+
+  /* BARIS 3: TANGGAL & JAM PRESISI (170px masing-masing) */
+  .row-web-updates .col-datetime-box { width: 170px; flex-shrink: 0; }
 
   .form-group-schedule { display: flex; flex-direction: column; }
-  .form-group-schedule label { font-size: 11px; color: #94a3b8; margin-bottom: 3px; font-weight: 600; }
+  .form-group-schedule label { font-size: 11px; color: #94a3b8; margin-bottom: 3px; font-weight: 600; white-space: nowrap; }
   .form-group-schedule input, .form-group-schedule select, .form-group-schedule textarea {
-    padding: 7px 9px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #fff; font-size: 11.5px; outline: none; transition: 0.2s;
+    padding: 7px 9px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #fff; font-size: 11.5px; outline: none; transition: 0.2s; box-sizing: border-box; width: 100%;
   }
   .form-group-schedule input:disabled, .form-group-schedule select:disabled {
     background: #1e293b !important; color: #64748b !important; cursor: not-allowed; border-color: #334155;
@@ -194,7 +204,7 @@
 
   .dest-section-box { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 10px; margin-top: 4px; }
   .dest-row-item {
-    display: grid; grid-template-columns: 1.2fr 1fr 1.3fr auto auto; gap: 6px; align-items: center; margin-bottom: 6px;
+    display: grid; grid-template-columns: 180px 140px 1fr auto auto; gap: 8px; align-items: center; margin-bottom: 6px;
     background: #1e293b; padding: 6px 8px; border-radius: 6px; border: 1px solid #334155;
   }
 
@@ -258,14 +268,14 @@
   }
   .nexportal-btn-cancel:hover { background: #475569; color: #ffffff; }
 
-  /* OVERRIDE STYLING FLATPICKR UNTUK MEMBUAT DATEPICKER ALA CEISA BEACUKAI */
-  .flatpickr-calendar { background: #0f172a !important; border: 1px solid #38bdf8 !important; box-shadow: 0 10px 25px rgba(0,0,0,0.8) !important; font-family: Calibri, sans-serif !important; border-radius: 8px !important; }
+  /* OVERRIDE STYLING FLATPICKR DATEPICKER INTERAKTIF CEISA BEACUKAI */
+  .flatpickr-calendar { background: #0f172a !important; border: 1px solid #38bdf8 !important; box-shadow: 0 10px 25px rgba(0,0,0,0.8) !important; font-family: Calibri, sans-serif !important; border-radius: 8px !important; z-index: 99999999 !important; }
   .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange { background: #0284c7 !important; border-color: #38bdf8 !important; }
   .flatpickr-day:hover { background: #1e293b !important; }
   .flatpickr-time input { color: #fff !important; }
 </style>
 
-<!-- DEPENDENCY FLATPICKR UNTUK DATE/TIME PICKER PROFESIONAL -->
+<!-- DEPENDENCY FLATPICKR FOR INTERACTIVE DATE & TIME PICKER -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -443,92 +453,95 @@
 
     <input type="hidden" id="sched-group-ids">
 
-    <div class="form-grid-schedule">
-      <!-- BARIS 1: WEEK, LINER, PORT -->
-      <div class="form-row-custom row-week-liner-port">
-        <div class="form-group-schedule">
-          <label>WEEK</label>
-          <input type="number" id="sched-week" placeholder="Mg">
-        </div>
-
-        <div class="form-group-schedule">
-          <label>LINER *</label>
-          <select id="sched-liner" onchange="onLinerChanged()">
-            <option value="">-- Pilih Liner --</option>
-            <option value="SINOKOR">SINOKOR</option>
-            <option value="SITC">SITC</option>
-            <option value="EVERGREEN">EVERGREEN</option>
-            <option value="WAN HAI">WAN HAI</option>
-            <option value="ONE">ONE</option>
-            <option value="EXPEDITORS">EXPEDITORS</option>
-            <option value="OOCL">OOCL</option>
-          </select>
-        </div>
-
-        <div class="form-group-schedule">
-          <label>PORT *</label>
-          <select id="sched-port">
-            <option value="SRG" selected>SRG</option>
-            <option value="SUB">SUB</option>
-            <option value="JKT">JKT</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- BARIS 2: FEEDER VESSEL, VOYAGE, ETD PORT ORIGINAL -->
-      <div class="form-row-custom row-vessel-voyage-etd">
-        <div class="form-group-schedule">
-          <label>FEEDER VESSEL (NAMA KAPAL) *</label>
-          <input type="text" id="sched-vessel-name" placeholder="Contoh: KM SEJATI / EVER BEAMY">
-        </div>
-
-        <div class="form-group-schedule">
-          <label>VOYAGE *</label>
-          <input type="text" id="sched-voyage" placeholder="Contoh: V.102N / 1204-082B">
-        </div>
-
-        <div class="form-group-schedule">
-          <label>ETD PORT ORIGINAL</label>
-          <input type="text" id="sched-etdorig" class="fp-date" placeholder="dd-mm-yyyy" onchange="autoHitungClosingCYFrontend()">
-        </div>
-      </div>
-
-      <!-- INPUT TERSEMBUNYI UNTUK CLOSING CY OTOMATIS -->
-      <input type="hidden" id="sched-closingcy">
-
-      <!-- BARIS 3: UPDATE CLOSING CY, ETB/ATB WEBSITE, ETD/ATD WEBSITE -->
-      <div class="form-row-custom row-web-updates">
-        <div class="form-group-schedule">
-          <label>UPDATE CLOSING CY</label>
-          <input type="text" id="sched-updclosing" class="fp-datetime" placeholder="dd-mm-yyyy hh:mm">
-        </div>
-
-        <div class="form-group-schedule">
-          <label>ETB/ATB WEBSITE</label>
-          <input type="text" id="sched-etbweb" class="fp-datetime" placeholder="dd-mm-yyyy hh:mm">
-        </div>
-
-        <div class="form-group-schedule">
-          <label>ETD/ATD WEBSITE</label>
-          <input type="text" id="sched-etdweb" class="fp-datetime" placeholder="dd-mm-yyyy hh:mm">
-        </div>
-      </div>
-
-      <div class="form-group-schedule">
-        <label>REMARK UTAMA (Catatan Umum Kapal)</label>
-        <textarea id="sched-remark" rows="2" placeholder="Catatan tambahan utama (Opsional)" oninput="syncAllChildRemarks()"></textarea>
-      </div>
-
-      <div class="form-group-schedule">
-        <div class="dest-section-box">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-            <span style="font-size:11.5px; font-weight:700; color:#38bdf8;">📍 Destination & ETA Port (Multi-Destination Kapal)</span>
-            <button type="button" id="btn-add-dest-row" class="btn-action" onclick="tambahDestinasiRowInForm()" style="background:#0284c7; font-size:10.5px;">➕ Tambah Destination</button>
+    <!-- ATTRIBUT autocomplete="off" DIGUNAKAN UNTUK MEMATIKAN SAVED INFO BROWSER -->
+    <form id="form-schedule-modal" autocomplete="off" onsubmit="return false;">
+      <div class="form-grid-schedule">
+        <!-- BARIS 1: WEEK (80px), LINER (180px), PORT (80px) -->
+        <div class="form-row-custom row-week-liner-port">
+          <div class="form-group-schedule col-week-box">
+            <label>WEEK</label>
+            <input type="number" id="sched-week" placeholder="Mg" autocomplete="off">
           </div>
-          <div id="dest-rows-wrapper"></div>
+
+          <div class="form-group-schedule col-liner-box">
+            <label>LINER *</label>
+            <select id="sched-liner" onchange="onLinerChanged()">
+              <option value="">-- Pilih Liner --</option>
+              <option value="SINOKOR">SINOKOR</option>
+              <option value="SITC">SITC</option>
+              <option value="EVERGREEN">EVERGREEN</option>
+              <option value="WAN HAI">WAN HAI</option>
+              <option value="ONE">ONE</option>
+              <option value="EXPEDITORS">EXPEDITORS</option>
+              <option value="OOCL">OOCL</option>
+            </select>
+          </div>
+
+          <div class="form-group-schedule col-port-box">
+            <label>PORT *</label>
+            <select id="sched-port">
+              <option value="SRG" selected>SRG</option>
+              <option value="SUB">SUB</option>
+              <option value="JKT">JKT</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- BARIS 2: FEEDER VESSEL, VOYAGE (120px), ETD PORT ORIGINAL (140px) -->
+        <div class="form-row-custom row-vessel-voyage-etd">
+          <div class="form-group-schedule col-vessel-box">
+            <label>FEEDER VESSEL (NAMA KAPAL) *</label>
+            <input type="text" id="sched-vessel-name" placeholder="Contoh: KM SEJATI / EVER BEAMY" autocomplete="off">
+          </div>
+
+          <div class="form-group-schedule col-voyage-box">
+            <label>VOYAGE *</label>
+            <input type="text" id="sched-voyage" placeholder="Contoh: V.102N" autocomplete="off">
+          </div>
+
+          <div class="form-group-schedule col-etdorig-box">
+            <label>ETD PORT ORIGINAL</label>
+            <input type="text" id="sched-etdorig" class="fp-date" placeholder="dd-mm-yyyy" autocomplete="off" onchange="autoHitungClosingCYFrontend()">
+          </div>
+        </div>
+
+        <!-- INPUT TERSEMBUNYI UNTUK CLOSING CY OTOMATIS -->
+        <input type="hidden" id="sched-closingcy">
+
+        <!-- BARIS 3: UPDATE CLOSING CY, ETB/ATB WEBSITE, ETD/ATD WEBSITE (170px masing-masing) -->
+        <div class="form-row-custom row-web-updates">
+          <div class="form-group-schedule col-datetime-box">
+            <label>UPDATE CLOSING CY</label>
+            <input type="text" id="sched-updclosing" class="fp-datetime" placeholder="dd-mm-yyyy hh:mm" autocomplete="off">
+          </div>
+
+          <div class="form-group-schedule col-datetime-box">
+            <label>ETB/ATB WEBSITE</label>
+            <input type="text" id="sched-etbweb" class="fp-datetime" placeholder="dd-mm-yyyy hh:mm" autocomplete="off">
+          </div>
+
+          <div class="form-group-schedule col-datetime-box">
+            <label>ETD/ATD WEBSITE</label>
+            <input type="text" id="sched-etdweb" class="fp-datetime" placeholder="dd-mm-yyyy hh:mm" autocomplete="off">
+          </div>
+        </div>
+
+        <div class="form-group-schedule">
+          <label>REMARK UTAMA (Catatan Umum Kapal)</label>
+          <textarea id="sched-remark" rows="2" placeholder="Catatan tambahan utama (Opsional)" autocomplete="off" oninput="syncAllChildRemarks()"></textarea>
+        </div>
+
+        <div class="form-group-schedule">
+          <div class="dest-section-box">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <span style="font-size:11.5px; font-weight:700; color:#38bdf8;">📍 Destination & ETA Port (Multi-Destination Kapal)</span>
+              <button type="button" id="btn-add-dest-row" class="btn-action" onclick="tambahDestinasiRowInForm()" style="background:#0284c7; font-size:10.5px;">➕ Tambah Destination</button>
+            </div>
+            <div id="dest-rows-wrapper"></div>
+          </div>
         </div>
       </div>
-    </div>
+    </form>
 
     <div class="term-info-panel">
       <div class="term-info-header">
@@ -679,7 +692,6 @@
     "OOCL": ["HIROSHIMA"]
   };
 
-  /* HELPER MENGHITUNG NOMOR MINGGU HARI INI */
   function getCurrentWeekNumber() {
     const d = new Date();
     d.setHours(0, 0, 0, 0);
@@ -688,11 +700,12 @@
     return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
   }
 
-  /* INISIALISASI FLATPICKR UNTUK SETIAP INPUT TANGGAL */
+  /* INISIALISASI FLATPICKR DATE/TIME PICKER INTERAKTIF DENGAN KETIK MANUAL SINKRON */
   function initFlatpickrInputs() {
     flatpickr(".fp-date", {
       dateFormat: "d-m-Y",
       allowInput: true,
+      clickOpens: true,
       theme: "dark"
     });
 
@@ -701,6 +714,7 @@
       enableTime: true,
       time_24hr: true,
       allowInput: true,
+      clickOpens: true,
       theme: "dark"
     });
   }
@@ -1162,68 +1176,92 @@
 
   function onLinerChanged() {
     if (isEditMode) return;
-    const liner = document.getElementById("sched-liner").value;
-    const dests = masterTermMap[liner];
-    if (dests && dests.length > 0) {
-      document.getElementById("dest-rows-wrapper").innerHTML = "";
-      dests.forEach(d => tambahDestinasiRowInForm(d, '', '', true, false));
-    }
+    document.getElementById("dest-rows-wrapper").innerHTML = "";
+    tambahDestinasiRowInForm("", "", "", true, false);
   }
 
-  /* KOREKSI VARIABEL & VALIDASI CEK DESTINATION DUPLIKAT */
-  function validateUniqueDestination(selectElem) {
-    const chosenVal = selectElem.value;
-    if (!chosenVal) return;
+  /* UPDATE SINKRONISASI DAFTAR DROPDOWN DESTINATION DENGAN PENYARINGAN KOTA YANG SUDAH DIPILIH */
+  function refreshAllDestinationOptions() {
+    const liner = document.getElementById("sched-liner").value;
+    const allowedList = masterTermMap[liner] || ["NAGOYA","OSAKA","TOKYO","YOKOHAMA","SENDAI","SHIMIZU","HIROSHIMA","HAKATA","LAEM CHABANG"];
 
-    let duplicateCount = 0;
+    const selectedDestinations = [];
     document.querySelectorAll("#dest-rows-wrapper .inp-dest-val").forEach(sel => {
-      if (sel.value === chosenVal) duplicateCount++;
+      if (sel.value) selectedDestinations.push(sel.value);
     });
 
-    if (duplicateCount > 1) {
-      showCustomAlert(`⚠️ Destination "${chosenVal}" sudah ditambahkan! Harap pilih destination lain.`);
-      selectElem.value = "";
+    document.querySelectorAll("#dest-rows-wrapper .inp-dest-val").forEach(sel => {
+      const currentValue = sel.value;
+      let optionsHtml = `<option value="">-- Select Destination --</option>`;
+
+      allowedList.forEach(d => {
+        if (!selectedDestinations.includes(d) || d === currentValue) {
+          const isSelected = (d === currentValue) ? 'selected' : '';
+          optionsHtml += `<option value="${d}" ${isSelected}>${d}</option>`;
+        }
+      });
+
+      sel.innerHTML = optionsHtml;
+    });
+
+    // CEK BATAS MAKSIMUM MULTI-DESTINATION SESUAI CONTRACT LINER
+    const btnAdd = document.getElementById("btn-add-dest-row");
+    if (selectedDestinations.length >= allowedList.length && allowedList.length > 0) {
+      btnAdd.disabled = true;
+      btnAdd.style.opacity = "0.5";
+      btnAdd.style.cursor = "not-allowed";
+    } else {
+      btnAdd.disabled = false;
+      btnAdd.style.opacity = "1";
+      btnAdd.style.cursor = "pointer";
     }
   }
 
   function tambahDestinasiRowInForm(selectedDest = "", etaValue = "", remarkValue = "", syncCheck = true, lockDestination = false) {
-    const wrapper = document.getElementById("dest-rows-wrapper");
     const liner = document.getElementById("sched-liner").value;
     const allowedList = masterTermMap[liner] || ["NAGOYA","OSAKA","TOKYO","YOKOHAMA","SENDAI","SHIMIZU","HIROSHIMA","HAKATA","LAEM CHABANG"];
 
-    let optionsHtml = `<option value="">-- Select Destination --</option>`;
-    allowedList.forEach(d => {
-      const sel = (d === selectedDest) ? 'selected' : '';
-      optionsHtml += `<option value="${d}" ${sel}>${d}</option>`;
-    });
+    const existingRows = document.querySelectorAll("#dest-rows-wrapper .dest-row-item");
+    if (!selectedDest && existingRows.length >= allowedList.length && allowedList.length > 0) {
+      showCustomAlert(`⚠️ Semua destination liner ${liner || ''} yang dipilih sudah terisi semua sesuai kontrak.`);
+      return;
+    }
 
     const isDisabled = lockDestination ? 'disabled="disabled"' : '';
-
+    const wrapper = document.getElementById("dest-rows-wrapper");
     const div = document.createElement("div");
     div.className = "dest-row-item";
 
     div.innerHTML = `
       <div>
         <label style="font-size:9.5px; color:#94a3b8; display:block;">DESTINATION *</label>
-        <select class="inp-dest-val" ${isDisabled} onchange="validateUniqueDestination(this)">${optionsHtml}</select>
+        <select class="inp-dest-val" ${isDisabled} onchange="refreshAllDestinationOptions()"></select>
       </div>
       <div>
         <label style="font-size:9.5px; color:#94a3b8; display:block;">ETA PORT</label>
-        <input type="text" class="inp-eta-val fp-date" value="${etaValue}" placeholder="dd-mm-yyyy">
+        <input type="text" class="inp-eta-val fp-date" value="${etaValue}" placeholder="dd-mm-yyyy" autocomplete="off">
       </div>
       <div>
         <label style="font-size:9.5px; color:#94a3b8; display:block;">REMARK DESTINATION</label>
-        <input type="text" class="inp-dest-remark" value="${remarkValue}" placeholder="Remark kota">
+        <input type="text" class="inp-dest-remark" value="${remarkValue}" placeholder="Remark kota" autocomplete="off">
       </div>
       <div style="text-align:center;">
         <label style="font-size:9.5px; color:#38bdf8; display:block;">Sync</label>
         <input type="checkbox" class="chk-sync-remark" ${syncCheck ? 'checked' : ''} onchange="onToggleSyncRemark(this)">
       </div>
       <div style="text-align:right;">
-        ${lockDestination ? '' : `<button type="button" onclick="this.closest('.dest-row-item').remove()" style="background:#ef4444; color:#fff; border:none; padding:5px 7px; border-radius:4px; font-size:10px; cursor:pointer;">🗑️</button>`}
+        ${lockDestination ? '' : `<button type="button" onclick="this.closest('.dest-row-item').remove(); refreshAllDestinationOptions();" style="background:#ef4444; color:#fff; border:none; padding:5px 7px; border-radius:4px; font-size:10px; cursor:pointer;">🗑️</button>`}
       </div>
     `;
+
     wrapper.appendChild(div);
+
+    if (selectedDest) {
+      const selectElem = div.querySelector(".inp-dest-val");
+      selectElem.value = selectedDest;
+    }
+
+    refreshAllDestinationOptions();
     initFlatpickrInputs();
   }
 
@@ -1259,7 +1297,6 @@
       document.getElementById("modal-schedule-title").innerText = "🚢 Form Tambah Control Schedule";
       document.getElementById("sched-group-ids").value = "";
       
-      /* OTOMATIS MEMASUKKAN MINGGU SAAT INI */
       document.getElementById("sched-week").value = getCurrentWeekNumber();
       
       document.getElementById("sched-liner").value = "";
@@ -1367,23 +1404,6 @@
     if (!linerInp || !vesselInp || destRows.length === 0) {
       alertDiv.style.color = "#ef4444";
       alertDiv.innerText = "⚠️ Harap isi Liner, Feeder Vessel, dan minimal 1 Destination!";
-      return;
-    }
-
-    /* VALIDASI DOUBLE CEK SEBELUM SIMPAN */
-    let destList = [];
-    let hasDuplicate = false;
-    destRows.forEach(r => {
-      const val = r.querySelector(".inp-dest-val").value;
-      if (val) {
-        if (destList.includes(val)) hasDuplicate = true;
-        destList.push(val);
-      }
-    });
-
-    if (hasDuplicate) {
-      alertDiv.style.color = "#ef4444";
-      alertDiv.innerText = "⚠️ Terdapat duplikasi Destination! Mohon pastikan setiap destination unik.";
       return;
     }
 
