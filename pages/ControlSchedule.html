@@ -979,7 +979,6 @@
   /* --- FUNGSI SINKRONISASI WEB TPKS SEMARANG (PORT SRG) --- */
   window.syncDataTPKS = async function(event, isAutoCron = false) {
     if (event) { event.preventDefault(); event.stopPropagation(); }
-    if (!isAutoCron && !await showCustomConfirm("⚡ Jalankan sinkronisasi otomatis status kapal TPKS (Port SRG)?")) return false;
 
     try {
       if (typeof supabaseClient === 'undefined' || !supabaseClient) { 
@@ -993,7 +992,6 @@
         return false; 
       }
 
-      // Ambil data JSON dari Apps Script Web App
       let tpksRawHtml = '';
       try {
         if (window.APPSCRIPT_TPKS_URL && window.APPSCRIPT_TPKS_URL.trim() !== '') {
@@ -1006,12 +1004,16 @@
           }
         }
       } catch (e) {
-        console.warn("Gagal fetch via Apps Script JSON:", e);
+        console.warn("Gagal fetch via Apps Script:", e);
       }
 
-      if (!tpksRawHtml || tpksRawHtml.trim() === '') {
-        if (!isAutoCron) await showCustomAlert("⚠️ Gagal mengambil HTML dari Web TPKS melalui Apps Script.");
-        return false;
+      // Fallback cadangan: Jika Apps Script / server TPKS memblokir request, buka prompt paste HTML manual
+      if (!tpksRawHtml || tpksRawHtml.trim() === '' || tpksRawHtml.includes("Cloudflare") || tpksRawHtml.includes("Diblokir")) {
+        if (isAutoCron) return false;
+        
+        let manualHtml = prompt("⚠️ Server TPKS memblokir akses otomatis script.\n\nTips: Buka https://webaccess.tpks.co.id/tpks_vessel_schedule/ di tab browser lain, tekan Ctrl+U, salin seluruh kode HTML-nya, lalu paste di bawah ini:");
+        if (!manualHtml || manualHtml.trim() === "") return false;
+        tpksRawHtml = manualHtml;
       }
 
       const debugDiv = document.getElementById("tpks-source-data");
@@ -1046,7 +1048,7 @@
       });
 
       if (!parsedTpksVessels.length) {
-        if (!isAutoCron) await showCustomAlert("⚠️ HTML TPKS berhasil dimuat, tetapi struktur elemen kapal gagal dikenali oleh parser.");
+        if (!isAutoCron) await showCustomAlert("⚠️ HTML berhasil dimuat, tetapi struktur elemen kapal gagal dikenali oleh parser.");
         return false;
       }
 
@@ -1102,7 +1104,7 @@
       }
 
       if (updatedVesselsList.length > 0) {
-        if (!isAutoCron) await showCustomAlert(`⚡ SINKRONISASI TPKS BERHASIL!\n\nBerikut ${updatedVesselsList.length} Kapal yang diperbarui datanya dari TPKS:\n\n${updatedVesselsList.map((v, i) => `${i + 1}. ${v}`).join("\n")}`);
+        if (!isAutoCron) await showCustomAlert(`⚡ SINKRONISASI TPKS BERHASIL!\n\nBerikut ${updatedVesselsList.length} Kapal yang diperbarui datanya:\n\n${updatedVesselsList.map((v, i) => `${i + 1}. ${v}`).join("\n")}`);
       } else if (!isAutoCron) { 
         await showCustomAlert("⚡ Status Web TPKS Semarang sudah sinkron (Tidak ada perubahan jadwal)."); 
       }
