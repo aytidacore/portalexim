@@ -850,114 +850,108 @@
     return 'background-color:#a855f7 !important; color:#ffffff !important; font-weight:bold;';
   }
 
-async function muatDataSchedule() {
-  const tbody = document.getElementById("tbody-schedule");
-  tbody.innerHTML = `<tr><td colspan="14" style="text-align: center; padding: 20px;">⏳ Memuat database Control Schedule...</td></tr>`;
+  async function muatDataSchedule() {
+    const tbody = document.getElementById("tbody-schedule");
+    tbody.innerHTML = `<tr><td colspan="14" style="text-align: center; padding: 20px;">⏳ Memuat database Control Schedule...</td></tr>`;
 
-  try {
-    const { data: logsData } = await supabaseClient.from('log_changes').select('*');
+    try {
+      const { data: logsData } = await supabaseClient.from('log_changes').select('*');
 
-    logChangesMap = {};
-    if (logsData) {
-      logsData.forEach(l => {
-        const targetKey = String(l.row_target || l.target_id || l.row_id || '').trim();
-        const aksiType = String(l.aksi || l.action || '').toUpperCase().trim();
+      logChangesMap = {};
+      if (logsData) {
+        logsData.forEach(l => {
+          const targetKey = String(l.row_target || l.target_id || l.row_id || '').trim();
+          const aksiType = String(l.aksi || l.action || '').toUpperCase().trim();
 
-        /* HITUNG REVISI HANYA JIKA BUKAN DATA BARU/INPUT PERTAMA */
-        if (targetKey && aksiType !== 'BARU' && aksiType !== 'INPUT PERTAMA') {
-          if (!logChangesMap[targetKey]) {
-            logChangesMap[targetKey] = { total: 0, upd_closing: 0, etb_web: 0, etd_web: 0, eta_port: 0 };
+          /* HITUNG REVISI HANYA JIKA BUKAN DATA BARU / BARU DIBUAT */
+          if (targetKey && aksiType !== 'BARU' && aksiType !== 'INPUT PERTAMA') {
+            if (!logChangesMap[targetKey]) {
+              logChangesMap[targetKey] = { total: 0, upd_closing: 0, etb_web: 0, etd_web: 0, eta_port: 0 };
+            }
+            
+            const col = String(l.kolom || l.column_name || l.field || '').toUpperCase().trim();
+            
+            // Pencocokan Eksak/Spesifik per Sel
+            if (col === 'UPDATE CLOSING CY' || col === 'UPDATE CLOSING') {
+              logChangesMap[targetKey].upd_closing += 1;
+              logChangesMap[targetKey].total += 1;
+            } else if (col === 'ETB/ATB WEBSITE' || col === 'ETB WEBSITE' || col === 'ETB/ATB') {
+              logChangesMap[targetKey].etb_web += 1;
+              logChangesMap[targetKey].total += 1;
+            } else if (col === 'ETD/ATD WEBSITE' || col === 'ETD WEBSITE' || col === 'ETD/ATD') {
+              logChangesMap[targetKey].etd_web += 1;
+              logChangesMap[targetKey].total += 1;
+            } else if (col === 'ETA PORT' || col === 'ETA') {
+              logChangesMap[targetKey].eta_port += 1;
+              logChangesMap[targetKey].total += 1;
+            }
           }
-          
-          const col = String(l.kolom || l.column_name || l.field || '').toUpperCase().trim();
-          
-          if (col.includes('UPDATE CLOSING') || col.includes('CLOSING')) {
-            logChangesMap[targetKey].upd_closing += 1;
-            logChangesMap[targetKey].total += 1;
-          } else if (col.includes('ETB') || col.includes('ATB')) {
-            logChangesMap[targetKey].etb_web += 1;
-            logChangesMap[targetKey].total += 1;
-          } else if (col.includes('ETD') || col.includes('ATD')) {
-            logChangesMap[targetKey].etd_web += 1;
-            logChangesMap[targetKey].total += 1;
-          } else if (col.includes('ETA PORT') || col === 'ETA') {
-            logChangesMap[targetKey].eta_port += 1;
-            logChangesMap[targetKey].total += 1;
-          }
-        }
-      });
-    }
-
-    const { data, error } = await supabaseClient
-      .from('control_schedule')
-      .select('*');
-
-    if (error) {
-      tbody.innerHTML = `<tr><td colspan="14" style="color:#ef4444; text-align:center;">❌ Error: ${error.message}</td></tr>`;
-      return;
-    }
-
-    masterDataSchedule = (data || []).map((row) => {
-      const rowIdStr = String(row.id).trim();
-      const vesselStr = String(row.feeder_vessel || row.vessel || '').trim();
-      
-      // Ambil data log berdasarkan ID unik baris
-      const logInfo = logChangesMap[rowIdStr] || { total: 0, upd_closing: 0, etb_web: 0, etd_web: 0, eta_port: 0 };
-
-      return {
-        id: row.id,
-        week: getSupabaseVal(row, ['week', 'Week']),
-        liner: getSupabaseVal(row, ['liner', 'Liner']),
-        port: getSupabaseVal(row, ['port', 'Port']) || 'SRG',
-        feeder_vessel: getSupabaseVal(row, ['feeder_vessel', 'vessel']),
-        etd_original: formatDateTimeAppScript(getSupabaseVal(row, ['etd_port_origin', 'etd_original', 'etd_orig'])),
-        closing_cy: formatDateTimeAppScript(getSupabaseVal(row, ['closing_cy', 'closing'])),
-        update_closing_cy: formatDateTimeAppScript(getSupabaseVal(row, ['update_closing', 'update_closing_cy', 'upd_closing'])),
-        etb_website: formatDateTimeAppScript(getSupabaseVal(row, ['etb_atb_website', 'etb_website', 'etb_web'])),
-        etd_website: formatDateTimeAppScript(getSupabaseVal(row, ['etd_atd_website', 'etd_website', 'etd_web'])),
-        eta_port: formatDateTimeAppScript(getSupabaseVal(row, ['eta_port', 'etaPort'])),
-        destination: getSupabaseVal(row, ['destination', 'dest']),
-        remark: getSupabaseVal(row, ['remark', 'Remark']),
-
-        revCount: logInfo.total,
-        revUpdClosing: logInfo.upd_closing,
-        revEtbWeb: logInfo.etb_web,
-        revEtdWeb: logInfo.etd_web,
-        revEtaPort: logInfo.eta_port
-      };
-    });
-
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-
-    masterDataSchedule.sort((a, b) => {
-      const isAtdA = String(a.etd_website || '').toUpperCase().includes("ATD");
-      const isAtdB = String(b.etd_website || '').toUpperCase().includes("ATD");
-
-      const dateA = parseDateForSorting((a.etd_website && a.etd_website !== '-' && !isAtdA) ? a.etd_website : a.etd_original);
-      const dateB = parseDateForSorting((b.etd_website && b.etd_website !== '-' && !isAtdB) ? b.etd_website : b.etd_original);
-
-      const isPastA = isAtdA || (dateA < today);
-      const isPastB = isAtdB || (dateB < today);
-
-      if (!isPastA && isPastB) return -1;
-      if (isPastA && !isPastB) return 1;
-
-      if (!isPastA && !isPastB) {
-        return dateA - dateB;
+        });
       }
 
-      return dateB - dateA;
-    });
+      const { data, error } = await supabaseClient.from('control_schedule').select('*');
 
-    currentFilteredSchedule = [...masterDataSchedule];
-    currentPage = 1;
-    tampilkanTabelScheduleWithPagination();
+      if (error) {
+        tbody.innerHTML = `<tr><td colspan="14" style="color:#ef4444; text-align:center;">❌ Error: ${error.message}</td></tr>`;
+        return;
+      }
 
-  } catch (err) {
-    tbody.innerHTML = `<tr><td colspan="14" style="color:#ef4444; text-align:center;">❌ Error: ${err.message}</td></tr>`;
+      masterDataSchedule = (data || []).map((row) => {
+        const rowIdStr = String(row.id).trim();
+        const logInfo = logChangesMap[rowIdStr] || { total: 0, upd_closing: 0, etb_web: 0, etd_web: 0, eta_port: 0 };
+
+        return {
+          id: row.id,
+          week: getSupabaseVal(row, ['week', 'Week']),
+          liner: getSupabaseVal(row, ['liner', 'Liner']),
+          port: getSupabaseVal(row, ['port', 'Port']) || 'SRG',
+          feeder_vessel: getSupabaseVal(row, ['feeder_vessel', 'vessel']),
+          etd_original: formatDateTimeAppScript(getSupabaseVal(row, ['etd_port_origin', 'etd_original', 'etd_orig'])),
+          closing_cy: formatDateTimeAppScript(getSupabaseVal(row, ['closing_cy', 'closing'])),
+          update_closing_cy: formatDateTimeAppScript(getSupabaseVal(row, ['update_closing', 'update_closing_cy', 'upd_closing'])),
+          etb_website: formatDateTimeAppScript(getSupabaseVal(row, ['etb_atb_website', 'etb_website', 'etb_web'])),
+          etd_website: formatDateTimeAppScript(getSupabaseVal(row, ['etd_atd_website', 'etd_website', 'etd_web'])),
+          eta_port: formatDateTimeAppScript(getSupabaseVal(row, ['eta_port', 'etaPort'])),
+          destination: getSupabaseVal(row, ['destination', 'dest']),
+          remark: getSupabaseVal(row, ['remark', 'Remark']),
+
+          revCount: logInfo.total,
+          revUpdClosing: logInfo.upd_closing,
+          revEtbWeb: logInfo.etb_web,
+          revEtdWeb: logInfo.etd_web,
+          revEtaPort: logInfo.eta_port
+        };
+      });
+
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+      masterDataSchedule.sort((a, b) => {
+        const isAtdA = String(a.etd_website || '').toUpperCase().includes("ATD");
+        const isAtdB = String(b.etd_website || '').toUpperCase().includes("ATD");
+
+        const dateA = parseDateForSorting((a.etd_website && a.etd_website !== '-' && !isAtdA) ? a.etd_website : a.etd_original);
+        const dateB = parseDateForSorting((b.etd_website && b.etd_website !== '-' && !isAtdB) ? b.etd_website : b.etd_original);
+
+        const isPastA = isAtdA || (dateA < today);
+        const isPastB = isAtdB || (dateB < today);
+
+        if (!isPastA && isPastB) return -1;
+        if (isPastA && !isPastB) return 1;
+
+        if (!isPastA && !isPastB) return dateA - dateB;
+
+        return dateB - dateA;
+      });
+
+      currentFilteredSchedule = [...masterDataSchedule];
+      currentPage = 1;
+      tampilkanTabelScheduleWithPagination();
+
+    } catch (err) {
+      tbody.innerHTML = `<tr><td colspan="14" style="color:#ef4444; text-align:center;">❌ Error: ${err.message}</td></tr>`;
+    }
   }
-}
 
   function tampilkanTabelScheduleWithPagination() {
     const tbody = document.getElementById("tbody-schedule");
@@ -1393,33 +1387,38 @@ async function muatDataSchedule() {
           if (newRow && newRow[0]) targetRowId = newRow[0].id;
         }
 
-       if (targetRowId) {
+        if (targetRowId) {
           if (!isUpdateAction) {
-            /* CATAT LOG INPUT PERTAMA (TIDAK DIHITUNG SEBAGAI REVISI WARNA) */
+            /* INPUT BARU / PERTAMA KALI */
             await catatLogChangesServer(targetRowId, "Aditya", "BARU", "ALL", "-", fullVesselName);
           } else {
-            /* PENCATATAN REVISI PER KOLOM SPESIFIK */
+            /* CEK DAN CATAT PERUBAHAN PER-SEL SECARA INDIVIDUAL (Presisi per Cell) */
+            
+            // 1. Cek UPDATE CLOSING CY
             const oldUpd = String(oldData.update_closing_cy || '').trim();
             const newUpd = String(updClosingFormatted || '').trim();
-            if (oldUpd !== newUpd && newUpd !== '') {
+            if (oldUpd !== newUpd && newUpd !== '' && oldUpd !== '-') {
               await catatLogChangesServer(targetRowId, "Aditya", "UPDATE", "UPDATE CLOSING CY", oldUpd, newUpd);
             }
 
+            // 2. Cek ETB/ATB WEBSITE
             const oldEtb = String(oldData.etb_website || '').trim();
             const newEtb = String(payload.etb_atb_website || '').trim();
-            if (oldEtb !== newEtb && newEtb !== '') {
+            if (oldEtb !== newEtb && newEtb !== '' && oldEtb !== '-') {
               await catatLogChangesServer(targetRowId, "Aditya", "UPDATE", "ETB/ATB WEBSITE", oldEtb, newEtb);
             }
 
+            // 3. Cek ETD/ATD WEBSITE
             const oldEtd = String(oldData.etd_website || '').trim();
             const newEtd = String(payload.etd_atd_website || '').trim();
-            if (oldEtd !== newEtd && newEtd !== '') {
+            if (oldEtd !== newEtd && newEtd !== '' && oldEtd !== '-') {
               await catatLogChangesServer(targetRowId, "Aditya", "UPDATE", "ETD/ATD WEBSITE", oldEtd, newEtd);
             }
 
+            // 4. Cek ETA PORT (Isolasi khusus baris/kota destinasi ini saja)
             const oldEta = String(oldData.eta_port || '').trim();
             const newEta = String(etaFormatted || '').trim();
-            if (oldEta !== newEta && newEta !== '') {
+            if (oldEta !== newEta && newEta !== '' && oldEta !== '-') {
               await catatLogChangesServer(targetRowId, "Aditya", "UPDATE", "ETA PORT", oldEta, newEta);
             }
           }
