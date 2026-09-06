@@ -1,4 +1,5 @@
 <style>
+  /* --- BASE CONTAINER --- */
   .schedule-container { width: 100%; font-family: Calibri, 'Segoe UI', Arial, sans-serif; display: flex; flex-direction: column; height: calc(100vh - 70px); max-height: 100%; box-sizing: border-box; }
   
   /* --- HEADER & BARIS TOMBOL UTAMA --- */
@@ -8,7 +9,7 @@
   }
   .schedule-title h3 { color: #38bdf8; font-size: 15px; font-weight: 600; margin: 0; }
 
-  /* Tombol Ukuran Ringkas */
+  /* Tombol Utama */
   .btn-add-schedule, .btn-action, .btn-export-main, .btn-import-main, .btn-tpks-sync {
     padding: 4px 8px !important; font-size: 11px !important; border-radius: 4px !important; font-weight: 600; cursor: pointer; border: none; transition: 0.2s; white-space: nowrap;
   }
@@ -19,11 +20,10 @@
   .btn-toggle-col { background: #334155; color: #38bdf8; border: 1px solid #475569 !important; }
   .btn-reset-filter { background: #64748b; color: white; border: 1px solid #475569 !important; }
   .btn-reset-filter:hover { background: #475569; }
-
   .btn-tpks-sync { background: #d97706; color: white; border: 1px solid #f59e0b !important; }
   .btn-tpks-sync:hover { background: #b45309; }
 
-  /* --- MENU DROPDOWN EXPORT & IMPORT --- */
+  /* Dropdown Export & Import */
   .export-dropdown-wrapper { position: relative; display: inline-block; }
   .btn-export-main { background: #8b5cf6; color: white; }
   .btn-export-main:hover { background: #7c3aed; }
@@ -41,83 +41,52 @@
   }
   .export-menu-list button:hover { background: #1e293b; color: #38bdf8; }
 
-  /* --- PANEL SHOW / HIDE KOLOM --- */
+  /* Panel Show/Hide Kolom */
   .column-selector-box {
     display: none; background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 10px; margin-bottom: 8px; flex-shrink: 0;
   }
   .col-checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 6px; font-size: 11px; color: #cbd5e1; }
   .col-checkbox-grid label { display: flex; align-items: center; gap: 5px; cursor: pointer; }
 
-  /* AREA TABEL UTAMA */
+  /* --- TABEL UTAMA --- */
   .table-responsive-schedule {
     flex: 1 1 auto; width: 100%; min-height: 150px; overflow-x: auto !important; overflow-y: auto !important;
     border: 1px solid #253346; border-radius: 8px 8px 0 0; position: relative; background: #141d2b;
   }
-
   .table-responsive-schedule::-webkit-scrollbar { height: 10px !important; width: 10px !important; display: block !important; }
   .table-responsive-schedule::-webkit-scrollbar-track { background: #0f172a !important; border-radius: 6px; }
   .table-responsive-schedule::-webkit-scrollbar-thumb { background: #38bdf8 !important; border-radius: 6px; border: 2px solid #0f172a; }
   .table-responsive-schedule::-webkit-scrollbar-thumb:hover { background: #0284c7 !important; }
 
   .custom-table { width: 100%; border-collapse: separate; border-spacing: 0; text-align: left; font-size: 11.5px; min-width: 1780px; }
-  
   .custom-table thead tr.th-title-row th { 
     background-color: #0f172a !important; color: #38bdf8 !important; padding: 6px 5px; 
-    border-bottom: 1px solid #253346; position: -webkit-sticky !important; position: sticky !important; 
-    top: 0 !important; z-index: 30 !important; font-size: 11px; font-weight: 700; white-space: nowrap;
+    border-bottom: 1px solid #253346; position: sticky !important; top: 0 !important; z-index: 30 !important; font-size: 11px; font-weight: 700; white-space: nowrap;
   }
-
   .th-header-content { display: flex; align-items: center; justify-content: space-between; gap: 4px; width: 100%; }
-
-  .btn-sort-col {
-    background: #1e293b; color: #94a3b8; border: 1px solid #334155; border-radius: 3px;
-    font-size: 9px; padding: 1px 3px; cursor: pointer; transition: 0.2s; line-height: 1;
-  }
+  .btn-sort-col { background: #1e293b; color: #94a3b8; border: 1px solid #334155; border-radius: 3px; font-size: 9px; padding: 1px 3px; cursor: pointer; transition: 0.2s; line-height: 1; }
   .btn-sort-col:hover { background: #0284c7; color: #ffffff; border-color: #38bdf8; }
 
   .custom-table thead tr.th-filter-row th {
     background-color: #0f172a !important; padding: 3px 4px 6px 4px; border-bottom: 2px solid #253346;
-    position: -webkit-sticky !important; position: sticky !important; top: 29px !important; z-index: 30 !important;
+    position: sticky !important; top: 29px !important; z-index: 30 !important;
   }
-
-  .header-filter-input {
-    width: 100%; padding: 3px 5px; background: #1e293b; border: 1px solid #475569;
-    border-radius: 4px; color: #fff; font-size: 10.5px; outline: none; box-sizing: border-box;
-  }
+  .header-filter-input { width: 100%; padding: 3px 5px; background: #1e293b; border: 1px solid #475569; border-radius: 4px; color: #fff; font-size: 10.5px; outline: none; box-sizing: border-box; }
   .header-filter-input:focus { border-color: #38bdf8; background: #0f172a; }
 
   .custom-table tbody tr { cursor: pointer; user-select: text !important; }
-
-  .custom-table td { 
-    padding: 6px 10px; border-bottom: 1px solid #1e293b; color: #cbd5e1; white-space: nowrap; 
-    background: #141d2b; position: relative; user-select: text !important; 
-  }
-
+  .custom-table td { padding: 6px 10px; border-bottom: 1px solid #1e293b; color: #cbd5e1; white-space: nowrap; background: #141d2b; position: relative; }
   .custom-table tbody tr:nth-child(even) td { background: #141d2b; color: #cbd5e1; }
   .custom-table tbody tr:hover td { background: #253346; color: #ffffff; }
 
-  .custom-table tbody tr.row-past-atd td {
-    background: #0f172a !important;
-    color: #64748b !important;
-    opacity: 0.7;
-    user-select: none !important;
-    -webkit-user-select: none !important;
-    cursor: default !important;
-  }
-  .custom-table tbody tr.row-past-atd:hover td {
-    background: #1e293b !important;
-    color: #94a3b8 !important;
-  }
+  .custom-table tbody tr.row-past-atd td { background: #0f172a !important; color: #64748b !important; opacity: 0.7; cursor: default !important; }
+  .custom-table tbody tr.row-past-atd:hover td { background: #1e293b !important; color: #94a3b8 !important; }
 
   .badge-liner { background: rgba(2, 132, 199, 0.25); color: #38bdf8; padding: 1px 5px; border-radius: 4px; font-weight: 700; display: inline-block; }
   .badge-week { background: rgba(147, 51, 234, 0.25); color: #c084fc; padding: 1px 5px; border-radius: 4px; font-weight: 600; }
+  .badge-rev-counter { background: #ef4444; color: #ffffff; font-size: 8px; font-weight: 800; padding: 1px 4px; border-radius: 3px; line-height: 10px; margin-right: 4px; display: inline-block; text-transform: lowercase; }
 
-  .badge-rev-counter {
-    background: #ef4444; color: #ffffff; font-size: 8px; font-weight: 800; 
-    padding: 1px 4px; border-radius: 3px; line-height: 10px; margin-right: 4px;
-    display: inline-block; text-transform: lowercase;
-  }
-
+  /* Status Revisi Colors */
   td.rev-lvl-1 { background-color: #dcfce7 !important; color: #14532d !important; font-weight: bold; }
   td.rev-lvl-2 { background-color: #86efac !important; color: #064e3b !important; font-weight: bold; }
   td.rev-lvl-3 { background-color: #fef9c3 !important; color: #713f12 !important; font-weight: bold; }
@@ -129,132 +98,72 @@
   td.rev-lvl-9 { background-color: #f3e8ff !important; color: #581c87 !important; font-weight: bold; }
   td.rev-lvl-10 { background-color: #d8b4fe !important; color: #581c87 !important; font-weight: bold; }
   td.rev-lvl-11 { background-color: #a855f7 !important; color: #ffffff !important; font-weight: bold; }
-
   .text-actual-red { color: #ef4444 !important; font-weight: 700; }
 
-  .col-aksi-header {
-    position: -webkit-sticky !important; position: sticky !important; right: 0 !important; 
-    background: #0f172a !important; z-index: 35 !important; border-left: 1px solid #253346; text-align: center;
-  }
-  .col-aksi-cell {
-    position: -webkit-sticky !important; position: sticky !important; right: 0 !important; 
-    background: #141d2b !important; z-index: 25 !important; border-left: 1px solid #253346; text-align: center;
-  }
-
-  .btn-aksi-tbl {
-    background: #334155; color: #f8fafc; border: 1px solid #475569; padding: 2px 6px; border-radius: 4px; font-size: 10.5px; font-weight: 600; cursor: pointer;
-  }
+  .col-aksi-header { position: sticky !important; right: 0 !important; background: #0f172a !important; z-index: 35 !important; border-left: 1px solid #253346; text-align: center; }
+  .col-aksi-cell { position: sticky !important; right: 0 !important; background: #141d2b !important; z-index: 25 !important; border-left: 1px solid #253346; text-align: center; }
+  .btn-aksi-tbl { background: #334155; color: #f8fafc; border: 1px solid #475569; padding: 2px 6px; border-radius: 4px; font-size: 10.5px; font-weight: 600; cursor: pointer; }
   .btn-aksi-tbl:hover { background: #0284c7; color: white; }
 
-  .pagination-bar {
-    display: flex; justify-content: flex-end; align-items: center; gap: 8px;
-    padding: 8px 12px; background: #0f172a; border: 1px solid #253346; border-top: none;
-    border-radius: 0 0 8px 8px; flex-shrink: 0;
-  }
+  /* Pagination Bar */
+  .pagination-bar { display: flex; justify-content: flex-end; align-items: center; gap: 8px; padding: 8px 12px; background: #0f172a; border: 1px solid #253346; border-top: none; border-radius: 0 0 8px 8px; flex-shrink: 0; }
   .pagination-btn-group { display: flex; gap: 4px; align-items: center; }
-  .btn-page {
-    background: #1e293b; color: #cbd5e1; border: 1px solid #334155; border-radius: 6px;
-    padding: 4px 10px; font-size: 11px; font-weight: 600; cursor: pointer; transition: 0.2s;
-  }
+  .btn-page { background: #1e293b; color: #cbd5e1; border: 1px solid #334155; border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 600; cursor: pointer; transition: 0.2s; }
   .btn-page:hover { background: #334155; color: #38bdf8; }
   .btn-page.active { background: #0284c7; color: #ffffff; border-color: #38bdf8; }
   .btn-page:disabled { opacity: 0.4; cursor: not-allowed; }
+  .select-page-size { background: #1e293b; color: #38bdf8; border: 1px solid #334155; border-radius: 6px; padding: 4px 8px; font-size: 11px; font-weight: 700; outline: none; cursor: pointer; }
 
-  .select-page-size {
-    background: #1e293b; color: #38bdf8; border: 1px solid #334155; border-radius: 6px;
-    padding: 4px 8px; font-size: 11px; font-weight: 700; outline: none; cursor: pointer;
-  }
-
-  .modal-overlay {
-    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px);
-    justify-content: center; align-items: center; z-index: 999999 !important; padding: 12px;
-  }
-  .modal-card-schedule {
-    background: #1e293b; border: 1px solid #334155; padding: 18px; border-radius: 12px;
-    width: 100%; max-width: 880px; max-height: 92vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5);
-  }
+  /* --- MODALS OVERLAY --- */
+  .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); justify-content: center; align-items: center; z-index: 999999 !important; padding: 12px; box-sizing: border-box; }
+  .modal-card-schedule { background: #1e293b; border: 1px solid #334155; padding: 18px; border-radius: 12px; width: 100%; max-width: 880px; max-height: 92vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); box-sizing: border-box; }
   .modal-card-schedule.preview-large { max-width: 98vw !important; width: 1450px !important; }
 
-  /* FORM GRID STYLING */
-  .form-grid-schedule { display: flex; flex-direction: column; gap: 12px; }
+  /* --- PERBAIKAN FORM GRID LENGKAP & SIMETRIS (PC/DESKTOP & HP) --- */
+  .form-grid-schedule { display: flex; flex-direction: column; gap: 12px; width: 100%; }
 
-  .row-week-liner-port { display: flex; gap: 10px; align-items: flex-start; }
-  .row-week-liner-port .col-week { width: 90px; flex-shrink: 0; }
-  .row-week-liner-port .col-liner { width: 180px; flex-shrink: 0; }
-  .row-week-liner-port .col-port { width: 100px; flex-shrink: 0; }
+  /* Baris 1: WEEK (100px), LINER (1fr), PORT (120px) */
+  .row-week-liner-port { display: grid; grid-template-columns: 100px 1fr 120px; gap: 10px; width: 100%; }
+  
+  /* Baris 2: FEEDER VESSEL (2fr), VOYAGE (1.2fr), ETD PORT ORIGINAL (1.5fr) */
+  .row-vessel-voyage-etd { display: grid; grid-template-columns: 2fr 1.2fr 1.5fr; gap: 10px; width: 100%; }
 
-  .row-vessel-voyage-etd { display: flex; gap: 10px; align-items: flex-start; }
-  .row-vessel-voyage-etd .col-vessel { width: 220px; flex-shrink: 0; }
-  .row-vessel-voyage-etd .col-voyage { width: 130px; flex-shrink: 0; }
-  .row-vessel-voyage-etd .col-etdorig { width: 140px; flex-shrink: 0; }
+  /* Baris 3: UPDATE CLOSING CY (1fr), ETB/ATB WEBSITE (1fr), ETD/ATD WEBSITE (1fr) */
+  .row-web-updates { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; }
 
-  .row-web-updates { display: flex; gap: 10px; align-items: flex-start; }
-  .row-web-updates .col-web-item { width: 170px; flex-shrink: 0; }
-
-  .form-group-schedule { display: flex; flex-direction: column; }
+  .form-group-schedule { display: flex; flex-direction: column; width: 100%; }
   .form-group-schedule label { font-size: 11px; color: #94a3b8; margin-bottom: 4px; font-weight: 600; white-space: nowrap; }
   .form-group-schedule input, .form-group-schedule select, .form-group-schedule textarea {
     padding: 8px 10px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #fff; font-size: 11.5px; outline: none; transition: 0.2s; box-sizing: border-box; width: 100%;
   }
-  .form-group-schedule input:focus, .form-group-schedule select:focus, .form-group-schedule textarea:focus {
-    border-color: #38bdf8; background: #141d2b;
-  }
-  .form-group-schedule input:disabled, .form-group-schedule select:disabled {
-    background: #1e293b !important; color: #64748b !important; cursor: not-allowed; border-color: #334155;
-  }
+  .form-group-schedule input:focus, .form-group-schedule select:focus, .form-group-schedule textarea:focus { border-color: #38bdf8; background: #141d2b; }
+  .form-group-schedule input:disabled, .form-group-schedule select:disabled { background: #1e293b !important; color: #64748b !important; cursor: not-allowed; border-color: #334155; }
 
-  .dest-section-box { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 12px; margin-top: 4px; }
-  
-  .dest-row-item {
-    display: flex; gap: 10px; align-items: center; margin-bottom: 8px;
-    background: #1e293b; padding: 8px 10px; border-radius: 6px; border: 1px solid #334155;
-  }
-  .dest-row-item .col-dest-val { width: 180px; flex-shrink: 0; }
-  .dest-row-item .col-eta-val { width: 130px; flex-shrink: 0; }
-  .dest-row-item .col-remark-val { width: 180px; flex-shrink: 0; }
-
+  /* Multi-Destination Section Grid */
+  .dest-section-box { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 12px; margin-top: 4px; width: 100%; box-sizing: border-box; }
+  .dest-row-item { display: grid; grid-template-columns: 200px 140px 1fr 45px 35px; gap: 10px; align-items: center; margin-bottom: 8px; background: #1e293b; padding: 8px 10px; border-radius: 6px; border: 1px solid #334155; width: 100%; box-sizing: border-box; }
   .chk-sync-remark { cursor: pointer; accent-color: #0284c7; width: 16px; height: 16px; margin-top: 2px; }
 
-  /* STYLING UNTUK EDIT LINER & TERM MANAGER */
-  .btn-edit-liner-term {
-    background: #eab308; color: #000; font-weight: 700; border: none; padding: 5px 12px;
-    border-radius: 6px; font-size: 11px; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 5px;
-  }
+  /* Developer Edit Liner & Term Box */
+  .btn-edit-liner-term { background: #eab308; color: #000; font-weight: 700; border: none; padding: 5px 12px; border-radius: 6px; font-size: 11px; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 5px; }
   .btn-edit-liner-term:hover { background: #ca8a04; }
-
-  .edit-liner-row {
-    display: flex; gap: 10px; align-items: center; margin-bottom: 8px;
-    background: #0f172a; padding: 8px 12px; border-radius: 8px; border: 1px solid #334155;
-  }
+  .edit-liner-row { display: flex; gap: 10px; align-items: center; margin-bottom: 8px; background: #0f172a; padding: 8px 12px; border-radius: 8px; border: 1px solid #334155; }
   .edit-liner-row .inp-liner-name { width: 160px; font-weight: bold; color: #38bdf8 !important; text-transform: uppercase; }
   .edit-liner-row .inp-liner-term { flex: 1; text-transform: uppercase; }
 
-  /* MEDIA QUERIES MOBILE */
-  @media (max-width: 768px) {
-    .modal-card-schedule { padding: 12px; }
-    .row-week-liner-port, .row-vessel-voyage-etd, .row-web-updates { flex-direction: column; gap: 8px; }
-    .row-week-liner-port .col-week, .row-week-liner-port .col-liner, .row-week-liner-port .col-port,
-    .row-vessel-voyage-etd .col-vessel, .row-vessel-voyage-etd .col-voyage, .row-vessel-voyage-etd .col-etdorig,
-    .row-web-updates .col-web-item { width: 100% !important; }
-    .dest-row-item { flex-direction: column; align-items: stretch; gap: 8px; }
-    .dest-row-item .col-dest-val, .dest-row-item .col-eta-val, .dest-row-item .col-remark-val { width: 100% !important; }
-    .edit-liner-row { flex-direction: column; align-items: stretch; }
-    .edit-liner-row .inp-liner-name { width: 100%; }
-  }
-
-  .term-info-panel { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 10px; margin-top: 10px; }
+  /* Term Panel */
+  .term-info-panel { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 10px; margin-top: 10px; width: 100%; box-sizing: border-box; }
   .term-info-header { display: flex; justify-content: space-between; align-items: center; color: #eab308; font-size: 11px; font-weight: 600; }
   .term-info-body { display: block; margin-top: 6px; font-size: 10.5px; color: #cbd5e1; border-top: 1px dashed #334155; padding-top: 6px; }
   .term-info-body ul { list-style: none; padding-left: 0; margin: 0; }
   .term-info-body li { margin-bottom: 3px; line-height: 1.4; }
   .term-info-body b { color: #38bdf8; }
 
+  /* Preview Paper Styles */
   .preview-paper { background: #ffffff; color: #000000; padding: 10px; border-radius: 6px; font-family: Calibri, 'Segoe UI', Arial, sans-serif !important; font-size: 11px; overflow-x: auto; }
   .preview-table { width: 100%; border-collapse: collapse !important; margin-top: 6px; border: 1px solid #000000 !important; }
   .preview-table th { background-color: #0284c7 !important; color: #ffffff !important; border: 1px solid #000000 !important; padding: 5px 6px; text-align: center; font-size: 11px; font-weight: 700; white-space: nowrap !important; }
   .preview-table td { border: 1px solid #000000 !important; padding: 4px 6px; font-size: 10px; color: #000000; white-space: nowrap !important; text-align: center; font-family: Calibri, sans-serif; }
-
   .btn-preview-mode { background: #334155; color: #94a3b8; border: 1px solid #475569; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; }
   .btn-preview-mode.active-mode { background: #0284c7; color: #ffffff; border-color: #38bdf8; }
 
@@ -265,56 +174,42 @@
   .upload-dropzone { border: 2px dashed #0284c7; border-radius: 8px; padding: 20px; text-align: center; background: #0f172a; cursor: pointer; transition: 0.3s; margin-top: 8px; }
   .upload-dropzone:hover { background: rgba(2, 132, 199, 0.1); }
 
-  .nexportal-dialog-overlay {
-    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-    background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(4px);
-    display: flex; justify-content: center; align-items: flex-start;
-    padding-top: 5vh; z-index: 99999999 !important;
-  }
-  .nexportal-dialog-card {
-    background: #182232; border: 1.5px solid #38bdf8; border-left: 6px solid #4ade80;
-    border-radius: 12px; width: 90%; max-width: 460px; padding: 18px 20px;
-    box-shadow: 0 20px 35px rgba(0,0,0,0.8); display: flex; flex-direction: column; gap: 14px;
-    animation: nexportalPopIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  }
-  @keyframes nexportalPopIn {
-    0% { transform: translateY(-20px) scale(0.95); opacity: 0; }
-    100% { transform: translateY(0) scale(1); opacity: 1; }
-  }
-  .nexportal-dialog-header {
-    color: #4ade80; font-size: 13px; font-weight: 700; margin: 0; font-family: system-ui, -apple-system, sans-serif;
-  }
-  .nexportal-dialog-body {
-    color: #f1f5f9; font-size: 12.5px; line-height: 1.5; font-weight: 500; font-family: system-ui, -apple-system, sans-serif;
-  }
-  .nexportal-dialog-actions {
-    display: flex; justify-content: flex-end; gap: 10px; margin-top: 4px;
-  }
-  .nexportal-btn-ok {
-    background: #0284c7; color: #ffffff; border: none; padding: 6px 18px;
-    border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; transition: 0.2s;
-  }
+  /* Dialog System Overlay */
+  .nexportal-dialog-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: flex-start; padding-top: 5vh; z-index: 99999999 !important; }
+  .nexportal-dialog-card { background: #182232; border: 1.5px solid #38bdf8; border-left: 6px solid #4ade80; border-radius: 12px; width: 90%; max-width: 460px; padding: 18px 20px; box-shadow: 0 20px 35px rgba(0,0,0,0.8); display: flex; flex-direction: column; gap: 14px; animation: nexportalPopIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+  @keyframes nexportalPopIn { 0% { transform: translateY(-20px) scale(0.95); opacity: 0; } 100% { transform: translateY(0) scale(1); opacity: 1; } }
+  .nexportal-dialog-header { color: #4ade80; font-size: 13px; font-weight: 700; margin: 0; font-family: system-ui, -apple-system, sans-serif; }
+  .nexportal-dialog-body { color: #f1f5f9; font-size: 12.5px; line-height: 1.5; font-weight: 500; font-family: system-ui, -apple-system, sans-serif; }
+  .nexportal-dialog-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 4px; }
+  .nexportal-btn-ok { background: #0284c7; color: #ffffff; border: none; padding: 6px 18px; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; transition: 0.2s; }
   .nexportal-btn-ok:hover { background: #0369a1; }
-  .nexportal-btn-cancel {
-    background: #334155; color: #cbd5e1; border: 1px solid #475569; padding: 6px 16px;
-    border-radius: 8px; font-weight: 600; font-size: 12px; cursor: pointer; transition: 0.2s;
-  }
+  .nexportal-btn-cancel { background: #334155; color: #cbd5e1; border: 1px solid #475569; padding: 6px 16px; border-radius: 8px; font-weight: 600; font-size: 12px; cursor: pointer; transition: 0.2s; }
   .nexportal-btn-cancel:hover { background: #475569; color: #ffffff; }
 
-  /* OVERRIDE STYLING FLATPICKR */
+  /* Flatpickr Styling Override */
   .flatpickr-calendar { background: #0f172a !important; border: 1px solid #38bdf8 !important; box-shadow: 0 10px 25px rgba(0,0,0,0.8) !important; font-family: Calibri, sans-serif !important; border-radius: 8px !important; z-index: 99999999 !important; }
   .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange { background: #0284c7 !important; border-color: #38bdf8 !important; }
   .flatpickr-day:hover { background: #1e293b !important; }
   .flatpickr-time input { color: #fff !important; }
+
+  /* RESPONSIVE MOBILE (HP) */
+  @media (max-width: 768px) {
+    .modal-card-schedule { padding: 12px; }
+    .row-week-liner-port, .row-vessel-voyage-etd, .row-web-updates { grid-template-columns: 1fr !important; gap: 8px; }
+    .dest-row-item { grid-template-columns: 1fr !important; gap: 8px; }
+    .edit-liner-row { flex-direction: column; align-items: stretch; }
+    .edit-liner-row .inp-liner-name { width: 100%; }
+  }
 </style>
 
-<!-- DEPENDENCY FLATPICKR -->
+<!-- DEPENDENCIES -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 <div class="schedule-container">
+  <!-- HEADER & NAVBAR UTAMA -->
   <div class="schedule-header">
     <div class="schedule-title">
       <h3>🚢 Database Control Schedule Export</h3>
@@ -344,11 +239,11 @@
       <button type="button" class="btn-action btn-toggle-col" onclick="toggleColumnBox()">⚙️ Show/Hide</button>
       <button type="button" class="btn-action btn-reset-filter" onclick="resetFilterSchedule()">🧹 Reset</button>
       <button type="button" class="btn-action" onclick="muatDataSchedule()">🔄 Refresh</button>
-
       <button type="button" class="btn-tpks-sync" onclick="syncDataTPKS(event)">⚡ Update TPKS</button>
     </div>
   </div>
 
+  <!-- SHOW/HIDE KOLOM BOX -->
   <div class="column-selector-box" id="colBox">
     <div style="font-weight: 600; color: #38bdf8; margin-bottom: 6px; font-size: 11px;">Centang Kolom yang Ingin Ditampilkan:</div>
     <div class="col-checkbox-grid">
@@ -368,49 +263,24 @@
     </div>
   </div>
 
+  <!-- TABEL DATABASE utama -->
   <div class="table-responsive-schedule">
     <table class="custom-table" id="tableSchedule">
       <thead>
         <tr class="th-title-row">
-          <th class="col-no" style="width:45px;">
-            <div class="th-header-content"><span>NO</span><button type="button" class="btn-sort-col" onclick="urutkanKolomData('no')">⇕</button></div>
-          </th>
-          <th class="col-week" style="width:80px;">
-            <div class="th-header-content"><span>WEEK</span><button type="button" class="btn-sort-col" onclick="urutkanKolomData('week')">⇕</button></div>
-          </th>
-          <th class="col-liner" style="width:110px;">
-            <div class="th-header-content"><span>LINER</span><button type="button" class="btn-sort-col" onclick="urutkanKolomData('liner')">⇕</button></div>
-          </th>
-          <th class="col-port" style="width:65px;">
-            <div class="th-header-content"><span>PORT</span><button type="button" class="btn-sort-col" onclick="urutkanKolomData('port')">⇕</button></div>
-          </th>
-          <th class="col-vessel" style="width:200px;">
-            <div class="th-header-content"><span>FEEDER VESSEL</span><button type="button" class="btn-sort-col" onclick="urutkanKolomData('feeder_vessel')">⇕</button></div>
-          </th>
-          <th class="col-etdorig" style="width:120px;">
-            <div class="th-header-content"><span>ETD ORIGINAL</span><button type="button" class="btn-sort-col" onclick="urutkanKolomData('etd_original')">⇕</button></div>
-          </th>
-          <th class="col-closing" style="width:120px;">
-            <div class="th-header-content"><span>CLOSING CY</span><button type="button" class="btn-sort-col" onclick="urutkanKolomData('closing_cy')">⇕</button></div>
-          </th>
-          <th class="col-updclosing" style="width:160px;">
-            <div class="th-header-content"><span>UPDATE CLOSING CY</span><button type="button" class="btn-sort-col" onclick="urutkanKolomData('update_closing_cy')">⇕</button></div>
-          </th>
-          <th class="col-etbweb" style="width:175px;">
-            <div class="th-header-content"><span>ETB/ATB WEBSITE</span><button type="button" class="btn-sort-col" onclick="urutkanKolomData('etb_website')">⇕</button></div>
-          </th>
-          <th class="col-etdweb" style="width:175px;">
-            <div class="th-header-content"><span>ETD/ATD WEBSITE</span><button type="button" class="btn-sort-col" onclick="urutkanKolomData('etd_website')">⇕</button></div>
-          </th>
-          <th class="col-etaport" style="width:120px;">
-            <div class="th-header-content"><span>ETA PORT</span><button type="button" class="btn-sort-col" onclick="urutkanKolomData('eta_port')">⇕</button></div>
-          </th>
-          <th class="col-dest" style="width:130px;">
-            <div class="th-header-content"><span>DESTINATION</span><button type="button" class="btn-sort-col" onclick="urutkanKolomData('destination')">⇕</button></div>
-          </th>
-          <th class="col-remark" style="width:160px;">
-            <div class="th-header-content"><span>REMARK</span><button type="button" class="btn-sort-col" onclick="urutkanKolomData('remark')">⇕</button></div>
-          </th>
+          <th class="col-no" style="width:45px;"><div class="th-header-content"><span>NO</span><button type="button" class="btn-sort-col" onclick="urutkanKolomData('no')">⇕</button></div></th>
+          <th class="col-week" style="width:80px;"><div class="th-header-content"><span>WEEK</span><button type="button" class="btn-sort-col" onclick="urutkanKolomData('week')">⇕</button></div></th>
+          <th class="col-liner" style="width:110px;"><div class="th-header-content"><span>LINER</span><button type="button" class="btn-sort-col" onclick="urutkanKolomData('liner')">⇕</button></div></th>
+          <th class="col-port" style="width:65px;"><div class="th-header-content"><span>PORT</span><button type="button" class="btn-sort-col" onclick="urutkanKolomData('port')">⇕</button></div></th>
+          <th class="col-vessel" style="width:200px;"><div class="th-header-content"><span>FEEDER VESSEL</span><button type="button" class="btn-sort-col" onclick="urutkanKolomData('feeder_vessel')">⇕</button></div></th>
+          <th class="col-etdorig" style="width:120px;"><div class="th-header-content"><span>ETD ORIGINAL</span><button type="button" class="btn-sort-col" onclick="urutkanKolomData('etd_original')">⇕</button></div></th>
+          <th class="col-closing" style="width:120px;"><div class="th-header-content"><span>CLOSING CY</span><button type="button" class="btn-sort-col" onclick="urutkanKolomData('closing_cy')">⇕</button></div></th>
+          <th class="col-updclosing" style="width:160px;"><div class="th-header-content"><span>UPDATE CLOSING CY</span><button type="button" class="btn-sort-col" onclick="urutkanKolomData('update_closing_cy')">⇕</button></div></th>
+          <th class="col-etbweb" style="width:175px;"><div class="th-header-content"><span>ETB/ATB WEBSITE</span><button type="button" class="btn-sort-col" onclick="urutkanKolomData('etb_website')">⇕</button></div></th>
+          <th class="col-etdweb" style="width:175px;"><div class="th-header-content"><span>ETD/ATD WEBSITE</span><button type="button" class="btn-sort-col" onclick="urutkanKolomData('etd_website')">⇕</button></div></th>
+          <th class="col-etaport" style="width:120px;"><div class="th-header-content"><span>ETA PORT</span><button type="button" class="btn-sort-col" onclick="urutkanKolomData('eta_port')">⇕</button></div></th>
+          <th class="col-dest" style="width:130px;"><div class="th-header-content"><span>DESTINATION</span><button type="button" class="btn-sort-col" onclick="urutkanKolomData('destination')">⇕</button></div></th>
+          <th class="col-remark" style="width:160px;"><div class="th-header-content"><span>REMARK</span><button type="button" class="btn-sort-col" onclick="urutkanKolomData('remark')">⇕</button></div></th>
           <th class="col-aksi-header" style="width:65px;">AKSI</th>
         </tr>
         <tr class="th-filter-row">
@@ -448,28 +318,25 @@
   </div>
 </div>
 
+<!-- MODAL IMPORT -->
 <div class="modal-overlay" id="modalImportSchedule">
   <div class="modal-card-schedule" style="max-width: 520px;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
       <h3>📤 Import File Database Schedule</h3>
       <button type="button" onclick="tutupModalImportSchedule()" style="background:none; border:none; color:#ef4444; font-size:18px; cursor:pointer;">✖</button>
     </div>
-
     <p style="font-size:11px; color:#cbd5e1; line-height:1.4;">
       Pastikan kolom urutan file Excel/CSV sesuai:<br>
       <b>A: WEEK | B: LINER | C: PORT | D: FEEDER VESSEL | E: ETD ORIGINAL | F: ETB/ATB WEBSITE | G: ETD/ATD WEBSITE | H: ETA PORT | I: DESTINATION | J: REMARK | K: UPDATE CLOSING CY | L: VOYAGE</b>
     </p>
-
     <div class="upload-dropzone" onclick="document.getElementById('fileImportInput').click()">
       <div style="font-size:28px; margin-bottom:6px;">📁</div>
       <div style="font-size:12px; font-weight:600; color:#38bdf8;">Klik di sini untuk memilih File Excel / CSV</div>
       <div style="font-size:10.5px; color:#94a3b8; margin-top:2px;">Format didukung: .xlsx, .xls, .csv</div>
       <input type="file" id="fileImportInput" accept=".xlsx, .xls, .csv" style="display:none;" onchange="prosesFileImportSelected(event)">
     </div>
-
     <div id="import-file-name" style="margin-top:8px; font-size:11.5px; color:#4ade80; text-align:center; font-weight:600;"></div>
     <div id="import-status-alert" style="margin-top:8px; font-size:11.5px; text-align:center;"></div>
-
     <div style="display:flex; gap:6px; margin-top:14px;">
       <button type="button" class="btn-action" id="btnProsesImportExec" onclick="eksekusiUploadImport()" style="flex:1; background:#16a34a;" disabled>💾 Eksekusi Import Data</button>
       <button type="button" class="btn-action" onclick="tutupModalImportSchedule()" style="background:#475569;">Batal</button>
@@ -477,6 +344,7 @@
   </div>
 </div>
 
+<!-- MODAL INPUT/EDIT SCHEDULE UTAMA -->
 <div class="modal-overlay" id="modalSchedule">
   <div class="modal-card-schedule">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid #334155; padding-bottom:8px;">
@@ -488,21 +356,17 @@
 
     <form id="form-schedule-modal" autocomplete="off" onsubmit="return false;">
       <div class="form-grid-schedule">
-        <!-- BARIS 1: WEEK, LINER, PORT -->
+        <!-- BARIS 1 -->
         <div class="row-week-liner-port">
-          <div class="form-group-schedule col-week">
+          <div class="form-group-schedule">
             <label>WEEK</label>
             <input type="number" id="sched-week" placeholder="Mg" autocomplete="off">
           </div>
-
-          <div class="form-group-schedule col-liner">
+          <div class="form-group-schedule">
             <label>LINER *</label>
-            <select id="sched-liner" onchange="onLinerChanged()">
-              <!-- OPSI DROPDOWN LINER DIPERBARUI SECARA DINAMIS OLEH JS -->
-            </select>
+            <select id="sched-liner" onchange="onLinerChanged()"></select>
           </div>
-
-          <div class="form-group-schedule col-port">
+          <div class="form-group-schedule">
             <label>PORT *</label>
             <select id="sched-port">
               <option value="SRG" selected>SRG</option>
@@ -512,19 +376,17 @@
           </div>
         </div>
 
-        <!-- BARIS 2: FEEDER VESSEL, VOYAGE, ETD PORT ORIGINAL -->
+        <!-- BARIS 2 -->
         <div class="row-vessel-voyage-etd">
-          <div class="form-group-schedule col-vessel">
+          <div class="form-group-schedule">
             <label>FEEDER VESSEL (NAMA KAPAL) *</label>
             <input type="text" id="sched-vessel-name" placeholder="KM SEJATI / EVER BEAMY" autocomplete="off">
           </div>
-
-          <div class="form-group-schedule col-voyage">
+          <div class="form-group-schedule">
             <label>VOYAGE *</label>
             <input type="text" id="sched-voyage" placeholder="Contoh: V.102N" autocomplete="off">
           </div>
-
-          <div class="form-group-schedule col-etdorig">
+          <div class="form-group-schedule">
             <label>ETD PORT ORIGINAL</label>
             <input type="text" id="sched-etdorig" class="fp-date" placeholder="dd-mm-yyyy" autocomplete="off" onchange="autoHitungClosingCYFrontend()">
           </div>
@@ -532,29 +394,29 @@
 
         <input type="hidden" id="sched-closingcy">
 
-        <!-- BARIS 3: UPDATE CLOSING CY, ETB/ATB WEBSITE, ETD/ATD WEBSITE -->
+        <!-- BARIS 3 -->
         <div class="row-web-updates">
-          <div class="form-group-schedule col-web-item">
+          <div class="form-group-schedule">
             <label>UPDATE CLOSING CY</label>
             <input type="text" id="sched-updclosing" class="fp-datetime" placeholder="dd-mm-yyyy hh:mm" autocomplete="off">
           </div>
-
-          <div class="form-group-schedule col-web-item">
+          <div class="form-group-schedule">
             <label>ETB/ATB WEBSITE</label>
             <input type="text" id="sched-etbweb" class="fp-datetime" placeholder="dd-mm-yyyy hh:mm" autocomplete="off">
           </div>
-
-          <div class="form-group-schedule col-web-item">
+          <div class="form-group-schedule">
             <label>ETD/ATD WEBSITE</label>
             <input type="text" id="sched-etdweb" class="fp-datetime" placeholder="dd-mm-yyyy hh:mm" autocomplete="off">
           </div>
         </div>
 
+        <!-- REMARK UTAMA -->
         <div class="form-group-schedule">
           <label>REMARK UTAMA (Catatan Umum Kapal)</label>
           <textarea id="sched-remark" rows="2" placeholder="Catatan tambahan utama (Opsional)" autocomplete="off" oninput="syncAllChildRemarks()"></textarea>
         </div>
 
+        <!-- MULTI DESTINATION CONTAINER -->
         <div class="form-group-schedule">
           <div class="dest-section-box">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
@@ -567,16 +429,14 @@
       </div>
     </form>
 
-    <!-- PANEL TERM DAN TOMBOL EDIT DEVELOPER -->
+    <!-- TERM CONTRACT INFO + EDIT DEVELOPER BUTTON -->
     <div class="term-info-panel">
       <div class="term-info-header">
         <span>📜 Ketentuan Destination Sesuai Term Kontrak ▼</span>
         <button type="button" class="btn-edit-liner-term" onclick="bukaModalEditLinerTerm()">✏️ Edit Liner & Term</button>
       </div>
       <div class="term-info-body">
-        <ul id="term-info-list">
-          <!-- DAFTAR LINER & TERM DI-RENDER DINAMIS -->
-        </ul>
+        <ul id="term-info-list"></ul>
       </div>
     </div>
 
@@ -588,20 +448,15 @@
   </div>
 </div>
 
-<!-- MODAL DEVELOPER: EDIT TERM & KELOLA LINER -->
+<!-- MODAL DEVELOPER EDIT LINER & TERM -->
 <div class="modal-overlay" id="modalEditLinerTerm">
   <div class="modal-card-schedule" style="max-width: 750px;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid #334155; padding-bottom:8px;">
       <h3 style="margin:0; font-size:15px; color:#38bdf8;">✏️ Edit Term & Kelola Liner (Developer)</h3>
       <button type="button" class="btn-action" onclick="tambahRowLinerBaru()" style="background:#0284c7; font-size:11px;">➕ Tambah Liner Baru</button>
     </div>
-
     <p style="font-size:11px; color:#94a3b8; margin-top:0; margin-bottom:12px;">Format Destination: Pisahkan antar kota dengan tanda koma (,)</p>
-
-    <div id="wrapper-edit-liner-rows" style="max-height: 55vh; overflow-y: auto; padding-right: 4px;">
-      <!-- ROW AKAN DI-GENERATE DI SINI -->
-    </div>
-
+    <div id="wrapper-edit-liner-rows" style="max-height: 55vh; overflow-y: auto; padding-right: 4px;"></div>
     <div style="display:flex; gap:8px; margin-top:16px;">
       <button type="button" class="btn-action" onclick="simpanSemuaLinerTerm()" style="flex:1; background:#16a34a; padding:9px; font-size:12px; font-weight:700;">💾 Simpan Semua Liner & Term</button>
       <button type="button" class="btn-action" onclick="tutupModalEditLinerTerm()" style="background:#475569; padding:9px; font-size:12px;">Batal</button>
@@ -609,54 +464,43 @@
   </div>
 </div>
 
+<!-- MODAL LOG HISTORI -->
 <div class="modal-overlay" id="modalHistoriLog">
   <div class="modal-card-schedule" style="max-width:680px;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
       <h3 id="histori-title">📜 Histori Perubahan Data Schedule</h3>
       <button type="button" onclick="tutupModalHistori()" style="background:none; border:none; color:#ef4444; font-size:18px; cursor:pointer;">✖</button>
     </div>
-
     <div style="max-height:400px; overflow-y:auto;">
       <table class="log-table">
         <thead>
-          <tr>
-            <th>Waktu Log</th>
-            <th>User</th>
-            <th>Aksi / Kolom</th>
-            <th>Nilai Sebelum</th>
-            <th>Nilai Sesudah</th>
-          </tr>
+          <tr><th>Waktu Log</th><th>User</th><th>Aksi / Kolom</th><th>Nilai Sebelum</th><th>Nilai Sesudah</th></tr>
         </thead>
         <tbody id="tbody-log-histori">
           <tr><td colspan="5" style="text-align:center; padding:15px;">⏳ Memuat log histori...</td></tr>
         </tbody>
       </table>
     </div>
-
     <div style="margin-top:12px; text-align:right;">
       <button type="button" class="btn-action" onclick="tutupModalHistori()" style="background:#475569;">Tutup</button>
     </div>
   </div>
 </div>
 
+<!-- MODAL PREVIEW PRINT / EXPORT -->
 <div class="modal-overlay" id="modalExportPreview">
   <div class="modal-card-schedule preview-large">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
       <h3>👁️ Preview Cetak Data Control Schedule</h3>
       <button type="button" onclick="tutupModalExportPreview()" style="background:none; border:none; color:#ef4444; font-size:18px; cursor:pointer;">✖</button>
     </div>
-
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; background:#0f172a; padding:6px 10px; border-radius:6px; border:1px solid #334155; flex-wrap:wrap; gap:6px;">
-      <div style="font-size:11px; color:#cbd5e1;">
-        <span>📊 Total Tampil: <b id="preview-total-count" style="color:#38bdf8;">0</b> Baris</span>
-      </div>
-      
+      <div style="font-size:11px; color:#cbd5e1;"><span>📊 Total Tampil: <b id="preview-total-count" style="color:#38bdf8;">0</b> Baris</span></div>
       <div style="display:flex; gap:5px; align-items:center;">
         <span style="font-size:10.5px; color:#94a3b8; font-weight:600; margin-right:4px;">Mode Tampilan:</span>
         <button type="button" id="btn-mode-normal" class="btn-preview-mode" onclick="setPreviewMode('normal')">📋 Normal</button>
         <button type="button" id="btn-mode-rapi" class="btn-preview-mode active-mode" onclick="setPreviewMode('rapi')">✨ Mode Rapi (Merged)</button>
       </div>
-
       <div style="display:flex; gap:6px;">
         <button type="button" class="btn-action" onclick="copyTableWithInlineStyles()" style="background:#eab308; color:#000; font-size:10.5px;">📋 Copy Table (Warna Email)</button>
         <button type="button" class="btn-action" onclick="downloadCSVExport()" style="background:#0284c7; font-size:10.5px;">📄 CSV</button>
@@ -664,7 +508,6 @@
         <button type="button" class="btn-action" onclick="cetakPDFJendelaBaru()" style="background:#ef4444; font-size:10.5px;">🖨️ Cetak / PDF (Tab Baru)</button>
       </div>
     </div>
-
     <div id="printableArea" class="preview-paper">
       <table border="0" cellpadding="0" cellspacing="0" style="width:100%; border-collapse:collapse; margin-bottom:8px; border-bottom:2px solid #0284c7; font-family:Calibri, Arial, sans-serif;">
         <tr>
@@ -692,7 +535,6 @@
           </td>
         </tr>
       </table>
-
       <table class="preview-table" id="preview-table-element" border="1">
         <thead>
           <tr>
@@ -704,7 +546,6 @@
         <tbody id="tbody-export-preview"></tbody>
       </table>
     </div>
-
     <div style="margin-top:12px; text-align:right;">
       <button type="button" class="btn-action" onclick="tutupModalExportPreview()" style="background:#475569;">Tutup Preview</button>
     </div>
@@ -719,11 +560,9 @@
   let parsedImportRows = [];
   let logChangesMap = {};
   let isEditMode = false;
-
   let currentPage = 1;
   let pageSize = 20;
 
-  // DATA MASTER LINER & TERM DYNAMIC
   let masterTermMap = {
     "SINOKOR": ["HIROSHIMA", "OSAKA", "SENDAI", "SHIMIZU", "TOKYO", "YOKOHAMA", "HAKATA"],
     "SITC": ["NAGOYA", "SENDAI", "SHIMIZU"],
@@ -743,29 +582,14 @@
   }
 
   function initFlatpickrInputs() {
-    flatpickr(".fp-date", {
-      dateFormat: "d-m-Y",
-      allowInput: true,
-      clickOpens: true,
-      theme: "dark"
-    });
-
-    flatpickr(".fp-datetime", {
-      dateFormat: "d-m-Y H:i",
-      enableTime: true,
-      time_24hr: true,
-      allowInput: true,
-      clickOpens: true,
-      theme: "dark"
-    });
+    flatpickr(".fp-date", { dateFormat: "d-m-Y", allowInput: true, clickOpens: true, theme: "dark" });
+    flatpickr(".fp-datetime", { dateFormat: "d-m-Y H:i", enableTime: true, time_24hr: true, allowInput: true, clickOpens: true, theme: "dark" });
   }
 
-  /* --- FUNGSI DINAMIS UNTUK RENDER KETENTUAN LINER & TERM --- */
   function renderTermInfoList() {
     const ul = document.getElementById("term-info-list");
     if (!ul) return;
     ul.innerHTML = "";
-
     Object.keys(masterTermMap).forEach(liner => {
       const dests = masterTermMap[liner].join(", ");
       const li = document.createElement("li");
@@ -773,7 +597,6 @@
       ul.appendChild(li);
     });
 
-    // Update Dropdown Liner Utama
     const selectLiner = document.getElementById("sched-liner");
     if (selectLiner) {
       const currentVal = selectLiner.value;
@@ -789,11 +612,9 @@
   function bukaModalEditLinerTerm() {
     const container = document.getElementById("wrapper-edit-liner-rows");
     container.innerHTML = "";
-
     Object.keys(masterTermMap).forEach(liner => {
       tambahRowLinerBaru(liner, masterTermMap[liner].join(", "));
     });
-
     document.getElementById("modalEditLinerTerm").style.display = "flex";
   }
 
@@ -801,30 +622,25 @@
     const container = document.getElementById("wrapper-edit-liner-rows");
     const div = document.createElement("div");
     div.className = "edit-liner-row";
-
     div.innerHTML = `
       <input type="text" class="inp-liner-name" value="${linerName}" placeholder="Nama Liner" autocomplete="off">
       <input type="text" class="inp-liner-term" value="${termDests}" placeholder="Contoh: NAGOYA, OSAKA, TOKYO" autocomplete="off">
       <button type="button" onclick="this.closest('.edit-liner-row').remove();" style="background:#ef4444; color:#fff; border:none; padding:6px 10px; border-radius:6px; cursor:pointer;">🗑️</button>
     `;
-
     container.appendChild(div);
   }
 
   function simpanSemuaLinerTerm() {
     const rows = document.querySelectorAll("#wrapper-edit-liner-rows .edit-liner-row");
     let newMasterMap = {};
-
     rows.forEach(r => {
       const name = r.querySelector(".inp-liner-name").value.trim().toUpperCase();
       const termsStr = r.querySelector(".inp-liner-term").value.trim().toUpperCase();
-
       if (name) {
         const destArr = termsStr ? termsStr.split(",").map(s => s.trim()).filter(s => s !== "") : [];
         newMasterMap[name] = destArr;
       }
     });
-
     masterTermMap = newMasterMap;
     renderTermInfoList();
     tutupModalEditLinerTerm();
@@ -844,7 +660,6 @@
     return new Promise((resolve) => {
       const overlay = document.createElement("div");
       overlay.className = "nexportal-dialog-overlay";
-
       overlay.innerHTML = `
         <div class="nexportal-dialog-card">
           <h4 class="nexportal-dialog-header">NexPortal-EXIM says:</h4>
@@ -855,9 +670,7 @@
           </div>
         </div>
       `;
-
       document.body.appendChild(overlay);
-
       overlay.querySelector("#npConfirmBtnOk").onclick = () => { overlay.remove(); resolve(true); };
       overlay.querySelector("#npConfirmBtnCancel").onclick = () => { overlay.remove(); resolve(false); };
     });
@@ -867,7 +680,6 @@
     return new Promise((resolve) => {
       const overlay = document.createElement("div");
       overlay.className = "nexportal-dialog-overlay";
-
       overlay.innerHTML = `
         <div class="nexportal-dialog-card">
           <h4 class="nexportal-dialog-header">NexPortal-EXIM says:</h4>
@@ -877,9 +689,7 @@
           </div>
         </div>
       `;
-
       document.body.appendChild(overlay);
-
       overlay.querySelector("#npAlertBtnOk").onclick = () => { overlay.remove(); resolve(true); };
     });
   }
@@ -899,27 +709,20 @@
   function formatDateTimeAppScript(valStr) {
     if (!valStr || valStr === '-' || String(valStr).trim() === '') return '-';
     let clean = String(valStr).trim();
-
     let prefix = "";
     if (/^(ATB:|ETD:|ATD:)/i.test(clean)) {
       const matchPrefix = clean.match(/^(ATB:|ETD:|ATD:)\s*/i);
       prefix = matchPrefix[0];
       clean = clean.replace(/^(ATB:|ETD:|ATD:)\s*/i, '').trim();
     }
-
     if (clean.includes('T') || clean.includes('-') || clean.includes('/')) {
       let datePart = clean.split(' ')[0].split('T')[0];
       let timePart = clean.includes('T') ? clean.split('T')[1].substring(0,5) : (clean.includes(' ') ? clean.split(' ')[1].substring(0,5) : '');
-
       let p = datePart.split(/[-/]/);
       if (p.length === 3) {
         let d, m, y;
-        if (p[0].length === 4) {
-          y = p[0]; m = p[1]; d = p[2];
-        } else {
-          d = p[0]; m = p[1]; y = p[2];
-          if (y.length === 2) y = "20" + y;
-        }
+        if (p[0].length === 4) { y = p[0]; m = p[1]; d = p[2]; }
+        else { d = p[0]; m = p[1]; y = p[2]; if (y.length === 2) y = "20" + y; }
         let formattedDate = `${String(d).padStart(2,'0')}-${String(m).padStart(2,'0')}-${y}`;
         let finalStr = timePart ? `${formattedDate} ${timePart}` : formattedDate;
         return prefix ? `${prefix} ${finalStr}` : finalStr;
@@ -998,39 +801,23 @@
 
     try {
       const { data: logsData } = await supabaseClient.from('log_changes').select('*');
-
       logChangesMap = {};
       if (logsData) {
         logsData.forEach(l => {
           const targetKey = String(l.row_target || l.target_id || l.row_id || '').trim();
           const aksiType = String(l.aksi || l.action || '').toUpperCase().trim();
-
           if (targetKey && aksiType !== 'BARU' && aksiType !== 'INPUT PERTAMA') {
-            if (!logChangesMap[targetKey]) {
-              logChangesMap[targetKey] = { total: 0, upd_closing: 0, etb_web: 0, etd_web: 0, eta_port: 0 };
-            }
-            
+            if (!logChangesMap[targetKey]) { logChangesMap[targetKey] = { total: 0, upd_closing: 0, etb_web: 0, etd_web: 0, eta_port: 0 }; }
             const col = String(l.kolom || l.column_name || l.field || '').toUpperCase().trim();
-            
-            if (col === 'UPDATE CLOSING CY' || col === 'UPDATE CLOSING') {
-              logChangesMap[targetKey].upd_closing += 1;
-              logChangesMap[targetKey].total += 1;
-            } else if (col === 'ETB/ATB WEBSITE' || col === 'ETB WEBSITE' || col === 'ETB/ATB') {
-              logChangesMap[targetKey].etb_web += 1;
-              logChangesMap[targetKey].total += 1;
-            } else if (col === 'ETD/ATD WEBSITE' || col === 'ETD WEBSITE' || col === 'ETD/ATD') {
-              logChangesMap[targetKey].etd_web += 1;
-              logChangesMap[targetKey].total += 1;
-            } else if (col === 'ETA PORT' || col === 'ETA') {
-              logChangesMap[targetKey].eta_port += 1;
-              logChangesMap[targetKey].total += 1;
-            }
+            if (col === 'UPDATE CLOSING CY' || col === 'UPDATE CLOSING') { logChangesMap[targetKey].upd_closing += 1; logChangesMap[targetKey].total += 1; }
+            else if (col === 'ETB/ATB WEBSITE' || col === 'ETB WEBSITE' || col === 'ETB/ATB') { logChangesMap[targetKey].etb_web += 1; logChangesMap[targetKey].total += 1; }
+            else if (col === 'ETD/ATD WEBSITE' || col === 'ETD WEBSITE' || col === 'ETD/ATD') { logChangesMap[targetKey].etd_web += 1; logChangesMap[targetKey].total += 1; }
+            else if (col === 'ETA PORT' || col === 'ETA') { logChangesMap[targetKey].eta_port += 1; logChangesMap[targetKey].total += 1; }
           }
         });
       }
 
       const { data, error } = await supabaseClient.from('control_schedule').select('*');
-
       if (error) {
         tbody.innerHTML = `<tr><td colspan="14" style="color:#ef4444; text-align:center;">❌ Error: ${error.message}</td></tr>`;
         return;
@@ -1039,16 +826,13 @@
       masterDataSchedule = (data || []).map((row) => {
         const rowIdStr = String(row.id).trim();
         const logInfo = logChangesMap[rowIdStr] || { total: 0, upd_closing: 0, etb_web: 0, etd_web: 0, eta_port: 0 };
-
         let rawVessel = getSupabaseVal(row, ['feeder_vessel', 'vessel']);
         let rawVoyage = getSupabaseVal(row, ['voyage', 'Voyage']);
-        
         if (rawVessel.includes("|")) {
           const parts = rawVessel.split("|");
           rawVessel = parts[0].trim();
           if (!rawVoyage) rawVoyage = parts.slice(1).join(" ").trim();
         }
-
         let combinedVesselDisplay = rawVoyage ? `${rawVessel} ${rawVoyage}` : rawVessel;
 
         return {
@@ -1067,7 +851,6 @@
           eta_port: formatDateTimeAppScript(getSupabaseVal(row, ['eta_port', 'etaPort'])),
           destination: getSupabaseVal(row, ['destination', 'dest']),
           remark: getSupabaseVal(row, ['remark', 'Remark']),
-
           revCount: logInfo.total,
           revUpdClosing: logInfo.upd_closing,
           revEtbWeb: logInfo.etb_web,
@@ -1082,18 +865,14 @@
       masterDataSchedule.sort((a, b) => {
         const isAtdA = String(a.etd_website || '').toUpperCase().includes("ATD");
         const isAtdB = String(b.etd_website || '').toUpperCase().includes("ATD");
-
         const dateA = parseDateForSorting((a.etd_website && a.etd_website !== '-' && !isAtdA) ? a.etd_website : a.etd_original);
         const dateB = parseDateForSorting((b.etd_website && b.etd_website !== '-' && !isAtdB) ? b.etd_website : b.etd_original);
-
         const isPastA = isAtdA || (dateA < today);
         const isPastB = isAtdB || (dateB < today);
 
         if (!isPastA && isPastB) return -1;
         if (isPastA && !isPastB) return 1;
-
         if (!isPastA && !isPastB) return dateA - dateB;
-
         return dateB - dateA;
       });
 
@@ -1121,7 +900,6 @@
       const pSize = parseInt(pageSize, 10);
       const totalPages = Math.ceil(currentFilteredSchedule.length / pSize);
       if (currentPage > totalPages) currentPage = totalPages || 1;
-      
       const startIdx = (currentPage - 1) * pSize;
       const endIdx = startIdx + pSize;
       pagedData = currentFilteredSchedule.slice(startIdx, endIdx);
@@ -1132,39 +910,24 @@
 
     pagedData.forEach((item, index) => {
       const tr = document.createElement("tr");
-
-      const actualDisplayNo = (pageSize === 'all') 
-        ? (index + 1) 
-        : ((currentPage - 1) * parseInt(pageSize, 10) + index + 1);
-
-      const revBadgeHtml = item.revCount > 0 
-        ? `<span class="badge-rev-counter">rev ${item.revCount}</span>` 
-        : ``;
-
+      const actualDisplayNo = (pageSize === 'all') ? (index + 1) : ((currentPage - 1) * parseInt(pageSize, 10) + index + 1);
+      const revBadgeHtml = item.revCount > 0 ? `<span class="badge-rev-counter">rev ${item.revCount}</span>` : ``;
       const classUpdClos = getRevColorClass(item.revUpdClosing);
       const classEtbWeb = getRevColorClass(item.revEtbWeb);
       const classEtdWeb = getRevColorClass(item.revEtdWeb);
       const classEtaPort = getRevColorClass(item.revEtaPort);
-
       const isAtbRed = String(item.etb_website || '').toUpperCase().includes("ATB") ? "text-actual-red" : "";
       const isAtdRed = String(item.etd_website || '').toUpperCase().includes("ATD") ? "text-actual-red" : "";
 
       let isAtd = String(item.etd_website || '').toUpperCase().includes("ATD");
       let dateEtd = parseDateForSorting(item.etd_website !== '-' ? item.etd_website : item.etd_original);
-      let isPastDate = isAtd || (dateEtd < today);
-
-      if (isPastDate) {
-        tr.className = "row-past-atd";
-      }
+      if (isAtd || (dateEtd < today)) { tr.className = "row-past-atd"; }
 
       const fnDblClick = `bukaModalHistori('${item.id}', ${actualDisplayNo}, '${(item.feeder_vessel || 'Vessel').replace(/'/g, "\\'")}')`;
 
       tr.innerHTML = `
         <td class="col-no" ondblclick="${fnDblClick}">${actualDisplayNo}</td>
-        <td class="col-week" ondblclick="${fnDblClick}">
-          ${revBadgeHtml}
-          <span class="badge-week">${item.week || '-'}</span>
-        </td>
+        <td class="col-week" ondblclick="${fnDblClick}">${revBadgeHtml}<span class="badge-week">${item.week || '-'}</span></td>
         <td class="col-liner" ondblclick="${fnDblClick}"><span class="badge-liner">${item.liner || '-'}</span></td>
         <td class="col-port" ondblclick="${fnDblClick}">${item.port || '-'}</td>
         <td class="col-vessel" ondblclick="${fnDblClick}" style="font-weight:700;">${item.feeder_vessel || '-'}</td>
@@ -1176,9 +939,7 @@
         <td class="col-etaport ${classEtaPort}" ondblclick="${fnDblClick}">${item.eta_port || '-'}</td>
         <td class="col-dest" ondblclick="${fnDblClick}" style="font-weight:600;">${item.destination || '-'}</td>
         <td class="col-remark" ondblclick="${fnDblClick}">${item.remark || '-'}</td>
-        <td class="col-aksi-cell">
-          <button type="button" class="btn-aksi-tbl" onclick="toggleMenuAksiSchedule(event, '${item.id}', ${actualDisplayNo})">Aksi ▾</button>
-        </td>
+        <td class="col-aksi-cell"><button type="button" class="btn-aksi-tbl" onclick="toggleMenuAksiSchedule(event, '${item.id}', ${actualDisplayNo})">Aksi ▾</button></td>
       `;
       tbody.appendChild(tr);
     });
@@ -1189,16 +950,12 @@
   function renderPaginationControls(totalItems) {
     const container = document.getElementById("paginationNavButtons");
     container.innerHTML = "";
-
     if (pageSize === 'all' || totalItems === 0) return;
-
     const pSize = parseInt(pageSize, 10);
     const totalPages = Math.ceil(totalItems / pSize);
 
     const btnPrev = document.createElement("button");
-    btnPrev.type = "button";
-    btnPrev.className = "btn-page";
-    btnPrev.innerText = "<";
+    btnPrev.type = "button"; btnPrev.className = "btn-page"; btnPrev.innerText = "<";
     btnPrev.disabled = currentPage === 1;
     btnPrev.onclick = () => { currentPage--; tampilkanTabelScheduleWithPagination(); };
     container.appendChild(btnPrev);
@@ -1209,59 +966,32 @@
 
     for (let p = startPage; p <= endPage; p++) {
       const btnP = document.createElement("button");
-      btnP.type = "button";
-      btnP.className = `btn-page ${p === currentPage ? 'active' : ''}`;
-      btnP.innerText = p;
+      btnP.type = "button"; btnP.className = `btn-page ${p === currentPage ? 'active' : ''}`; btnP.innerText = p;
       btnP.onclick = () => { currentPage = p; tampilkanTabelScheduleWithPagination(); };
       container.appendChild(btnP);
     }
 
     const btnNext = document.createElement("button");
-    btnNext.type = "button";
-    btnNext.className = "btn-page";
-    btnNext.innerText = ">";
+    btnNext.type = "button"; btnNext.className = "btn-page"; btnNext.innerText = ">";
     btnNext.disabled = currentPage === totalPages || totalPages === 0;
     btnNext.onclick = () => { currentPage++; tampilkanTabelScheduleWithPagination(); };
     container.appendChild(btnNext);
   }
 
-  function changePageSize(val) {
-    pageSize = val;
-    currentPage = 1;
-    tampilkanTabelScheduleWithPagination();
-  }
+  function changePageSize(val) { pageSize = val; currentPage = 1; tampilkanTabelScheduleWithPagination(); }
 
   function toggleMenuAksiSchedule(event, rowId, displayNo) {
-    if (event) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
+    if (event) { event.preventDefault(); event.stopPropagation(); }
     tutupSemuaMenuAksiSchedule();
-
     const btn = event.currentTarget;
     const rect = btn.getBoundingClientRect();
-
     const menu = document.createElement("div");
-    menu.className = "aksi-menu-popup";
-    menu.id = "activeAksiPopup";
-    menu.style.cssText = `
-      position: fixed;
-      top: ${rect.bottom + 4}px;
-      left: ${rect.left - 90}px;
-      background: #0f172a;
-      border: 1px solid #334155;
-      border-radius: 8px;
-      width: 125px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.9);
-      z-index: 9999999;
-      overflow: hidden;
-    `;
-
+    menu.className = "aksi-menu-popup"; menu.id = "activeAksiPopup";
+    menu.style.cssText = `position: fixed; top: ${rect.bottom + 4}px; left: ${rect.left - 90}px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; width: 125px; box-shadow: 0 10px 25px rgba(0,0,0,0.9); z-index: 9999999; overflow: hidden;`;
     menu.innerHTML = `
       <button type="button" onclick="editScheduleByGlobalId('${rowId}')" style="display:block; width:100%; text-align:left; background:none; border:none; padding:7px 9px; color:#f59e0b; font-size:11px; cursor:pointer; font-weight:600;">✏️ Edit Data</button>
       <button type="button" onclick="hapusSchedule(event, ${displayNo}, '${rowId}')" style="display:block; width:100%; text-align:left; background:none; border:none; padding:7px 9px; color:#f87171; font-size:11px; cursor:pointer; font-weight:600;">🗑️ Delete Data</button>
     `;
-
     document.body.appendChild(menu);
   }
 
@@ -1279,15 +1009,11 @@
     const etdVal = document.getElementById("sched-etdorig").value;
     const targetInp = document.getElementById("sched-closingcy");
     if (!etdVal) { targetInp.value = ""; return; }
-
     const parts = etdVal.split("-");
     if(parts.length === 3) {
       const d = new Date(parts[2], parts[1] - 1, parts[0]);
       d.setDate(d.getDate() - 1);
-      const day = ("0" + d.getDate()).slice(-2);
-      const month = ("0" + (d.getMonth() + 1)).slice(-2);
-      const year = d.getFullYear();
-      targetInp.value = `${day}-${month}-${year}`;
+      targetInp.value = `${("0" + d.getDate()).slice(-2)}-${("0" + (d.getMonth() + 1)).slice(-2)}-${d.getFullYear()}`;
     }
   }
 
@@ -1296,12 +1022,8 @@
     const liner = document.getElementById("sched-liner").value;
     const dests = masterTermMap[liner] || [];
     document.getElementById("dest-rows-wrapper").innerHTML = "";
-    
-    if (dests.length > 0) {
-      dests.forEach(d => tambahDestinasiRowInForm(d, '', '', true, false));
-    } else {
-      tambahDestinasiRowInForm("", "", "", true, false);
-    }
+    if (dests.length > 0) { dests.forEach(d => tambahDestinasiRowInForm(d, '', '', true, false)); }
+    else { tambahDestinasiRowInForm("", "", "", true, false); }
   }
 
   function refreshAllDestinationOptions() {
@@ -1310,34 +1032,25 @@
     const allowedList = masterTermMap[liner] || ["NAGOYA","OSAKA","TOKYO","YOKOHAMA","SENDAI","SHIMIZU","HIROSHIMA","HAKATA","LAEM CHABANG"];
 
     const selectedDestinations = [];
-    document.querySelectorAll("#dest-rows-wrapper .inp-dest-val").forEach(sel => {
-      if (sel.value) selectedDestinations.push(sel.value);
-    });
+    document.querySelectorAll("#dest-rows-wrapper .inp-dest-val").forEach(sel => { if (sel.value) selectedDestinations.push(sel.value); });
 
     document.querySelectorAll("#dest-rows-wrapper .inp-dest-val").forEach(sel => {
       const currentValue = sel.value || sel.getAttribute("data-initial-val");
       let optionsHtml = `<option value="">-- Select Destination --</option>`;
-
       allowedList.forEach(d => {
         if (!selectedDestinations.includes(d) || d === currentValue) {
-          const isSelected = (d === currentValue) ? 'selected' : '';
-          optionsHtml += `<option value="${d}" ${isSelected}>${d}</option>`;
+          optionsHtml += `<option value="${d}" ${d === currentValue ? 'selected' : ''}>${d}</option>`;
         }
       });
-
       sel.innerHTML = optionsHtml;
       if (currentValue) sel.value = currentValue;
     });
 
     const btnAdd = document.getElementById("btn-add-dest-row");
     if (selectedDestinations.length >= allowedList.length && allowedList.length > 0) {
-      btnAdd.disabled = true;
-      btnAdd.style.opacity = "0.5";
-      btnAdd.style.cursor = "not-allowed";
+      btnAdd.disabled = true; btnAdd.style.opacity = "0.5"; btnAdd.style.cursor = "not-allowed";
     } else {
-      btnAdd.disabled = false;
-      btnAdd.style.opacity = "1";
-      btnAdd.style.cursor = "pointer";
+      btnAdd.disabled = false; btnAdd.style.opacity = "1"; btnAdd.style.cursor = "pointer";
     }
   }
 
@@ -1352,57 +1065,44 @@
       return;
     }
 
-    const isDisabled = lockDestination ? 'disabled="disabled"' : '';
     const wrapper = document.getElementById("dest-rows-wrapper");
     const div = document.createElement("div");
     div.className = "dest-row-item";
-
     div.innerHTML = `
-      <div class="col-dest-val">
+      <div>
         <label style="font-size:9.5px; color:#94a3b8; display:block;">DESTINATION *</label>
-        <select class="inp-dest-val" data-initial-val="${selectedDest}" ${isDisabled} onchange="refreshAllDestinationOptions()"></select>
+        <select class="inp-dest-val" data-initial-val="${selectedDest}" ${lockDestination ? 'disabled' : ''} onchange="refreshAllDestinationOptions()"></select>
       </div>
-      <div class="col-eta-val">
+      <div>
         <label style="font-size:9.5px; color:#94a3b8; display:block;">ETA PORT</label>
         <input type="text" class="inp-eta-val fp-date" value="${etaValue}" placeholder="dd-mm-yyyy" autocomplete="off">
       </div>
-      <div class="col-remark-val">
+      <div>
         <label style="font-size:9.5px; color:#94a3b8; display:block;">REMARK DESTINATION</label>
         <input type="text" class="inp-dest-remark" value="${remarkValue}" placeholder="Remark kota" autocomplete="off">
       </div>
-      <div style="text-align:center; width:40px;">
+      <div style="text-align:center;">
         <label style="font-size:9.5px; color:#38bdf8; display:block;">Sync</label>
         <input type="checkbox" class="chk-sync-remark" ${syncCheck ? 'checked' : ''} onchange="onToggleSyncRemark(this)">
       </div>
-      <div style="text-align:right; width:35px;">
+      <div style="text-align:right;">
         ${lockDestination ? '' : `<button type="button" onclick="this.closest('.dest-row-item').remove(); refreshAllDestinationOptions();" style="background:#ef4444; color:#fff; border:none; padding:5px 7px; border-radius:4px; font-size:10px; cursor:pointer;">🗑️</button>`}
       </div>
     `;
 
     wrapper.appendChild(div);
-
-    const selectElem = div.querySelector(".inp-dest-val");
-    if (selectedDest) {
-      selectElem.setAttribute("data-initial-val", selectedDest);
-    }
-
+    if (selectedDest) div.querySelector(".inp-dest-val").setAttribute("data-initial-val", selectedDest);
     refreshAllDestinationOptions();
     initFlatpickrInputs();
   }
 
   function onToggleSyncRemark(chk) {
-    const row = chk.closest(".dest-row-item");
-    const inpRemark = row.querySelector(".inp-dest-remark");
+    const inpRemark = chk.closest(".dest-row-item").querySelector(".inp-dest-remark");
     const mainRemark = document.getElementById("sched-remark").value;
     if (chk.checked) {
-      inpRemark.value = mainRemark;
-      inpRemark.readOnly = true;
-      inpRemark.style.background = "#0f172a";
-      inpRemark.style.color = "#94a3b8";
+      inpRemark.value = mainRemark; inpRemark.readOnly = true; inpRemark.style.background = "#0f172a"; inpRemark.style.color = "#94a3b8";
     } else {
-      inpRemark.readOnly = false;
-      inpRemark.style.background = "#0f172a";
-      inpRemark.style.color = "#ffffff";
+      inpRemark.readOnly = false; inpRemark.style.background = "#0f172a"; inpRemark.style.color = "#ffffff";
     }
   }
 
@@ -1410,8 +1110,7 @@
     const mainRemark = document.getElementById("sched-remark").value;
     document.querySelectorAll("#dest-rows-wrapper .dest-row-item").forEach(r => {
       const chk = r.querySelector(".chk-sync-remark");
-      const inp = r.querySelector(".inp-dest-remark");
-      if (chk && chk.checked) inp.value = mainRemark;
+      if (chk && chk.checked) r.querySelector(".inp-dest-remark").value = mainRemark;
     });
   }
 
@@ -1421,27 +1120,16 @@
       isEditMode = false;
       document.getElementById("modal-schedule-title").innerText = "🚢 Form Tambah Control Schedule";
       document.getElementById("sched-group-ids").value = "";
-      
       document.getElementById("sched-week").value = getCurrentWeekNumber();
-      
       const linerElem = document.getElementById("sched-liner");
-      linerElem.value = "";
-      linerElem.disabled = false;
-      linerElem.removeAttribute("data-current-liner");
-
+      linerElem.value = ""; linerElem.disabled = false; linerElem.removeAttribute("data-current-liner");
       document.getElementById("sched-port").value = "SRG";
-      document.getElementById("sched-vessel-name").value = "";
-      document.getElementById("sched-vessel-name").disabled = false;
-      document.getElementById("sched-voyage").value = "";
-      document.getElementById("sched-voyage").disabled = false;
-      document.getElementById("sched-etdorig").value = "";
-      document.getElementById("sched-closingcy").value = "";
-      document.getElementById("sched-updclosing").value = "";
-      document.getElementById("sched-etbweb").value = "";
-      document.getElementById("sched-etdweb").value = "";
-      document.getElementById("sched-remark").value = "";
+      document.getElementById("sched-vessel-name").value = ""; document.getElementById("sched-vessel-name").disabled = false;
+      document.getElementById("sched-voyage").value = ""; document.getElementById("sched-voyage").disabled = false;
+      document.getElementById("sched-etdorig").value = ""; document.getElementById("sched-closingcy").value = "";
+      document.getElementById("sched-updclosing").value = ""; document.getElementById("sched-etbweb").value = "";
+      document.getElementById("sched-etdweb").value = ""; document.getElementById("sched-remark").value = "";
       document.getElementById("btn-add-dest-row").style.display = "block";
-
       document.getElementById("dest-rows-wrapper").innerHTML = "";
       tambahDestinasiRowInForm("", "", "", true, false);
     }
@@ -1460,33 +1148,22 @@
       String(x.feeder_vessel).trim().toUpperCase() === String(itemTarget.feeder_vessel).trim().toUpperCase()
     );
 
-    const groupIds = groupItems.map(x => x.id);
-    document.getElementById("sched-group-ids").value = JSON.stringify(groupIds);
-
+    document.getElementById("sched-group-ids").value = JSON.stringify(groupItems.map(x => x.id));
     document.getElementById("modal-schedule-title").innerText = `✏️ Edit Grup Kapal: ${itemTarget.feeder_vessel} (${groupItems.length} Destinasi)`;
     document.getElementById("sched-week").value = (itemTarget.week || '').replace(/\D/g, '');
     
     const linerElem = document.getElementById("sched-liner");
-    linerElem.value = itemTarget.liner || '';
-    linerElem.setAttribute("data-current-liner", itemTarget.liner || '');
-    linerElem.disabled = true;
+    linerElem.value = itemTarget.liner || ''; linerElem.setAttribute("data-current-liner", itemTarget.liner || ''); linerElem.disabled = true;
 
     document.getElementById("sched-port").value = itemTarget.port || 'SRG';
-
-    let vName = itemTarget.vessel_name_only || itemTarget.feeder_vessel || "";
-    let vVoy = itemTarget.voyage_only || "";
-    
-    document.getElementById("sched-vessel-name").value = vName;
-    document.getElementById("sched-vessel-name").disabled = true;
-    document.getElementById("sched-voyage").value = vVoy;
-
+    document.getElementById("sched-vessel-name").value = itemTarget.vessel_name_only || itemTarget.feeder_vessel || ""; document.getElementById("sched-vessel-name").disabled = true;
+    document.getElementById("sched-voyage").value = itemTarget.voyage_only || "";
     document.getElementById("sched-etdorig").value = parseToInputDate(itemTarget.etd_original);
     document.getElementById("sched-closingcy").value = itemTarget.closing_cy || '';
     document.getElementById("sched-updclosing").value = parseToInputDateTimeLocal(itemTarget.update_closing_cy);
     document.getElementById("sched-etbweb").value = parseToInputDateTimeLocal(itemTarget.etb_website);
     document.getElementById("sched-etdweb").value = parseToInputDateTimeLocal(itemTarget.etd_website);
     document.getElementById("sched-remark").value = itemTarget.remark || '';
-    
     document.getElementById("btn-add-dest-row").style.display = "none";
 
     document.getElementById("dest-rows-wrapper").innerHTML = "";
@@ -1509,16 +1186,7 @@
       const now = new Date();
       const hariArr = ["minggu", "senin", "selasa", "rabu", "kamis", "jumat", "sabtu"];
       const ts = `${hariArr[now.getDay()]}, ${String(now.getDate()).padStart(2,'0')}-${String(now.getMonth()+1).padStart(2,'0')}-${now.getFullYear()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-
-      await supabaseClient.from('log_changes').insert([{
-        timestamp: ts,
-        row_target: String(rowTarget),
-        user: user || 'Aditya',
-        aksi: aksi,
-        kolom: kolom,
-        nilai_lama: String(oldVal || '-'),
-        nilai_baru: String(newVal || '-')
-      }]);
+      await supabaseClient.from('log_changes').insert([{ timestamp: ts, row_target: String(rowTarget), user: user || 'Aditya', aksi: aksi, kolom: kolom, nilai_lama: String(oldVal || '-'), nilai_baru: String(newVal || '-') }]);
     } catch(e) { console.error("Log error:", e); }
   }
 
@@ -1529,30 +1197,23 @@
     const vesselInp = document.getElementById("sched-vessel-name").value.trim().toUpperCase();
     const voyageInp = document.getElementById("sched-voyage").value.trim().toUpperCase();
     const alertDiv = document.getElementById("sched-alert");
-
     const fullVesselNameDisplay = voyageInp ? `${vesselInp} ${voyageInp}` : vesselInp;
     const destRows = document.querySelectorAll("#dest-rows-wrapper .dest-row-item");
 
     if (!linerInp || !vesselInp || destRows.length === 0) {
-      alertDiv.style.color = "#ef4444";
-      alertDiv.innerText = "⚠️ Harap isi Liner, Feeder Vessel, dan minimal 1 Destination!";
-      return;
+      alertDiv.style.color = "#ef4444"; alertDiv.innerText = "⚠️ Harap isi Liner, Feeder Vessel, dan minimal 1 Destination!"; return;
     }
 
-    alertDiv.style.color = "#38bdf8";
-    alertDiv.innerText = "⏳ Menyimpan data grup kapal ke Supabase...";
+    alertDiv.style.color = "#38bdf8"; alertDiv.innerText = "⏳ Menyimpan data grup kapal ke Supabase...";
 
     try {
       let existingIds = groupIdsStr ? JSON.parse(groupIdsStr) : [];
       let isUpdateAction = existingIds.length > 0;
-
       let oldGroupDataMap = {};
       if (isUpdateAction) {
         existingIds.forEach(id => {
           const found = masterDataSchedule.find(m => String(m.id) === String(id));
-          if (found) {
-            oldGroupDataMap[found.destination] = found;
-          }
+          if (found) oldGroupDataMap[found.destination] = found;
         });
       }
 
@@ -1560,12 +1221,10 @@
         const destVal = r.querySelector(".inp-dest-val").value;
         const etaIsoVal = r.querySelector(".inp-eta-val").value;
         const remVal = r.querySelector(".inp-dest-remark").value;
-
         const etdOrigFormatted = document.getElementById("sched-etdorig").value;
         const updClosingFormatted = document.getElementById("sched-updclosing").value;
         const etbWebFormatted = document.getElementById("sched-etbweb").value;
         const etdWebFormatted = document.getElementById("sched-etdweb").value;
-        const etaFormatted = etaIsoVal;
 
         const payload = {
           week: weekInp ? `WEEK ${weekInp}` : '',
@@ -1578,7 +1237,7 @@
           update_closing: updClosingFormatted,
           etb_atb_website: etbWebFormatted ? (etbWebFormatted.toUpperCase().includes('ATB') ? etbWebFormatted : `ATB: ${etbWebFormatted}`) : '',
           etd_atd_website: etdWebFormatted ? (etdWebFormatted.toUpperCase().includes('ETD') || etdWebFormatted.toUpperCase().includes('ATD') ? etdWebFormatted : `ETD: ${etdWebFormatted}`) : '',
-          eta_port: etaFormatted,
+          eta_port: etaIsoVal,
           destination: destVal,
           remark: remVal || document.getElementById("sched-remark").value.trim()
         };
@@ -1598,90 +1257,42 @@
             await catatLogChangesServer(targetRowId, "Aditya", "BARU", "ALL", "-", fullVesselNameDisplay);
           } else {
             const cleanPrefix = (str) => String(str || '').replace(/^(ATB:|ETD:|ATD:)\s*/i, '').trim();
-
-            const oldUpd = cleanPrefix(oldData.update_closing_cy);
-            const newUpd = cleanPrefix(updClosingFormatted);
-            if (oldUpd !== newUpd && newUpd !== '' && oldUpd !== '-') {
+            if (cleanPrefix(oldData.update_closing_cy) !== cleanPrefix(updClosingFormatted) && updClosingFormatted !== '' && oldData.update_closing_cy !== '-') {
               await catatLogChangesServer(targetRowId, "Aditya", "UPDATE", "UPDATE CLOSING CY", oldData.update_closing_cy, updClosingFormatted);
             }
-
-            const oldEtb = cleanPrefix(oldData.etb_website);
-            const newEtb = cleanPrefix(payload.etb_atb_website);
-            if (oldEtb !== newEtb && newEtb !== '' && oldEtb !== '-') {
+            if (cleanPrefix(oldData.etb_website) !== cleanPrefix(payload.etb_atb_website) && payload.etb_atb_website !== '' && oldData.etb_website !== '-') {
               await catatLogChangesServer(targetRowId, "Aditya", "UPDATE", "ETB/ATB WEBSITE", oldData.etb_website, payload.etb_atb_website);
             }
-
-            const oldEtd = cleanPrefix(oldData.etd_website);
-            const newEtd = cleanPrefix(payload.etd_atd_website);
-            if (oldEtd !== newEtd && newEtd !== '' && oldEtd !== '-') {
+            if (cleanPrefix(oldData.etd_website) !== cleanPrefix(payload.etd_atd_website) && payload.etd_atd_website !== '' && oldData.etd_website !== '-') {
               await catatLogChangesServer(targetRowId, "Aditya", "UPDATE", "ETD/ATD WEBSITE", oldData.etd_website, payload.etd_atd_website);
             }
-
-            const oldEta = cleanPrefix(oldData.eta_port);
-            const newEta = cleanPrefix(etaFormatted);
-            if (oldEta !== newEta && newEta !== '' && oldEta !== '-') {
-              await catatLogChangesServer(targetRowId, "Aditya", "UPDATE", "ETA PORT", oldData.eta_port, etaFormatted);
+            if (cleanPrefix(oldData.eta_port) !== cleanPrefix(etaIsoVal) && etaIsoVal !== '' && oldData.eta_port !== '-') {
+              await catatLogChangesServer(targetRowId, "Aditya", "UPDATE", "ETA PORT", oldData.eta_port, etaIsoVal);
             }
           }
         }
       }
 
-      alertDiv.style.color = "#4ade80";
-      alertDiv.innerText = "✅ Data Schedule berhasil disimpan!";
-      setTimeout(() => {
-        tutupModalSchedule();
-        muatDataSchedule();
-      }, 1000);
+      alertDiv.style.color = "#4ade80"; alertDiv.innerText = "✅ Data Schedule berhasil disimpan!";
+      setTimeout(() => { tutupModalSchedule(); muatDataSchedule(); }, 1000);
     } catch(err) {
-      alertDiv.style.color = "#ef4444";
-      alertDiv.innerText = "❌ Gagal menyimpan: " + err.message;
+      alertDiv.style.color = "#ef4444"; alertDiv.innerText = "❌ Gagal menyimpan: " + err.message;
     }
   }
 
   async function hapusSchedule(event, displayNo, rowId) {
-    if (event) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
+    if (event) { event.preventDefault(); event.stopPropagation(); }
     tutupSemuaMenuAksiSchedule();
-
     const targetId = isNaN(rowId) ? rowId : parseInt(rowId, 10);
-
-    const isConfirmed = await showCustomConfirm(`⚠️ Apakah Anda yakin ingin menghapus data Schedule pada baris ke-${displayNo} (ID: ${targetId}) ini?`);
-
-    if (!isConfirmed) {
-      return false;
-    }
+    if (!await showCustomConfirm(`⚠️ Apakah Anda yakin ingin menghapus data Schedule pada baris ke-${displayNo} (ID: ${targetId}) ini?`)) return false;
 
     try {
-      const { data, error } = await supabaseClient
-        .from('control_schedule')
-        .delete()
-        .eq('id', targetId)
-        .select();
-
-      if (error) {
-        await showCustomAlert("❌ Gagal hapus data Supabase: " + error.message);
-        console.error("Supabase Delete Error:", error);
-        return;
-      }
-
-      try {
-        await supabaseClient
-          .from('log_changes')
-          .delete()
-          .eq('row_target', String(targetId));
-      } catch (logErr) {
-        console.warn("Gagal hapus log_changes:", logErr);
-      }
-
+      const { error } = await supabaseClient.from('control_schedule').delete().eq('id', targetId);
+      if (error) { await showCustomAlert("❌ Gagal hapus data Supabase: " + error.message); return; }
+      try { await supabaseClient.from('log_changes').delete().eq('row_target', String(targetId)); } catch (e) {}
       await showCustomAlert("✅ Data Schedule berhasil dihapus!");
       muatDataSchedule();
-
-    } catch(err) {
-      await showCustomAlert("❌ Error Sistem: " + err.message);
-      console.error("Catch Delete Error:", err);
-    }
+    } catch(err) { await showCustomAlert("❌ Error Sistem: " + err.message); }
   }
 
   async function bukaModalHistori(rowId, displayNo, titleInfo) {
@@ -1693,20 +1304,10 @@
     const targetStr = String(rowId).trim();
     const { data } = await supabaseClient.from('log_changes').select('*').order('id', { ascending: false });
 
-    if (!data || data.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#94a3b8; padding:15px;">Belum ada catatan histori log untuk baris ini.</td></tr>`;
-      return;
-    }
+    if (!data || data.length === 0) { tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#94a3b8; padding:15px;">Belum ada catatan histori log untuk baris ini.</td></tr>`; return; }
 
-    const filteredLogs = data.filter(l => {
-      const tgt = String(l.row_target || l.target_id || l.row_id || '').trim();
-      return tgt === targetStr || tgt === titleInfo.trim();
-    });
-
-    if (filteredLogs.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#94a3b8; padding:15px;">Belum ada catatan histori log untuk baris ini.</td></tr>`;
-      return;
-    }
+    const filteredLogs = data.filter(l => String(l.row_target || l.target_id || l.row_id || '').trim() === targetStr || String(l.row_target || '').trim() === titleInfo.trim());
+    if (filteredLogs.length === 0) { tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#94a3b8; padding:15px;">Belum ada catatan histori log untuk baris ini.</td></tr>`; return; }
 
     tbody.innerHTML = "";
     filteredLogs.forEach(l => {
@@ -1722,143 +1323,63 @@
     });
   }
 
-  function tutupModalHistori() {
-    document.getElementById("modalHistoriLog").style.display = "none";
-  }
+  function tutupModalHistori() { document.getElementById("modalHistoriLog").style.display = "none"; }
 
   window.syncDataTPKS = async function(event) {
-    if (event) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
-
-    const isUserProceed = await showCustomConfirm("⚡ Jalankan sinkronisasi otomatis status kapal TPKS (Port SRG)?");
-    if (!isUserProceed) {
-      return false;
-    }
+    if (event) { event.preventDefault(); event.stopPropagation(); }
+    if (!await showCustomConfirm("⚡ Jalankan sinkronisasi otomatis status kapal TPKS (Port SRG)?")) return false;
 
     try {
-      if (typeof supabaseClient === 'undefined' || !supabaseClient) {
-        await showCustomAlert("❌ Error: Koneksi database Supabase belum siap. Silakan muat ulang halaman.");
-        return false;
-      }
-
+      if (typeof supabaseClient === 'undefined' || !supabaseClient) { await showCustomAlert("❌ Error: Koneksi database Supabase belum siap."); return false; }
       const { data: srgRows, error: fetchErr } = await supabaseClient.from('control_schedule').select('*').eq('port', 'SRG');
-      if (fetchErr) {
-        await showCustomAlert("❌ Gagal mengambil data TPKS: " + fetchErr.message);
-        return false;
-      }
-
-      if (!srgRows || srgRows.length === 0) {
-        await showCustomAlert("ℹ️ Tidak ditemukan baris kapal dengan PORT 'SRG' untuk di-sync.");
-        return false;
-      }
+      if (fetchErr || !srgRows || srgRows.length === 0) { await showCustomAlert("ℹ️ Tidak ditemukan baris kapal PORT 'SRG' untuk di-sync."); return false; }
 
       let updatedVessels = [];
       const now = new Date();
       const dateStr = `${String(now.getDate()).padStart(2,'0')}-${String(now.getMonth()+1).padStart(2,'0')}-${now.getFullYear()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
 
       for (let row of srgRows) {
-        let isModified = false;
-        let updatePayload = {};
-
-        const oldUpdClos = row.update_closing || row.update_closing_cy || '';
-        if (!oldUpdClos || oldUpdClos === '-' || oldUpdClos.trim() === '') {
-          updatePayload.update_closing = dateStr;
-          isModified = true;
-          await catatLogChangesServer(row.id, "TPKS BOT", "SYNC TPKS", "UPDATE CLOSING CY", oldUpdClos, dateStr);
-        }
-
-        const oldEtb = row.etb_atb_website || '';
-        if (!oldEtb || oldEtb === '-' || oldEtb.trim() === '') {
-          updatePayload.etb_atb_website = `ATB: ${dateStr}`;
-          isModified = true;
-          await catatLogChangesServer(row.id, "TPKS BOT", "SYNC TPKS", "ETB/ATB WEBSITE", oldEtb, `ATB: ${dateStr}`);
-        }
-
-        const oldEtd = row.etd_atd_website || '';
-        if (!oldEtd || oldEtd === '-' || oldEtd.trim() === '') {
-          updatePayload.etd_atd_website = `ETD: ${dateStr}`;
-          isModified = true;
-          await catatLogChangesServer(row.id, "TPKS BOT", "SYNC TPKS", "ETD/ATD WEBSITE", oldEtd, `ETD: ${dateStr}`);
-        }
+        let isModified = false; let updatePayload = {};
+        if (!row.update_closing || row.update_closing === '-') { updatePayload.update_closing = dateStr; isModified = true; await catatLogChangesServer(row.id, "TPKS BOT", "SYNC TPKS", "UPDATE CLOSING CY", row.update_closing, dateStr); }
+        if (!row.etb_atb_website || row.etb_atb_website === '-') { updatePayload.etb_atb_website = `ATB: ${dateStr}`; isModified = true; await catatLogChangesServer(row.id, "TPKS BOT", "SYNC TPKS", "ETB/ATB WEBSITE", row.etb_atb_website, `ATB: ${dateStr}`); }
+        if (!row.etd_atd_website || row.etd_atd_website === '-') { updatePayload.etd_atd_website = `ETD: ${dateStr}`; isModified = true; await catatLogChangesServer(row.id, "TPKS BOT", "SYNC TPKS", "ETD/ATD WEBSITE", row.etd_atd_website, `ETD: ${dateStr}`); }
 
         if (isModified) {
           await supabaseClient.from('control_schedule').update(updatePayload).eq('id', row.id);
-
           const vDisplay = row.voyage ? `${row.feeder_vessel} ${row.voyage}` : row.feeder_vessel;
-          if (!updatedVessels.includes(vDisplay)) {
-            updatedVessels.push(vDisplay);
-          }
+          if (!updatedVessels.includes(vDisplay)) updatedVessels.push(vDisplay);
         }
       }
 
       if (updatedVessels.length > 0) {
-        let msgList = updatedVessels.map((v, i) => `${i + 1}. ${v}`).join("\n");
-        await showCustomAlert(`⚡ SINKRONISASI TPKS BERHASIL!\n\nBerikut ${updatedVessels.length} Kapal yang berhasil diperbarui:\n\n${msgList}`);
-      } else {
-        await showCustomAlert("⚡ Status Web TPKS sudah yang terbaru. Tidak ada perubahan data kapal.");
-      }
-
+        await showCustomAlert(`⚡ SINKRONISASI TPKS BERHASIL!\n\nBerikut ${updatedVessels.length} Kapal yang diperbarui:\n\n${updatedVessels.map((v, i) => `${i + 1}. ${v}`).join("\n")}`);
+      } else { await showCustomAlert("⚡ Status Web TPKS sudah yang terbaru."); }
       muatDataSchedule();
-    } catch(err) {
-      await showCustomAlert("❌ Error sync TPKS: " + err.message);
-    }
+    } catch(err) { await showCustomAlert("❌ Error sync TPKS: " + err.message); }
   };
 
-  function bukaModalExportPreview() {
-    document.getElementById("modalExportPreview").style.display = "flex";
-    document.getElementById("preview-total-count").innerText = currentFilteredSchedule.length;
-    renderExportPreviewContent();
-  }
-
-  function tutupModalExportPreview() {
-    document.getElementById("modalExportPreview").style.display = "none";
-  }
-
-  function setPreviewMode(mode) {
-    currentPreviewMode = mode;
-    document.getElementById("btn-mode-normal").classList.toggle("active-mode", mode === 'normal');
-    document.getElementById("btn-mode-rapi").classList.toggle("active-mode", mode === 'rapi');
-    renderExportPreviewContent();
-  }
+  function bukaModalExportPreview() { document.getElementById("modalExportPreview").style.display = "flex"; document.getElementById("preview-total-count").innerText = currentFilteredSchedule.length; renderExportPreviewContent(); }
+  function tutupModalExportPreview() { document.getElementById("modalExportPreview").style.display = "none"; }
+  function setPreviewMode(mode) { currentPreviewMode = mode; document.getElementById("btn-mode-normal").classList.toggle("active-mode", mode === 'normal'); document.getElementById("btn-mode-rapi").classList.toggle("active-mode", mode === 'rapi'); renderExportPreviewContent(); }
 
   function renderExportPreviewContent() {
     const tbody = document.getElementById("tbody-export-preview");
     tbody.innerHTML = "";
-
-    if (!currentFilteredSchedule || currentFilteredSchedule.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="13" style="text-align:center; padding:15px; color:#ef4444;">Tidak ada data untuk di-export!</td></tr>`;
-      return;
-    }
+    if (!currentFilteredSchedule || currentFilteredSchedule.length === 0) { tbody.innerHTML = `<tr><td colspan="13" style="text-align:center; padding:15px; color:#ef4444;">Tidak ada data untuk di-export!</td></tr>`; return; }
 
     const baseTdStyle = "border: 1px solid #000000; padding: 4px 6px; font-size: 10px; color: #000000; text-align: center; font-family: Calibri, sans-serif;";
     const baseTdLeftStyle = "border: 1px solid #000000; padding: 4px 6px; font-size: 10px; color: #000000; text-align: left; font-family: Calibri, sans-serif;";
 
     if (currentPreviewMode === 'normal') {
       currentFilteredSchedule.forEach((item, index) => {
-        const styleUpdClos = getRevInlineStyle(item.revUpdClosing);
-        const styleEtbWeb = getRevInlineStyle(item.revEtbWeb);
-        const styleEtdWeb = getRevInlineStyle(item.revEtdWeb);
-        const styleEtaPort = getRevInlineStyle(item.revEtaPort);
-
-        const colorEtbRed = String(item.etb_website || '').toUpperCase().includes("ATB") ? "color:#ef4444 !important; font-weight:bold;" : "";
-        const colorEtdRed = String(item.etd_website || '').toUpperCase().includes("ATD") ? "color:#ef4444 !important; font-weight:bold;" : "";
-
         const tr = document.createElement("tr");
         tr.innerHTML = `
-          <td style="${baseTdStyle}">${index + 1}</td>
-          <td style="${baseTdStyle}"><b>${item.week || '-'}</b></td>
-          <td style="${baseTdStyle}"><b>${item.liner || '-'}</b></td>
-          <td style="${baseTdStyle}">${item.port || '-'}</td>
-          <td style="${baseTdLeftStyle}"><b>${item.feeder_vessel || '-'}</b></td>
-          <td style="${baseTdStyle}">${item.etd_original || '-'}</td>
-          <td style="${baseTdStyle}">${item.closing_cy || '-'}</td>
-          <td style="${baseTdStyle} ${styleUpdClos}">${item.update_closing_cy || '-'}</td>
-          <td style="${baseTdStyle} ${styleEtbWeb} ${colorEtbRed}">${item.etb_website || '-'}</td>
-          <td style="${baseTdStyle} ${styleEtdWeb} ${colorEtdRed}">${item.etd_website || '-'}</td>
-          <td style="${baseTdStyle} ${styleEtaPort}">${item.eta_port || '-'}</td>
-          <td style="${baseTdStyle}"><b>${item.destination || '-'}</b></td>
+          <td style="${baseTdStyle}">${index + 1}</td><td style="${baseTdStyle}"><b>${item.week || '-'}</b></td>
+          <td style="${baseTdStyle}"><b>${item.liner || '-'}</b></td><td style="${baseTdStyle}">${item.port || '-'}</td>
+          <td style="${baseTdLeftStyle}"><b>${item.feeder_vessel || '-'}</b></td><td style="${baseTdStyle}">${item.etd_original || '-'}</td>
+          <td style="${baseTdStyle}">${item.closing_cy || '-'}</td><td style="${baseTdStyle} ${getRevInlineStyle(item.revUpdClosing)}">${item.update_closing_cy || '-'}</td>
+          <td style="${baseTdStyle} ${getRevInlineStyle(item.revEtbWeb)}">${item.etb_website || '-'}</td><td style="${baseTdStyle} ${getRevInlineStyle(item.revEtdWeb)}">${item.etd_website || '-'}</td>
+          <td style="${baseTdStyle} ${getRevInlineStyle(item.revEtaPort)}">${item.eta_port || '-'}</td><td style="${baseTdStyle}"><b>${item.destination || '-'}</b></td>
           <td style="${baseTdLeftStyle}">${item.remark || '-'}</td>
         `;
         tbody.appendChild(tr);
@@ -1870,104 +1391,54 @@
     currentFilteredSchedule.forEach(item => {
       const key = `${item.week}_${item.liner}_${item.feeder_vessel}`;
       let group = groups.find(g => g.key === key);
-      if (!group) {
-        group = { key: key, items: [] };
-        groups.push(group);
-      }
+      if (!group) { group = { key: key, items: [] }; groups.push(group); }
       group.items.push(item);
     });
 
     let displayNo = 1;
     groups.forEach(group => {
       const items = group.items;
-      const rowCount = items.length;
-
       items.forEach((item, idx) => {
         const tr = document.createElement("tr");
-
-        const styleUpdClos = getRevInlineStyle(item.revUpdClosing);
-        const styleEtbWeb = getRevInlineStyle(item.revEtbWeb);
-        const styleEtdWeb = getRevInlineStyle(item.revEtdWeb);
-        const styleEtaPort = getRevInlineStyle(item.revEtaPort);
-
-        const colorEtbRed = String(item.etb_website || '').toUpperCase().includes("ATB") ? "color:#ef4444 !important; font-weight:bold;" : "";
-        const colorEtdRed = String(item.etd_website || '').toUpperCase().includes("ATD") ? "color:#ef4444 !important; font-weight:bold;" : "";
-
         if (idx === 0) {
-          tr.innerHTML += `<td rowspan="${rowCount}" style="${baseTdStyle}">${displayNo++}</td>`;
-          tr.innerHTML += `<td rowspan="${rowCount}" style="${baseTdStyle}"><b>${item.week || '-'}</b></td>`;
-          tr.innerHTML += `<td rowspan="${rowCount}" style="${baseTdStyle}"><b>${item.liner || '-'}</b></td>`;
-          tr.innerHTML += `<td rowspan="${rowCount}" style="${baseTdStyle}">${item.port || '-'}</td>`;
-          tr.innerHTML += `<td rowspan="${rowCount}" style="${baseTdLeftStyle}"><b>${item.feeder_vessel || '-'}</b></td>`;
-          tr.innerHTML += `<td rowspan="${rowCount}" style="${baseTdStyle}">${item.etd_original || '-'}</td>`;
-          tr.innerHTML += `<td rowspan="${rowCount}" style="${baseTdStyle}">${item.closing_cy || '-'}</td>`;
-          tr.innerHTML += `<td rowspan="${rowCount}" style="${baseTdStyle} ${styleUpdClos}">${item.update_closing_cy || '-'}</td>`;
-          tr.innerHTML += `<td rowspan="${rowCount}" style="${baseTdStyle} ${styleEtbWeb} ${colorEtbRed}">${item.etb_website || '-'}</td>`;
-          tr.innerHTML += `<td rowspan="${rowCount}" style="${baseTdStyle} ${styleEtdWeb} ${colorEtdRed}">${item.etd_website || '-'}</td>`;
+          tr.innerHTML += `<td rowspan="${items.length}" style="${baseTdStyle}">${displayNo++}</td>`;
+          tr.innerHTML += `<td rowspan="${items.length}" style="${baseTdStyle}"><b>${item.week || '-'}</b></td>`;
+          tr.innerHTML += `<td rowspan="${items.length}" style="${baseTdStyle}"><b>${item.liner || '-'}</b></td>`;
+          tr.innerHTML += `<td rowspan="${items.length}" style="${baseTdStyle}">${item.port || '-'}</td>`;
+          tr.innerHTML += `<td rowspan="${items.length}" style="${baseTdLeftStyle}"><b>${item.feeder_vessel || '-'}</b></td>`;
+          tr.innerHTML += `<td rowspan="${items.length}" style="${baseTdStyle}">${item.etd_original || '-'}</td>`;
+          tr.innerHTML += `<td rowspan="${items.length}" style="${baseTdStyle}">${item.closing_cy || '-'}</td>`;
+          tr.innerHTML += `<td rowspan="${items.length}" style="${baseTdStyle} ${getRevInlineStyle(item.revUpdClosing)}">${item.update_closing_cy || '-'}</td>`;
+          tr.innerHTML += `<td rowspan="${items.length}" style="${baseTdStyle} ${getRevInlineStyle(item.revEtbWeb)}">${item.etb_website || '-'}</td>`;
+          tr.innerHTML += `<td rowspan="${items.length}" style="${baseTdStyle} ${getRevInlineStyle(item.revEtdWeb)}">${item.etd_website || '-'}</td>`;
         }
-
-        tr.innerHTML += `<td style="${baseTdStyle} ${styleEtaPort}">${item.eta_port || '-'}</td>`;
+        tr.innerHTML += `<td style="${baseTdStyle} ${getRevInlineStyle(item.revEtaPort)}">${item.eta_port || '-'}</td>`;
         tr.innerHTML += `<td style="${baseTdStyle}"><b>${item.destination || '-'}</b></td>`;
         tr.innerHTML += `<td style="${baseTdLeftStyle}">${item.remark || '-'}</td>`;
-
         tbody.appendChild(tr);
       });
     });
   }
 
   function cetakPDFJendelaBaru() {
-    const contentArea = document.getElementById("printableArea").innerHTML;
     const printWindow = window.open('', '_blank', 'width=1250,height=850');
-    
     printWindow.document.write(`
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <title>Control Schedule Export - NexPortal EXIM</title>
-        <style>
-          @page { size: A4 landscape; margin: 8mm 6mm 8mm 6mm; }
-          body { font-family: Calibri, 'Segoe UI', Arial, sans-serif !important; background: #ffffff; color: #000000; margin: 0; padding: 8px; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-          table { width: 100%; border-collapse: collapse !important; margin-bottom: 4px; }
-          .preview-table th { background-color: #0284c7 !important; color: #ffffff !important; border: 1px solid #000000 !important; padding: 5px 4px; font-size: 10px; font-weight: bold; text-align: center; }
-          .preview-table td { border: 1px solid #000000 !important; padding: 4px 5px; font-size: 9.5px; color: #000000; text-align: center; }
-          tr { page-break-inside: avoid !important; }
-        </style>
-      </head>
-      <body>
-        ${contentArea}
-        <script>
-          setTimeout(() => { window.print(); window.close(); }, 500);
-        <\/script>
-      </body>
-      </html>
+      <!DOCTYPE html><html><head><title>Control Schedule Export</title>
+      <style>@page { size: A4 landscape; margin: 8mm 6mm; } body { font-family: Calibri, sans-serif; background: #fff; color: #000; margin: 0; padding: 8px; } table { width: 100%; border-collapse: collapse; } .preview-table th { background: #0284c7; color: #fff; border: 1px solid #000; padding: 5px; font-size: 10px; } .preview-table td { border: 1px solid #000; padding: 4px; font-size: 9.5px; text-align: center; }</style>
+      </head><body>${document.getElementById("printableArea").innerHTML}<script>setTimeout(() => { window.print(); window.close(); }, 500);<\/script></body></html>
     `);
     printWindow.document.close();
   }
 
   async function copyTableWithInlineStyles() {
     try {
-      const areaElem = document.getElementById("printableArea");
-      if (!areaElem) return;
-
-      const cloneArea = areaElem.cloneNode(true);
-      const fullOfficeHtml = `
-        <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
-        <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head>
-        <body style="font-family: Calibri, Arial, sans-serif; background-color: #ffffff;">
-          ${cloneArea.innerHTML}
-        </body>
-        </html>
-      `;
-
+      const cloneArea = document.getElementById("printableArea").cloneNode(true);
+      const fullOfficeHtml = `<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head><body style="font-family: Calibri, sans-serif;">${cloneArea.innerHTML}</body></html>`;
       if (navigator.clipboard && window.ClipboardItem) {
-        const blobHtml = new Blob([fullOfficeHtml], { type: 'text/html' });
-        const blobText = new Blob([cloneArea.innerText], { type: 'text/plain' });
-        await navigator.clipboard.write([new ClipboardItem({ 'text/html': blobHtml, 'text/plain': blobText })]);
+        await navigator.clipboard.write([new ClipboardItem({ 'text/html': new Blob([fullOfficeHtml], { type: 'text/html' }), 'text/plain': new Blob([cloneArea.innerText], { type: 'text/plain' }) })]);
         await showCustomAlert("✅ Berhasil Di-copy!");
       }
-    } catch (err) {
-      await showCustomAlert("❌ Gagal menyalin: " + err.message);
-    }
+    } catch (err) { await showCustomAlert("❌ Gagal menyalin: " + err.message); }
   }
 
   function filterMultiColumn() {
@@ -1975,196 +1446,100 @@
     currentFilteredSchedule = masterDataSchedule.filter(item => {
       let isMatch = true;
       inputs.forEach(inp => {
-        const key = inp.getAttribute("data-key");
         const filterVal = inp.value.trim().toLowerCase();
-        if (filterVal) {
-          const itemVal = item[key] ? String(item[key]).toLowerCase() : "";
-          if (!itemVal.includes(filterVal)) isMatch = false;
-        }
+        if (filterVal && !String(item[inp.getAttribute("data-key")] || "").toLowerCase().includes(filterVal)) isMatch = false;
       });
       return isMatch;
     });
-    currentPage = 1;
-    tampilkanTabelScheduleWithPagination();
+    currentPage = 1; tampilkanTabelScheduleWithPagination();
   }
 
   function urutkanKolomData(columnKey) {
-    let direction = 'asc';
-    if (currentSortState.column === columnKey && currentSortState.direction === 'asc') direction = 'desc';
+    let direction = (currentSortState.column === columnKey && currentSortState.direction === 'asc') ? 'desc' : 'asc';
     currentSortState = { column: columnKey, direction: direction };
-
     currentFilteredSchedule.sort((a, b) => {
       let valA = a[columnKey] ? String(a[columnKey]).trim().toLowerCase() : '';
       let valB = b[columnKey] ? String(b[columnKey]).trim().toLowerCase() : '';
-      if (valA < valB) return direction === 'asc' ? -1 : 1;
-      if (valA > valB) return direction === 'asc' ? 1 : -1;
-      return 0;
+      return direction === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
     });
     tampilkanTabelScheduleWithPagination();
   }
 
   function resetFilterSchedule() {
     document.querySelectorAll(".header-filter-input").forEach(inp => inp.value = "");
-    currentFilteredSchedule = [...masterDataSchedule];
-    currentPage = 1;
-    tampilkanTabelScheduleWithPagination();
+    currentFilteredSchedule = [...masterDataSchedule]; currentPage = 1; tampilkanTabelScheduleWithPagination();
   }
 
-  function toggleImportMenu(e) {
-    if(e) e.stopPropagation();
-    const menu = document.getElementById("importMenuList");
-    menu.style.display = (menu.style.display === "block") ? "none" : "block";
-  }
-
-  function toggleExportMenu(e) {
-    if(e) e.stopPropagation();
-    const menu = document.getElementById("exportMenuList");
-    menu.style.display = (menu.style.display === "block") ? "none" : "block";
-  }
-
-  function toggleColumnBox() {
-    const box = document.getElementById("colBox");
-    box.style.display = (box.style.display === "block") ? "none" : "block";
-  }
+  function toggleImportMenu(e) { if(e) e.stopPropagation(); const menu = document.getElementById("importMenuList"); menu.style.display = (menu.style.display === "block") ? "none" : "block"; }
+  function toggleExportMenu(e) { if(e) e.stopPropagation(); const menu = document.getElementById("exportMenuList"); menu.style.display = (menu.style.display === "block") ? "none" : "block"; }
+  function toggleColumnBox() { const box = document.getElementById("colBox"); box.style.display = (box.style.display === "block") ? "none" : "block"; }
 
   function downloadFormatUploadSchedule() {
-    let csv = "WEEK,LINER,PORT,FEEDER VESSEL,ETD PORT ORIGINAL,ETB/ATB WEBSITE,ETD/ATD WEBSITE,ETA PORT,DESTINATION,REMARK,UPDATE CLOSING CY,VOYAGE\n";
-    csv += "WEEK 36,WAN HAI,SRG,WAN HAI 311,25-08-2026,ATB: 24-08-2026 10:00,ETD: 26-08-2026 14:00,30-08-2026,NAGOYA,Sample Remark,24-08-2026 12:00,V.001\n";
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "Template_Import_Control_Schedule.csv";
-    link.click();
+    let csv = "WEEK,LINER,PORT,FEEDER VESSEL,ETD PORT ORIGINAL,ETB/ATB WEBSITE,ETD/ATD WEBSITE,ETA PORT,DESTINATION,REMARK,UPDATE CLOSING CY,VOYAGE\nWEEK 36,WAN HAI,SRG,WAN HAI 311,25-08-2026,ATB: 24-08-2026 10:00,ETD: 26-08-2026 14:00,30-08-2026,NAGOYA,Sample Remark,24-08-2026 12:00,V.001\n";
+    const link = document.createElement("a"); link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); link.download = "Template_Import_Control_Schedule.csv"; link.click();
   }
 
   function bukaModalImportSchedule() {
     document.getElementById("importMenuList").style.display = "none";
-    document.getElementById("fileImportInput").value = "";
-    document.getElementById("import-file-name").innerText = "";
-    document.getElementById("import-status-alert").innerText = "";
-    document.getElementById("btnProsesImportExec").disabled = true;
-    parsedImportRows = [];
-    document.getElementById("modalImportSchedule").style.display = "flex";
+    document.getElementById("fileImportInput").value = ""; document.getElementById("import-file-name").innerText = "";
+    document.getElementById("import-status-alert").innerText = ""; document.getElementById("btnProsesImportExec").disabled = true;
+    parsedImportRows = []; document.getElementById("modalImportSchedule").style.display = "flex";
   }
-
-  function tutupModalImportSchedule() {
-    document.getElementById("modalImportSchedule").style.display = "none";
-  }
+  function tutupModalImportSchedule() { document.getElementById("modalImportSchedule").style.display = "none"; }
 
   function prosesFileImportSelected(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-
+    const file = e.target.files[0]; if (!file) return;
     document.getElementById("import-file-name").innerText = `📄 File terpilih: ${file.name}`;
-    document.getElementById("import-status-alert").style.color = "#38bdf8";
-    document.getElementById("import-status-alert").innerText = "⏳ Membaca isi file...";
+    document.getElementById("import-status-alert").style.color = "#38bdf8"; document.getElementById("import-status-alert").innerText = "⏳ Membaca isi file...";
 
     const reader = new FileReader();
     reader.onload = function(evt) {
       try {
-        const data = new Uint8Array(evt.target.result);
-        const workbook = XLSX.read(data, { type: 'array' });
-        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-
-        if (jsonData.length <= 1) {
-          document.getElementById("import-status-alert").style.color = "#ef4444";
-          document.getElementById("import-status-alert").innerText = "❌ File kosong!";
-          return;
-        }
-
+        const jsonData = XLSX.utils.sheet_to_json(XLSX.read(new Uint8Array(evt.target.result), { type: 'array' }).Sheets[XLSX.read(new Uint8Array(evt.target.result), { type: 'array' }).SheetNames[0]], { header: 1 });
+        if (jsonData.length <= 1) { document.getElementById("import-status-alert").style.color = "#ef4444"; document.getElementById("import-status-alert").innerText = "❌ File kosong!"; return; }
         parsedImportRows = jsonData.slice(1);
-        document.getElementById("import-status-alert").style.color = "#4ade80";
-        document.getElementById("import-status-alert").innerText = `✅ File Siap! ${parsedImportRows.length} baris data ditemukan.`;
+        document.getElementById("import-status-alert").style.color = "#4ade80"; document.getElementById("import-status-alert").innerText = `✅ File Siap! ${parsedImportRows.length} baris data ditemukan.`;
         document.getElementById("btnProsesImportExec").disabled = false;
-      } catch (err) {
-        document.getElementById("import-status-alert").style.color = "#ef4444";
-        document.getElementById("import-status-alert").innerText = "❌ Gagal membaca file: " + err.message;
-      }
+      } catch (err) { document.getElementById("import-status-alert").style.color = "#ef4444"; document.getElementById("import-status-alert").innerText = "❌ Error: " + err.message; }
     };
     reader.readAsArrayBuffer(file);
   }
 
   async function eksekusiUploadImport() {
     if (!parsedImportRows || parsedImportRows.length === 0) return;
-    const btnExec = document.getElementById("btnProsesImportExec");
-    const statusDiv = document.getElementById("import-status-alert");
-
-    btnExec.disabled = true;
-    statusDiv.style.color = "#38bdf8";
-    statusDiv.innerText = "⏳ Sedang mengunggah data ke Supabase...";
+    const btnExec = document.getElementById("btnProsesImportExec"); const statusDiv = document.getElementById("import-status-alert");
+    btnExec.disabled = true; statusDiv.style.color = "#38bdf8"; statusDiv.innerText = "⏳ Sedang mengunggah data...";
 
     try {
       let addedCount = 0;
       for (let r of parsedImportRows) {
         if (!r[1] && !r[3]) continue;
-        const payload = {
-          week: r[0] ? (String(r[0]).toUpperCase().includes("WEEK") ? r[0] : `WEEK ${r[0]}`) : '',
-          liner: String(r[1] || '').toUpperCase(),
-          port: String(r[2] || 'SRG').toUpperCase(),
-          feeder_vessel: String(r[3] || '').toUpperCase(),
-          etd_port_origin: r[4] || '',
-          etb_atb_website: r[5] || '',
-          etd_atd_website: r[6] || '',
-          eta_port: r[7] || '',
-          destination: String(r[8] || '').toUpperCase(),
-          remark: r[9] || '',
-          update_closing: r[10] || '',
-          voyage: String(r[11] || '').toUpperCase()
-        };
+        const payload = { week: r[0] ? (String(r[0]).toUpperCase().includes("WEEK") ? r[0] : `WEEK ${r[0]}`) : '', liner: String(r[1] || '').toUpperCase(), port: String(r[2] || 'SRG').toUpperCase(), feeder_vessel: String(r[3] || '').toUpperCase(), etd_port_origin: r[4] || '', etb_atb_website: r[5] || '', etd_atd_website: r[6] || '', eta_port: r[7] || '', destination: String(r[8] || '').toUpperCase(), remark: r[9] || '', update_closing: r[10] || '', voyage: String(r[11] || '').toUpperCase() };
         const { data: inserted } = await supabaseClient.from('control_schedule').insert([payload]).select();
-        if (inserted && inserted[0]) {
-          const vDisp = payload.voyage ? `${payload.feeder_vessel} ${payload.voyage}` : payload.feeder_vessel;
-          await catatLogChangesServer(inserted[0].id, "Aditya (Import)", "BARU", "ALL", "-", vDisp);
-        }
+        if (inserted && inserted[0]) { await catatLogChangesServer(inserted[0].id, "Aditya (Import)", "BARU", "ALL", "-", payload.voyage ? `${payload.feeder_vessel} ${payload.voyage}` : payload.feeder_vessel); }
         addedCount++;
       }
-
-      statusDiv.style.color = "#4ade80";
-      statusDiv.innerText = `✅ Import Selesai! ${addedCount} baris data berhasil ditambahkan.`;
-      setTimeout(() => {
-        tutupModalImportSchedule();
-        muatDataSchedule();
-      }, 1200);
-    } catch(err) {
-      statusDiv.style.color = "#ef4444";
-      statusDiv.innerText = "❌ Error import: " + err.message;
-      btnExec.disabled = false;
-    }
+      statusDiv.style.color = "#4ade80"; statusDiv.innerText = `✅ Import Selesai! ${addedCount} baris data ditambahkan.`;
+      setTimeout(() => { tutupModalImportSchedule(); muatDataSchedule(); }, 1200);
+    } catch(err) { statusDiv.style.color = "#ef4444"; statusDiv.innerText = "❌ Error import: " + err.message; btnExec.disabled = false; }
   }
 
   function downloadCSVExport() {
     let csv = "NO,WEEK,LINER,PORT,FEEDER VESSEL,ETD ORIGINAL,CLOSING CY,UPDATE CLOSING CY,ETB/ATB WEBSITE,ETD/ATD WEBSITE,ETA PORT,DESTINATION,REMARK\n";
-    currentFilteredSchedule.forEach((item, i) => {
-      csv += `"${i+1}","${item.week}","${item.liner}","${item.port}","${item.feeder_vessel}","${item.etd_original}","${item.closing_cy}","${item.update_closing_cy}","${item.etb_website}","${item.etd_website}","${item.eta_port}","${item.destination}","${item.remark}"\n`;
-    });
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "ControlSchedule.csv";
-    link.click();
+    currentFilteredSchedule.forEach((item, i) => { csv += `"${i+1}","${item.week}","${item.liner}","${item.port}","${item.feeder_vessel}","${item.etd_original}","${item.closing_cy}","${item.update_closing_cy}","${item.etb_website}","${item.etd_website}","${item.eta_port}","${item.destination}","${item.remark}"\n`; });
+    const link = document.createElement("a"); link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); link.download = "ControlSchedule.csv"; link.click();
   }
 
   function downloadExcelExport() {
     let html = `<table border="1"><tr><th>NO</th><th>WEEK</th><th>LINER</th><th>PORT</th><th>FEEDER VESSEL</th><th>ETD ORIGINAL</th><th>CLOSING CY</th><th>UPDATE CLOSING CY</th><th>ETB/ATB WEBSITE</th><th>ETD/ATD WEBSITE</th><th>ETA PORT</th><th>DESTINATION</th><th>REMARK</th></tr>`;
-    currentFilteredSchedule.forEach((item, i) => {
-      html += `<tr><td>${i+1}</td><td>${item.week}</td><td>${item.liner}</td><td>${item.port}</td><td>${item.feeder_vessel}</td><td>${item.etd_original}</td><td>${item.closing_cy}</td><td>${item.update_closing_cy}</td><td>${item.etb_website}</td><td>${item.etd_website}</td><td>${item.eta_port}</td><td>${item.destination}</td><td>${item.remark}</td></tr>`;
-    });
-    html += `</table>`;
-    const blob = new Blob([html], { type: 'application/vnd.ms-excel' });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "ControlSchedule.xls";
-    link.click();
+    currentFilteredSchedule.forEach((item, i) => { html += `<tr><td>${i+1}</td><td>${item.week}</td><td>${item.liner}</td><td>${item.port}</td><td>${item.feeder_vessel}</td><td>${item.etd_original}</td><td>${item.closing_cy}</td><td>${item.update_closing_cy}</td><td>${item.etb_website}</td><td>${item.etd_website}</td><td>${item.eta_port}</td><td>${item.destination}</td><td>${item.remark}</td></tr>`; });
+    const link = document.createElement("a"); link.href = URL.createObjectURL(new Blob([html], { type: 'application/vnd.ms-excel' })); link.download = "ControlSchedule.xls"; link.click();
   }
 
   document.querySelectorAll('.col-toggle').forEach(chk => {
     chk.addEventListener('change', function() {
-      const colClass = this.getAttribute('data-col');
-      const isChecked = this.checked;
-      document.querySelectorAll('.' + colClass).forEach(cell => {
-        cell.style.display = isChecked ? '' : 'none';
-      });
+      const colClass = this.getAttribute('data-col'); const isChecked = this.checked;
+      document.querySelectorAll('.' + colClass).forEach(cell => { cell.style.display = isChecked ? '' : 'none'; });
     });
   });
 </script>
