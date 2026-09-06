@@ -1,92 +1,50 @@
 <style>
-  /* --- BASE CONTAINER --- */
   .schedule-container { width: 100%; font-family: Calibri, 'Segoe UI', Arial, sans-serif; display: flex; flex-direction: column; height: calc(100vh - 70px); max-height: 100%; box-sizing: border-box; }
-  
-  /* --- HEADER & BARIS TOMBOL UTAMA --- */
-  .schedule-header {
-    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;
-    margin-bottom: 8px; border-bottom: 1px solid #334155; padding-bottom: 6px; flex-shrink: 0;
-  }
+  .schedule-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; border-bottom: 1px solid #334155; padding-bottom: 6px; flex-shrink: 0; }
   .schedule-title h3 { color: #38bdf8; font-size: 15px; font-weight: 600; margin: 0; }
 
-  /* Tombol Utama */
-  .btn-add-schedule, .btn-action, .btn-export-main, .btn-import-main, .btn-tpks-sync {
-    padding: 4px 8px !important; font-size: 11px !important; border-radius: 4px !important; font-weight: 600; cursor: pointer; border: none; transition: 0.2s; white-space: nowrap;
-  }
-  .btn-add-schedule { background: #16a34a; color: white; }
-  .btn-add-schedule:hover { background: #15803d; }
-  .btn-action { background: #0284c7; color: white; }
-  .btn-action:hover { background: #0369a1; }
+  .btn-add-schedule, .btn-action, .btn-export-main, .btn-import-main, .btn-tpks-sync { padding: 4px 8px !important; font-size: 11px !important; border-radius: 4px !important; font-weight: 600; cursor: pointer; border: none; transition: 0.2s; white-space: nowrap; }
+  .btn-add-schedule { background: #16a34a; color: white; } .btn-add-schedule:hover { background: #15803d; }
+  .btn-action { background: #0284c7; color: white; } .btn-action:hover { background: #0369a1; }
   .btn-toggle-col { background: #334155; color: #38bdf8; border: 1px solid #475569 !important; }
-  .btn-reset-filter { background: #64748b; color: white; border: 1px solid #475569 !important; }
-  .btn-reset-filter:hover { background: #475569; }
-  .btn-tpks-sync { background: #d97706; color: white; border: 1px solid #f59e0b !important; }
-  .btn-tpks-sync:hover { background: #b45309; }
+  .btn-reset-filter { background: #64748b; color: white; border: 1px solid #475569 !important; } .btn-reset-filter:hover { background: #475569; }
+  .btn-tpks-sync { background: #d97706; color: white; border: 1px solid #f59e0b !important; } .btn-tpks-sync:hover { background: #b45309; }
 
-  /* Dropdown Export & Import */
   .export-dropdown-wrapper { position: relative; display: inline-block; }
-  .btn-export-main { background: #8b5cf6; color: white; }
-  .btn-export-main:hover { background: #7c3aed; }
-  .btn-import-main { background: #0284c7; color: white; }
-  .btn-import-main:hover { background: #0369a1; }
+  .btn-export-main { background: #8b5cf6; color: white; } .btn-export-main:hover { background: #7c3aed; }
+  .btn-import-main { background: #0284c7; color: white; } .btn-import-main:hover { background: #0369a1; }
 
-  .export-menu-list {
-    display: none; position: absolute; right: 0; top: 110%; background: #0f172a;
-    border: 1px solid #334155; border-radius: 8px; width: 220px; box-shadow: 0 10px 25px rgba(0,0,0,0.8);
-    z-index: 99999; overflow: hidden;
-  }
-  .export-menu-list button {
-    width: 100%; text-align: left; background: none; border: none; padding: 8px 10px;
-    color: #cbd5e1; font-size: 11px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 6px;
-  }
+  .export-menu-list { display: none; position: absolute; right: 0; top: 110%; background: #0f172a; border: 1px solid #334155; border-radius: 8px; width: 220px; box-shadow: 0 10px 25px rgba(0,0,0,0.8); z-index: 99999; overflow: hidden; }
+  .export-menu-list button { width: 100%; text-align: left; background: none; border: none; padding: 8px 10px; color: #cbd5e1; font-size: 11px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 6px; }
   .export-menu-list button:hover { background: #1e293b; color: #38bdf8; }
 
-  /* Panel Show/Hide Kolom */
-  .column-selector-box {
-    display: none; background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 10px; margin-bottom: 8px; flex-shrink: 0;
-  }
+  .column-selector-box { display: none; background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 10px; margin-bottom: 8px; flex-shrink: 0; }
   .col-checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 6px; font-size: 11px; color: #cbd5e1; }
   .col-checkbox-grid label { display: flex; align-items: center; gap: 5px; cursor: pointer; }
 
-  /* --- TABEL UTAMA --- */
-  .table-responsive-schedule {
-    flex: 1 1 auto; width: 100%; min-height: 150px; overflow-x: auto !important; overflow-y: auto !important;
-    border: 1px solid #253346; border-radius: 8px 8px 0 0; position: relative; background: #141d2b;
-  }
+  .table-responsive-schedule { flex: 1 1 auto; width: 100%; min-height: 150px; overflow-x: auto !important; overflow-y: auto !important; border: 1px solid #253346; border-radius: 8px 8px 0 0; position: relative; background: #141d2b; }
   .table-responsive-schedule::-webkit-scrollbar { height: 10px !important; width: 10px !important; display: block !important; }
   .table-responsive-schedule::-webkit-scrollbar-track { background: #0f172a !important; border-radius: 6px; }
   .table-responsive-schedule::-webkit-scrollbar-thumb { background: #38bdf8 !important; border-radius: 6px; border: 2px solid #0f172a; }
-  .table-responsive-schedule::-webkit-scrollbar-thumb:hover { background: #0284c7 !important; }
 
   .custom-table { width: 100%; border-collapse: separate; border-spacing: 0; text-align: left; font-size: 11.5px; min-width: 1780px; }
-  .custom-table thead tr.th-title-row th { 
-    background-color: #0f172a !important; color: #38bdf8 !important; padding: 6px 5px; 
-    border-bottom: 1px solid #253346; position: sticky !important; top: 0 !important; z-index: 30 !important; font-size: 11px; font-weight: 700; white-space: nowrap;
-  }
+  .custom-table thead tr.th-title-row th { background-color: #0f172a !important; color: #38bdf8 !important; padding: 6px 5px; border-bottom: 1px solid #253346; position: sticky !important; top: 0 !important; z-index: 30 !important; font-size: 11px; font-weight: 700; white-space: nowrap; }
   .th-header-content { display: flex; align-items: center; justify-content: space-between; gap: 4px; width: 100%; }
-  .btn-sort-col { background: #1e293b; color: #94a3b8; border: 1px solid #334155; border-radius: 3px; font-size: 9px; padding: 1px 3px; cursor: pointer; transition: 0.2s; line-height: 1; }
-  .btn-sort-col:hover { background: #0284c7; color: #ffffff; border-color: #38bdf8; }
+  .btn-sort-col { background: #1e293b; color: #94a3b8; border: 1px solid #334155; border-radius: 3px; font-size: 9px; padding: 1px 3px; cursor: pointer; }
 
-  .custom-table thead tr.th-filter-row th {
-    background-color: #0f172a !important; padding: 3px 4px 6px 4px; border-bottom: 2px solid #253346;
-    position: sticky !important; top: 29px !important; z-index: 30 !important;
-  }
+  .custom-table thead tr.th-filter-row th { background-color: #0f172a !important; padding: 3px 4px 6px 4px; border-bottom: 2px solid #253346; position: sticky !important; top: 29px !important; z-index: 30 !important; }
   .header-filter-input { width: 100%; padding: 3px 5px; background: #1e293b; border: 1px solid #475569; border-radius: 4px; color: #fff; font-size: 10.5px; outline: none; box-sizing: border-box; }
   .header-filter-input:focus { border-color: #38bdf8; background: #0f172a; }
 
   .custom-table tbody tr { cursor: pointer; user-select: text !important; }
   .custom-table td { padding: 6px 10px; border-bottom: 1px solid #1e293b; color: #cbd5e1; white-space: nowrap; background: #141d2b; position: relative; }
-  .custom-table tbody tr:nth-child(even) td { background: #141d2b; color: #cbd5e1; }
   .custom-table tbody tr:hover td { background: #253346; color: #ffffff; }
-
   .custom-table tbody tr.row-past-atd td { background: #0f172a !important; color: #64748b !important; opacity: 0.7; cursor: default !important; }
-  .custom-table tbody tr.row-past-atd:hover td { background: #1e293b !important; color: #94a3b8 !important; }
 
   .badge-liner { background: rgba(2, 132, 199, 0.25); color: #38bdf8; padding: 1px 5px; border-radius: 4px; font-weight: 700; display: inline-block; }
   .badge-week { background: rgba(147, 51, 234, 0.25); color: #c084fc; padding: 1px 5px; border-radius: 4px; font-weight: 600; }
   .badge-rev-counter { background: #ef4444; color: #ffffff; font-size: 8px; font-weight: 800; padding: 1px 4px; border-radius: 3px; line-height: 10px; margin-right: 4px; display: inline-block; text-transform: lowercase; }
 
-  /* Status Revisi Colors */
   td.rev-lvl-1 { background-color: #dcfce7 !important; color: #14532d !important; font-weight: bold; }
   td.rev-lvl-2 { background-color: #86efac !important; color: #064e3b !important; font-weight: bold; }
   td.rev-lvl-3 { background-color: #fef9c3 !important; color: #713f12 !important; font-weight: bold; }
@@ -100,46 +58,34 @@
   td.rev-lvl-11 { background-color: #a855f7 !important; color: #ffffff !important; font-weight: bold; }
   .text-actual-red { color: #ef4444 !important; font-weight: 700; }
 
-  .col-aksi-header { position: sticky !important; right: 0 !important; background: #0f172a !important; z-index: 35 !important; border-left: 1px solid #253346; text-align: center; }
-  .col-aksi-cell { position: sticky !important; right: 0 !important; background: #141d2b !important; z-index: 25 !important; border-left: 1px solid #253346; text-align: center; }
+  .col-aksi-header, .col-aksi-cell { position: sticky !important; right: 0 !important; background: #0f172a !important; z-index: 25 !important; border-left: 1px solid #253346; text-align: center; }
   .btn-aksi-tbl { background: #334155; color: #f8fafc; border: 1px solid #475569; padding: 2px 6px; border-radius: 4px; font-size: 10.5px; font-weight: 600; cursor: pointer; }
-  .btn-aksi-tbl:hover { background: #0284c7; color: white; }
 
-  /* Pagination Bar */
   .pagination-bar { display: flex; justify-content: flex-end; align-items: center; gap: 8px; padding: 8px 12px; background: #0f172a; border: 1px solid #253346; border-top: none; border-radius: 0 0 8px 8px; flex-shrink: 0; }
   .pagination-btn-group { display: flex; gap: 4px; align-items: center; }
-  .btn-page { background: #1e293b; color: #cbd5e1; border: 1px solid #334155; border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 600; cursor: pointer; transition: 0.2s; }
-  .btn-page:hover { background: #334155; color: #38bdf8; }
+  .btn-page { background: #1e293b; color: #cbd5e1; border: 1px solid #334155; border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 600; cursor: pointer; }
   .btn-page.active { background: #0284c7; color: #ffffff; border-color: #38bdf8; }
-  .btn-page:disabled { opacity: 0.4; cursor: not-allowed; }
   .select-page-size { background: #1e293b; color: #38bdf8; border: 1px solid #334155; border-radius: 6px; padding: 4px 8px; font-size: 11px; font-weight: 700; outline: none; cursor: pointer; }
 
-  /* --- MODALS OVERLAY --- */
   .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); justify-content: center; align-items: center; z-index: 999999 !important; padding: 12px; box-sizing: border-box; }
   .modal-card-schedule { background: #1e293b; border: 1px solid #334155; padding: 18px; border-radius: 12px; width: 100%; max-width: 880px; max-height: 92vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); box-sizing: border-box; }
   .modal-card-schedule.preview-large { max-width: 98vw !important; width: 1450px !important; }
 
-  /* --- FORM GRID & LAYOUT --- */
   .form-grid-schedule { display: flex; flex-direction: column; gap: 12px; width: 100%; }
-
   .row-week-liner-port { display: grid; grid-template-columns: 100px 1fr 120px; gap: 10px; width: 100%; }
   .row-vessel-voyage-etd { display: grid; grid-template-columns: 2fr 1.2fr 1.5fr; gap: 10px; width: 100%; }
   .row-web-updates { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; }
 
   .form-group-schedule { display: flex; flex-direction: column; width: 100%; }
   .form-group-schedule label { font-size: 11px; color: #94a3b8; margin-bottom: 4px; font-weight: 600; white-space: nowrap; }
-  .form-group-schedule input, .form-group-schedule select, .form-group-schedule textarea {
-    padding: 8px 10px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #fff; font-size: 11.5px; outline: none; transition: 0.2s; box-sizing: border-box; width: 100%;
-  }
+  .form-group-schedule input, .form-group-schedule select, .form-group-schedule textarea { padding: 8px 10px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #fff; font-size: 11.5px; outline: none; transition: 0.2s; box-sizing: border-box; width: 100%; }
   .form-group-schedule input:focus, .form-group-schedule select:focus, .form-group-schedule textarea:focus { border-color: #38bdf8; background: #141d2b; }
-  .form-group-schedule input:disabled, .form-group-schedule select:disabled { background: #1e293b !important; color: #64748b !important; cursor: not-allowed; border-color: #334155; }
 
   .dest-section-box { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 12px; margin-top: 4px; width: 100%; box-sizing: border-box; }
   .dest-row-item { display: grid; grid-template-columns: 200px 140px 1fr 45px 35px; gap: 10px; align-items: center; margin-bottom: 8px; background: #1e293b; padding: 8px 10px; border-radius: 6px; border: 1px solid #334155; width: 100%; box-sizing: border-box; }
   .chk-sync-remark { cursor: pointer; accent-color: #0284c7; width: 16px; height: 16px; margin-top: 2px; }
 
-  .btn-edit-liner-term { background: #eab308; color: #000; font-weight: 700; border: none; padding: 5px 12px; border-radius: 6px; font-size: 11px; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 5px; }
-  .btn-edit-liner-term:hover { background: #ca8a04; }
+  .btn-edit-liner-term { background: #eab308; color: #000; font-weight: 700; border: none; padding: 5px 12px; border-radius: 6px; font-size: 11px; cursor: pointer; }
   .edit-liner-row { display: flex; gap: 10px; align-items: center; margin-bottom: 8px; background: #0f172a; padding: 8px 12px; border-radius: 8px; border: 1px solid #334155; }
   .edit-liner-row .inp-liner-name { width: 160px; font-weight: bold; color: #38bdf8 !important; text-transform: uppercase; }
   .edit-liner-row .inp-liner-term { flex: 1; text-transform: uppercase; }
@@ -151,10 +97,10 @@
   .term-info-body li { margin-bottom: 3px; line-height: 1.4; }
   .term-info-body b { color: #38bdf8; }
 
-  .preview-paper { background: #ffffff; color: #000000; padding: 10px; border-radius: 6px; font-family: Calibri, 'Segoe UI', Arial, sans-serif !important; font-size: 11px; overflow-x: auto; }
+  .preview-paper { background: #ffffff; color: #000000; padding: 10px; border-radius: 6px; font-family: Calibri, sans-serif !important; font-size: 11px; overflow-x: auto; }
   .preview-table { width: 100%; border-collapse: collapse !important; margin-top: 6px; border: 1px solid #000000 !important; }
-  .preview-table th { background-color: #0284c7 !important; color: #ffffff !important; border: 1px solid #000000 !important; padding: 5px 6px; text-align: center; font-size: 11px; font-weight: 700; white-space: nowrap !important; }
-  .preview-table td { border: 1px solid #000000 !important; padding: 4px 6px; font-size: 10px; color: #000000; white-space: nowrap !important; text-align: center; font-family: Calibri, sans-serif; }
+  .preview-table th { background-color: #0284c7 !important; color: #ffffff !important; border: 1px solid #000000 !important; padding: 5px 6px; text-align: center; font-size: 11px; font-weight: 700; }
+  .preview-table td { border: 1px solid #000000 !important; padding: 4px 6px; font-size: 10px; color: #000000; text-align: center; }
   .btn-preview-mode { background: #334155; color: #94a3b8; border: 1px solid #475569; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; }
   .btn-preview-mode.active-mode { background: #0284c7; color: #ffffff; border-color: #38bdf8; }
 
@@ -162,44 +108,32 @@
   .log-table th { background: #0f172a; color: #38bdf8; padding: 6px; border-bottom: 2px solid #334155; text-align: left; }
   .log-table td { padding: 6px; border-bottom: 1px solid #334155; color: #cbd5e1; white-space: nowrap; }
 
-  .upload-dropzone { border: 2px dashed #0284c7; border-radius: 8px; padding: 20px; text-align: center; background: #0f172a; cursor: pointer; transition: 0.3s; margin-top: 8px; }
-  .upload-dropzone:hover { background: rgba(2, 132, 199, 0.1); }
-
+  .upload-dropzone { border: 2px dashed #0284c7; border-radius: 8px; padding: 20px; text-align: center; background: #0f172a; cursor: pointer; }
   .nexportal-dialog-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: flex-start; padding-top: 5vh; z-index: 99999999 !important; }
-  .nexportal-dialog-card { background: #182232; border: 1.5px solid #38bdf8; border-left: 6px solid #4ade80; border-radius: 12px; width: 90%; max-width: 460px; padding: 18px 20px; box-shadow: 0 20px 35px rgba(0,0,0,0.8); display: flex; flex-direction: column; gap: 14px; animation: nexportalPopIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-  @keyframes nexportalPopIn { 0% { transform: translateY(-20px) scale(0.95); opacity: 0; } 100% { transform: translateY(0) scale(1); opacity: 1; } }
-  .nexportal-dialog-header { color: #4ade80; font-size: 13px; font-weight: 700; margin: 0; font-family: system-ui, -apple-system, sans-serif; }
-  .nexportal-dialog-body { color: #f1f5f9; font-size: 12.5px; line-height: 1.5; font-weight: 500; font-family: system-ui, -apple-system, sans-serif; }
-  .nexportal-dialog-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 4px; }
-  .nexportal-btn-ok { background: #0284c7; color: #ffffff; border: none; padding: 6px 18px; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; transition: 0.2s; }
-  .nexportal-btn-ok:hover { background: #0369a1; }
-  .nexportal-btn-cancel { background: #334155; color: #cbd5e1; border: 1px solid #475569; padding: 6px 16px; border-radius: 8px; font-weight: 600; font-size: 12px; cursor: pointer; transition: 0.2s; }
-  .nexportal-btn-cancel:hover { background: #475569; color: #ffffff; }
+  .nexportal-dialog-card { background: #182232; border: 1.5px solid #38bdf8; border-left: 6px solid #4ade80; border-radius: 12px; width: 90%; max-width: 460px; padding: 18px 20px; box-shadow: 0 20px 35px rgba(0,0,0,0.8); display: flex; flex-direction: column; gap: 14px; }
+  .nexportal-dialog-header { color: #4ade80; font-size: 13px; font-weight: 700; margin: 0; }
+  .nexportal-dialog-body { color: #f1f5f9; font-size: 12.5px; line-height: 1.5; font-weight: 500; }
+  .nexportal-dialog-actions { display: flex; justify-content: flex-end; gap: 10px; }
+  .nexportal-btn-ok { background: #0284c7; color: #ffffff; border: none; padding: 6px 18px; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; }
+  .nexportal-btn-cancel { background: #334155; color: #cbd5e1; border: 1px solid #475569; padding: 6px 16px; border-radius: 8px; font-weight: 600; font-size: 12px; cursor: pointer; }
 
-  /* Flatpickr Styling Override */
-  .flatpickr-calendar { background: #0f172a !important; border: 1px solid #38bdf8 !important; box-shadow: 0 10px 25px rgba(0,0,0,0.8) !important; font-family: Calibri, sans-serif !important; border-radius: 8px !important; z-index: 99999999 !important; }
-  .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange { background: #0284c7 !important; border-color: #38bdf8 !important; }
-  .flatpickr-day:hover { background: #1e293b !important; }
-  .flatpickr-time input { color: #fff !important; }
+  .flatpickr-calendar { background: #0f172a !important; border: 1px solid #38bdf8 !important; border-radius: 8px !important; z-index: 99999999 !important; }
+  .flatpickr-day.selected { background: #0284c7 !important; border-color: #38bdf8 !important; }
 
-  /* RESPONSIVE MOBILE (HP) */
   @media (max-width: 768px) {
     .modal-card-schedule { padding: 12px; }
-    .row-week-liner-port, .row-vessel-voyage-etd, .row-web-updates { grid-template-columns: 1fr !important; gap: 8px; }
-    .dest-row-item { grid-template-columns: 1fr !important; gap: 8px; }
+    .row-week-liner-port, .row-vessel-voyage-etd, .row-web-updates, .dest-row-item { grid-template-columns: 1fr !important; gap: 8px; }
     .edit-liner-row { flex-direction: column; align-items: stretch; }
     .edit-liner-row .inp-liner-name { width: 100%; }
   }
 </style>
 
-<!-- DEPENDENCIES -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 <div class="schedule-container">
-  <!-- HEADER & NAVBAR UTAMA -->
   <div class="schedule-header">
     <div class="schedule-title">
       <h3>🚢 Database Control Schedule Export</h3>
@@ -207,7 +141,6 @@
     </div>
     <div style="display:flex; gap:5px; flex-wrap:wrap; align-items:center;">
       <button type="button" class="btn-add-schedule" onclick="bukaModalSchedule('add')">➕ Schedule Baru</button>
-
       <div class="export-dropdown-wrapper">
         <button type="button" class="btn-import-main" onclick="toggleImportMenu(event)">📥 Import ▾</button>
         <div class="export-menu-list" id="importMenuList">
@@ -215,7 +148,6 @@
           <button type="button" onclick="bukaModalImportSchedule()">📤 Upload File Excel / CSV</button>
         </div>
       </div>
-
       <div class="export-dropdown-wrapper">
         <button type="button" class="btn-export-main" onclick="toggleExportMenu(event)">📤 Export ▾</button>
         <div class="export-menu-list" id="exportMenuList">
@@ -225,7 +157,6 @@
           <button type="button" onclick="cetakPDFJendelaBaru()">🖨️ Export / Cetak PDF (Tab Baru)</button>
         </div>
       </div>
-
       <button type="button" class="btn-action btn-toggle-col" onclick="toggleColumnBox()">⚙️ Show/Hide</button>
       <button type="button" class="btn-action btn-reset-filter" onclick="resetFilterSchedule()">🧹 Reset</button>
       <button type="button" class="btn-action" onclick="muatDataSchedule()">🔄 Refresh</button>
@@ -233,7 +164,6 @@
     </div>
   </div>
 
-  <!-- SHOW/HIDE KOLOM BOX -->
   <div class="column-selector-box" id="colBox">
     <div style="font-weight: 600; color: #38bdf8; margin-bottom: 6px; font-size: 11px;">Centang Kolom yang Ingin Ditampilkan:</div>
     <div class="col-checkbox-grid">
@@ -253,7 +183,6 @@
     </div>
   </div>
 
-  <!-- TABEL DATABASE UTAMA -->
   <div class="table-responsive-schedule">
     <table class="custom-table" id="tableSchedule">
       <thead>
@@ -308,7 +237,6 @@
   </div>
 </div>
 
-<!-- CONTAINER DATA TPKS SEMARANG (FOR SCRAPING & SYNC) -->
 <div id="tpks-source-data" style="display:none;"></div>
 
 <!-- MODAL IMPORT -->
@@ -349,7 +277,6 @@
 
     <form id="form-schedule-modal" autocomplete="off" onsubmit="return false;">
       <div class="form-grid-schedule">
-        <!-- BARIS 1 -->
         <div class="row-week-liner-port">
           <div class="form-group-schedule">
             <label>WEEK</label>
@@ -369,7 +296,6 @@
           </div>
         </div>
 
-        <!-- BARIS 2 -->
         <div class="row-vessel-voyage-etd">
           <div class="form-group-schedule">
             <label>FEEDER VESSEL (NAMA KAPAL) *</label>
@@ -387,7 +313,6 @@
 
         <input type="hidden" id="sched-closingcy">
 
-        <!-- BARIS 3 -->
         <div class="row-web-updates">
           <div class="form-group-schedule">
             <label>UPDATE CLOSING CY</label>
@@ -403,13 +328,11 @@
           </div>
         </div>
 
-        <!-- REMARK UTAMA -->
         <div class="form-group-schedule">
           <label>REMARK UTAMA (Catatan Umum Kapal)</label>
           <textarea id="sched-remark" rows="2" placeholder="Catatan tambahan utama (Opsional)" autocomplete="off" oninput="syncAllChildRemarks()"></textarea>
         </div>
 
-        <!-- MULTI DESTINATION CONTAINER -->
         <div class="form-group-schedule">
           <div class="dest-section-box">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
@@ -422,7 +345,6 @@
       </div>
     </form>
 
-    <!-- TERM CONTRACT INFO + EDIT DEVELOPER BUTTON -->
     <div class="term-info-panel">
       <div class="term-info-header">
         <span>📜 Ketentuan Destination Sesuai Term Kontrak ▼</span>
@@ -546,231 +468,144 @@
 </div>
 
 <script>
-  let masterDataSchedule = [];
-  let currentFilteredSchedule = [];
-  let currentSortState = { column: null, direction: 'asc' };
-  let currentPreviewMode = 'rapi';
-  let parsedImportRows = [];
-  let logChangesMap = {};
-  let isEditMode = false;
-  let currentPage = 1;
-  let pageSize = 20;
+  let masterDataSchedule = [], currentFilteredSchedule = [], logChangesMap = {}, parsedImportRows = [];
+  let currentSortState = { column: null, direction: 'asc' }, currentPreviewMode = 'rapi';
+  let isEditMode = false, currentPage = 1, pageSize = 20;
 
-  let masterTermMap = {
-    "SINOKOR": ["HIROSHIMA", "OSAKA", "SENDAI", "SHIMIZU", "TOKYO", "YOKOHAMA", "HAKATA"],
-    "SITC": ["NAGOYA", "SENDAI", "SHIMIZU"],
-    "EVERGREEN": ["NAGOYA", "OSAKA", "SENDAI", "SHIMIZU", "TOKYO", "YOKOHAMA", "HAKATA"],
-    "ONE": ["LAEM CHABANG"],
-    "WAN HAI": ["NAGOYA", "OSAKA", "TOKYO", "YOKOHAMA"],
-    "EXPEDITORS": ["KITCHENER", "EL PASO"],
-    "OOCL": ["HIROSHIMA"]
+  // VARIABEL MAP MASTER LINER DARI SUPABASE
+  let masterTermMap = {};
+
+  const getCurrentWeekNumber = () => {
+    const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate() + 4 - (d.getDay() || 7));
+    return Math.ceil((((d - new Date(d.getFullYear(), 0, 1)) / 86400000) + 1) / 7);
   };
 
-  function getCurrentWeekNumber() {
-    const d = new Date();
-    d.setHours(0, 0, 0, 0);
-    d.setDate(d.getDate() + 4 - (d.getDay() || 7));
-    const yearStart = new Date(d.getFullYear(), 0, 1);
-    return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
-  }
-
-  /* --- FLATPICKR SYNC REALTIME SAAT MENGETIK MANUAL --- */
-  function initFlatpickrInputs() {
-    const syncCalendarOnInput = function(selectedDates, dateStr, instance) {
-      const val = instance.input.value.trim();
-      const cleanVal = val.replace(/^(ATB:|ETD:|ATD:)\s*/i, '').trim();
-      
-      // Sync format dd-mm-yyyy (10 karakter)
-      if (/^\d{2}-\d{2}-\d{4}$/.test(cleanVal)) {
-        const p = cleanVal.split('-');
-        const parsedDate = new Date(p[2], p[1] - 1, p[0]);
-        if (!isNaN(parsedDate.getTime())) {
-          instance.setDate(parsedDate, false);
-          instance.jumpToDate(parsedDate);
-        }
-      } 
-      // Sync format dd-mm-yyyy hh:mm (16 karakter)
-      else if (/^\d{2}-\d{2}-\d{4}\s\d{2}:\d{2}$/.test(cleanVal)) {
-        const parts = cleanVal.split(' ');
-        const p = parts[0].split('-');
-        const t = parts[1].split(':');
-        const parsedDate = new Date(p[2], p[1] - 1, p[0], t[0], t[1]);
-        if (!isNaN(parsedDate.getTime())) {
-          instance.setDate(parsedDate, false);
-          instance.jumpToDate(parsedDate);
-        }
+  /* --- AMBIL DATA LINER & TERM DARI TABEL master_liners (SUPABASE) --- */
+  async function muatMasterLinerDariSupabase() {
+    try {
+      const { data, error } = await supabaseClient.from('master_liners').select('*').order('id', { ascending: true });
+      if (!error && data) {
+        masterTermMap = {};
+        data.forEach(item => { masterTermMap[item.liner_name] = item.destinations || []; });
+        renderTermInfoList();
       }
-    };
-
-    flatpickr(".fp-date", {
-      dateFormat: "d-m-Y",
-      allowInput: true,
-      clickOpens: true,
-      theme: "dark",
-      onValueUpdate: syncCalendarOnInput,
-      onReady: function(selectedDates, dateStr, instance) {
-        instance.input.addEventListener("input", () => {
-          syncCalendarOnInput(selectedDates, instance.input.value, instance);
-        });
-      }
-    });
-
-    flatpickr(".fp-datetime", {
-      dateFormat: "d-m-Y H:i",
-      enableTime: true,
-      time_24hr: true,
-      allowInput: true,
-      clickOpens: true,
-      theme: "dark",
-      onValueUpdate: syncCalendarOnInput,
-      onReady: function(selectedDates, dateStr, instance) {
-        instance.input.addEventListener("input", () => {
-          syncCalendarOnInput(selectedDates, instance.input.value, instance);
-        });
-      }
-    });
+    } catch(e) { console.error("Gagal load master_liners:", e); }
   }
 
   function renderTermInfoList() {
     const ul = document.getElementById("term-info-list");
-    if (!ul) return;
-    ul.innerHTML = "";
-    Object.keys(masterTermMap).forEach(liner => {
-      const dests = masterTermMap[liner].join(", ");
-      const li = document.createElement("li");
-      li.innerHTML = `• <b>${liner}:</b> ${dests}`;
-      ul.appendChild(li);
-    });
-
+    if (ul) {
+      ul.innerHTML = "";
+      Object.keys(masterTermMap).forEach(liner => {
+        const li = document.createElement("li");
+        li.innerHTML = `• <b>${liner}:</b> ${masterTermMap[liner].join(", ")}`;
+        ul.appendChild(li);
+      });
+    }
     const selectLiner = document.getElementById("sched-liner");
     if (selectLiner) {
-      const currentVal = selectLiner.value;
-      let optsHtml = `<option value="">-- Pilih Liner --</option>`;
-      Object.keys(masterTermMap).forEach(liner => {
-        optsHtml += `<option value="${liner}">${liner}</option>`;
-      });
-      selectLiner.innerHTML = optsHtml;
-      selectLiner.value = currentVal;
+      const currVal = selectLiner.value;
+      selectLiner.innerHTML = `<option value="">-- Pilih Liner --</option>` + 
+        Object.keys(masterTermMap).map(l => `<option value="${l}">${l}</option>`).join('');
+      if (currVal) selectLiner.value = currVal;
     }
   }
 
   function bukaModalEditLinerTerm() {
     const container = document.getElementById("wrapper-edit-liner-rows");
     container.innerHTML = "";
-    Object.keys(masterTermMap).forEach(liner => {
-      tambahRowLinerBaru(liner, masterTermMap[liner].join(", "));
-    });
+    Object.keys(masterTermMap).forEach(liner => tambahRowLinerBaru(liner, masterTermMap[liner].join(", ")));
     document.getElementById("modalEditLinerTerm").style.display = "flex";
   }
 
   function tambahRowLinerBaru(linerName = "", termDests = "") {
-    const container = document.getElementById("wrapper-edit-liner-rows");
-    const div = document.createElement("div");
-    div.className = "edit-liner-row";
+    const div = document.createElement("div"); div.className = "edit-liner-row";
     div.innerHTML = `
       <input type="text" class="inp-liner-name" value="${linerName}" placeholder="Nama Liner" autocomplete="off">
       <input type="text" class="inp-liner-term" value="${termDests}" placeholder="Contoh: NAGOYA, OSAKA, TOKYO" autocomplete="off">
       <button type="button" onclick="this.closest('.edit-liner-row').remove();" style="background:#ef4444; color:#fff; border:none; padding:6px 10px; border-radius:6px; cursor:pointer;">🗑️</button>
     `;
-    container.appendChild(div);
+    document.getElementById("wrapper-edit-liner-rows").appendChild(div);
   }
 
-  function simpanSemuaLinerTerm() {
+  /* --- SIMPAN SEMUA LINER KEMBALI KE SUPABASE VIA TRUNCATE & INSERT REFRESH --- */
+  async function simpanSemuaLinerTerm() {
     const rows = document.querySelectorAll("#wrapper-edit-liner-rows .edit-liner-row");
-    let newMasterMap = {};
-    rows.forEach(r => {
-      const name = r.querySelector(".inp-liner-name").value.trim().toUpperCase();
-      const termsStr = r.querySelector(".inp-liner-term").value.trim().toUpperCase();
-      if (name) {
-        const destArr = termsStr ? termsStr.split(",").map(s => s.trim()).filter(s => s !== "") : [];
-        newMasterMap[name] = destArr;
-      }
-    });
-    masterTermMap = newMasterMap;
-    renderTermInfoList();
-    tutupModalEditLinerTerm();
-    showCustomAlert("✅ Master Liner & Term berhasil diperbarui!");
+    try {
+      await supabaseClient.from('master_liners').delete().neq('id', 0);
+      let payloadBatch = [];
+      rows.forEach(r => {
+        const name = r.querySelector(".inp-liner-name").value.trim().toUpperCase();
+        const termsStr = r.querySelector(".inp-liner-term").value.trim().toUpperCase();
+        if (name) {
+          const destArr = termsStr ? termsStr.split(",").map(s => s.trim()).filter(s => s !== "") : [];
+          payloadBatch.push({ liner_name: name, destinations: destArr });
+        }
+      });
+      if (payloadBatch.length > 0) { await supabaseClient.from('master_liners').insert(payloadBatch); }
+      await muatMasterLinerDariSupabase();
+      tutupModalEditLinerTerm();
+      showCustomAlert("✅ Master Liner & Term berhasil tersimpan ke Supabase dan aktif untuk seluruh user!");
+    } catch (err) { showCustomAlert("❌ Error Supabase: " + err.message); }
   }
 
-  function tutupModalEditLinerTerm() {
-    document.getElementById("modalEditLinerTerm").style.display = "none";
+  function tutupModalEditLinerTerm() { document.getElementById("modalEditLinerTerm").style.display = "none"; }
+
+  function initFlatpickrInputs() {
+    const syncCalendarOnInput = (selectedDates, dateStr, instance) => {
+      const cleanVal = instance.input.value.trim().replace(/^(ATB:|ETD:|ATD:)\s*/i, '').trim();
+      if (/^\d{2}-\d{2}-\d{4}$/.test(cleanVal)) {
+        const p = cleanVal.split('-'); const parsedDate = new Date(p[2], p[1] - 1, p[0]);
+        if (!isNaN(parsedDate)) { instance.setDate(parsedDate, false); instance.jumpToDate(parsedDate); }
+      } else if (/^\d{2}-\d{2}-\d{4}\s\d{2}:\d{2}$/.test(cleanVal)) {
+        const parts = cleanVal.split(' '); const p = parts[0].split('-'); const t = parts[1].split(':');
+        const parsedDate = new Date(p[2], p[1] - 1, p[0], t[0], t[1]);
+        if (!isNaN(parsedDate)) { instance.setDate(parsedDate, false); instance.jumpToDate(parsedDate); }
+      }
+    };
+    flatpickr(".fp-date", { dateFormat: "d-m-Y", allowInput: true, theme: "dark", onValueUpdate: syncCalendarOnInput });
+    flatpickr(".fp-datetime", { dateFormat: "d-m-Y H:i", enableTime: true, time_24hr: true, allowInput: true, theme: "dark", onValueUpdate: syncCalendarOnInput });
   }
 
   document.addEventListener("DOMContentLoaded", () => {
     initFlatpickrInputs();
-    renderTermInfoList();
+    muatMasterLinerDariSupabase();
   });
 
-  function showCustomConfirm(message) {
-    return new Promise((resolve) => {
-      const overlay = document.createElement("div");
-      overlay.className = "nexportal-dialog-overlay";
-      overlay.innerHTML = `
-        <div class="nexportal-dialog-card">
-          <h4 class="nexportal-dialog-header">NexPortal-EXIM says:</h4>
-          <div class="nexportal-dialog-body">${message}</div>
-          <div class="nexportal-dialog-actions">
-            <button type="button" class="nexportal-btn-ok" id="npConfirmBtnOk">OK</button>
-            <button type="button" class="nexportal-btn-cancel" id="npConfirmBtnCancel">Cancel</button>
-          </div>
-        </div>
-      `;
-      document.body.appendChild(overlay);
-      overlay.querySelector("#npConfirmBtnOk").onclick = () => { overlay.remove(); resolve(true); };
-      overlay.querySelector("#npConfirmBtnCancel").onclick = () => { overlay.remove(); resolve(false); };
-    });
-  }
+  const showCustomConfirm = (msg) => new Promise(res => {
+    const overlay = document.createElement("div"); overlay.className = "nexportal-dialog-overlay";
+    overlay.innerHTML = `<div class="nexportal-dialog-card"><h4 class="nexportal-dialog-header">NexPortal-EXIM says:</h4><div class="nexportal-dialog-body">${msg}</div><div class="nexportal-dialog-actions"><button class="nexportal-btn-ok" id="npConfirmBtnOk">OK</button><button class="nexportal-btn-cancel" id="npConfirmBtnCancel">Cancel</button></div></div>`;
+    document.body.appendChild(overlay);
+    overlay.querySelector("#npConfirmBtnOk").onclick = () => { overlay.remove(); res(true); };
+    overlay.querySelector("#npConfirmBtnCancel").onclick = () => { overlay.remove(); res(false); };
+  });
 
-  function showCustomAlert(message) {
-    return new Promise((resolve) => {
-      const overlay = document.createElement("div");
-      overlay.className = "nexportal-dialog-overlay";
-      overlay.innerHTML = `
-        <div class="nexportal-dialog-card">
-          <h4 class="nexportal-dialog-header">NexPortal-EXIM says:</h4>
-          <div class="nexportal-dialog-body">${message}</div>
-          <div class="nexportal-dialog-actions">
-            <button type="button" class="nexportal-btn-ok" id="npAlertBtnOk">OK</button>
-          </div>
-        </div>
-      `;
-      document.body.appendChild(overlay);
-      overlay.querySelector("#npAlertBtnOk").onclick = () => { overlay.remove(); resolve(true); };
-    });
-  }
+  const showCustomAlert = (msg) => new Promise(res => {
+    const overlay = document.createElement("div"); overlay.className = "nexportal-dialog-overlay";
+    overlay.innerHTML = `<div class="nexportal-dialog-card"><h4 class="nexportal-dialog-header">NexPortal-EXIM says:</h4><div class="nexportal-dialog-body">${msg}</div><div class="nexportal-dialog-actions"><button class="nexportal-btn-ok" id="npAlertBtnOk">OK</button></div></div>`;
+    document.body.appendChild(overlay);
+    overlay.querySelector("#npAlertBtnOk").onclick = () => { overlay.remove(); res(true); };
+  });
 
   muatDataSchedule();
 
   function getSupabaseVal(row, candidates) {
     if (!row) return '';
-    for (let c of candidates) {
-      if (row[c] !== undefined && row[c] !== null && String(row[c]).trim() !== '') {
-        return row[c];
-      }
-    }
+    for (let c of candidates) { if (row[c] !== undefined && row[c] !== null && String(row[c]).trim() !== '') return row[c]; }
     return '';
   }
 
   function formatDateTimeAppScript(valStr) {
     if (!valStr || valStr === '-' || String(valStr).trim() === '') return '-';
-    let clean = String(valStr).trim();
-    let prefix = "";
-    if (/^(ATB:|ETD:|ATD:)/i.test(clean)) {
-      const matchPrefix = clean.match(/^(ATB:|ETD:|ATD:)\s*/i);
-      prefix = matchPrefix[0];
-      clean = clean.replace(/^(ATB:|ETD:|ATD:)\s*/i, '').trim();
-    }
+    let clean = String(valStr).trim(), prefix = "";
+    if (/^(ATB:|ETD:|ATD:)/i.test(clean)) { prefix = clean.match(/^(ATB:|ETD:|ATD:)\s*/i)[0]; clean = clean.replace(/^(ATB:|ETD:|ATD:)\s*/i, '').trim(); }
     if (clean.includes('T') || clean.includes('-') || clean.includes('/')) {
-      let datePart = clean.split(' ')[0].split('T')[0];
-      let timePart = clean.includes('T') ? clean.split('T')[1].substring(0,5) : (clean.includes(' ') ? clean.split(' ')[1].substring(0,5) : '');
+      let datePart = clean.split(' ')[0].split('T')[0], timePart = clean.includes('T') ? clean.split('T')[1].substring(0,5) : (clean.includes(' ') ? clean.split(' ')[1].substring(0,5) : '');
       let p = datePart.split(/[-/]/);
       if (p.length === 3) {
-        let d, m, y;
-        if (p[0].length === 4) { y = p[0]; m = p[1]; d = p[2]; }
-        else { d = p[0]; m = p[1]; y = p[2]; if (y.length === 2) y = "20" + y; }
+        let d = p[0].length === 4 ? p[2] : p[0], m = p[1], y = p[0].length === 4 ? p[0] : (p[2].length === 2 ? "20" + p[2] : p[2]);
         let formattedDate = `${String(d).padStart(2,'0')}-${String(m).padStart(2,'0')}-${y}`;
-        let finalStr = timePart ? `${formattedDate} ${timePart}` : formattedDate;
-        return prefix ? `${prefix} ${finalStr}` : finalStr;
+        return prefix ? `${prefix} ${timePart ? formattedDate + ' ' + timePart : formattedDate}` : (timePart ? `${formattedDate} ${timePart}` : formattedDate);
       }
     }
     return prefix ? `${prefix} ${clean}` : clean;
@@ -778,248 +613,151 @@
 
   function parseToInputDate(valStr) {
     if (!valStr || valStr === '-' || valStr.trim() === '') return '';
-    let clean = valStr.replace(/^(ATB:|ETD:|ATD:)\s*/i, '').trim().split(' ')[0];
-    let p = clean.split(/[-/]/);
-    if (p.length === 3) {
-      if (p[0].length === 4) return `${String(p[2]).padStart(2,'0')}-${String(p[1]).padStart(2,'0')}-${p[0]}`;
-      return `${String(p[0]).padStart(2,'0')}-${String(p[1]).padStart(2,'0')}-${p[2]}`;
-    }
-    return '';
+    let p = valStr.replace(/^(ATB:|ETD:|ATD:)\s*/i, '').trim().split(' ')[0].split(/[-/]/);
+    return p.length === 3 ? (p[0].length === 4 ? `${String(p[2]).padStart(2,'0')}-${String(p[1]).padStart(2,'0')}-${p[0]}` : `${String(p[0]).padStart(2,'0')}-${String(p[1]).padStart(2,'0')}-${p[2]}`) : '';
   }
 
   function parseToInputDateTimeLocal(valStr) {
     if (!valStr || valStr === '-' || valStr.trim() === '') return '';
-    let clean = valStr.replace(/^(ATB:|ETD:|ATD:)\s*/i, '').trim();
-    let parts = clean.split(' ');
+    let parts = valStr.replace(/^(ATB:|ETD:|ATD:)\s*/i, '').trim().split(' ');
     let datePart = parseToInputDate(parts[0]);
-    let timePart = parts[1] ? parts[1].substring(0,5) : '00:00';
-    return datePart ? `${datePart} ${timePart}` : '';
+    return datePart ? `${datePart} ${parts[1] ? parts[1].substring(0,5) : '00:00'}` : '';
   }
 
   function parseDateForSorting(dateStr) {
     if (!dateStr || dateStr === '-' || dateStr.trim() === '') return new Date(9999, 11, 31);
-    let clean = dateStr.replace(/^(ATB:|ETD:|ATD:)\s*/i, '').trim();
-    const parts = clean.split(/[-/]/);
+    const parts = dateStr.replace(/^(ATB:|ETD:|ATD:)\s*/i, '').trim().split(/[-/]/);
     if (parts.length >= 3) {
-      let d = parseInt(parts[0], 10);
-      let m = parseInt(parts[1], 10) - 1;
-      let y = parseInt(parts[2].substring(0,4), 10);
-      if (y < 100) y += 2000;
-      return new Date(y, m, d);
+      let y = parseInt(parts[2].substring(0,4), 10); if (y < 100) y += 2000;
+      return new Date(y, parseInt(parts[1], 10) - 1, parseInt(parts[0], 10));
     }
     return new Date(9999, 11, 31);
   }
 
-  function getRevColorClass(count) {
-    if (!count || count <= 0) return '';
-    if (count === 1) return 'rev-lvl-1';
-    if (count === 2) return 'rev-lvl-2';
-    if (count === 3) return 'rev-lvl-3';
-    if (count === 4) return 'rev-lvl-4';
-    if (count === 5) return 'rev-lvl-5';
-    if (count === 6) return 'rev-lvl-6';
-    if (count === 7) return 'rev-lvl-7';
-    if (count === 8) return 'rev-lvl-8';
-    if (count === 9) return 'rev-lvl-9';
-    if (count === 10) return 'rev-lvl-10';
-    return 'rev-lvl-11';
-  }
-
-  function getRevInlineStyle(count) {
-    if (!count || count <= 0) return '';
-    if (count === 1) return 'background-color:#dcfce7 !important; color:#14532d !important; font-weight:bold;';
-    if (count === 2) return 'background-color:#86efac !important; color:#064e3b !important; font-weight:bold;';
-    if (count === 3) return 'background-color:#fef9c3 !important; color:#713f12 !important; font-weight:bold;';
-    if (count === 4) return 'background-color:#fde047 !important; color:#713f12 !important; font-weight:bold;';
-    if (count === 5) return 'background-color:#ffedd5 !important; color:#7c2d12 !important; font-weight:bold;';
-    if (count === 6) return 'background-color:#fed7aa !important; color:#7c2d12 !important; font-weight:bold;';
-    if (count === 7) return 'background-color:#e0f2fe !important; color:#0c4a6e !important; font-weight:bold;';
-    if (count === 8) return 'background-color:#93c5fd !important; color:#1e3a8a !important; font-weight:bold;';
-    if (count === 9) return 'background-color:#f3e8ff !important; color:#581c87 !important; font-weight:bold;';
-    if (count === 10) return 'background-color:#d8b4fe !important; color:#581c87 !important; font-weight:bold;';
-    return 'background-color:#a855f7 !important; color:#ffffff !important; font-weight:bold;';
+  function getRevColorClass(c) { return !c || c <= 0 ? '' : (c > 10 ? 'rev-lvl-11' : `rev-lvl-${c}`); }
+  function getRevInlineStyle(c) {
+    if (!c || c <= 0) return '';
+    const styles = ['', 'background-color:#dcfce7 !important; color:#14532d !important;', 'background-color:#86efac !important; color:#064e3b !important;', 'background-color:#fef9c3 !important; color:#713f12 !important;', 'background-color:#fde047 !important; color:#713f12 !important;', 'background-color:#ffedd5 !important; color:#7c2d12 !important;', 'background-color:#fed7aa !important; color:#7c2d12 !important;', 'background-color:#e0f2fe !important; color:#0c4a6e !important;', 'background-color:#93c5fd !important; color:#1e3a8a !important;', 'background-color:#f3e8ff !important; color:#581c87 !important;', 'background-color:#d8b4fe !important; color:#581c87 !important;'];
+    return (styles[c] || 'background-color:#a855f7 !important; color:#ffffff !important;') + ' font-weight:bold;';
   }
 
   async function muatDataSchedule() {
     const tbody = document.getElementById("tbody-schedule");
     tbody.innerHTML = `<tr><td colspan="14" style="text-align: center; padding: 20px;">⏳ Memuat database Control Schedule...</td></tr>`;
-
     try {
       const { data: logsData } = await supabaseClient.from('log_changes').select('*');
       logChangesMap = {};
       if (logsData) {
         logsData.forEach(l => {
-          const targetKey = String(l.row_target || l.target_id || l.row_id || '').trim();
-          const aksiType = String(l.aksi || l.action || '').toUpperCase().trim();
-          if (targetKey && aksiType !== 'BARU' && aksiType !== 'INPUT PERTAMA') {
-            if (!logChangesMap[targetKey]) { logChangesMap[targetKey] = { total: 0, upd_closing: 0, etb_web: 0, etd_web: 0, eta_port: 0 }; }
+          const k = String(l.row_target || l.target_id || l.row_id || '').trim();
+          const aksi = String(l.aksi || l.action || '').toUpperCase().trim();
+          if (k && aksi !== 'BARU' && aksi !== 'INPUT PERTAMA') {
+            if (!logChangesMap[k]) logChangesMap[k] = { total: 0, upd_closing: 0, etb_web: 0, etd_web: 0, eta_port: 0 };
             const col = String(l.kolom || l.column_name || l.field || '').toUpperCase().trim();
-            if (col === 'UPDATE CLOSING CY' || col === 'UPDATE CLOSING') { logChangesMap[targetKey].upd_closing += 1; logChangesMap[targetKey].total += 1; }
-            else if (col === 'ETB/ATB WEBSITE' || col === 'ETB WEBSITE' || col === 'ETB/ATB') { logChangesMap[targetKey].etb_web += 1; logChangesMap[targetKey].total += 1; }
-            else if (col === 'ETD/ATD WEBSITE' || col === 'ETD WEBSITE' || col === 'ETD/ATD') { logChangesMap[targetKey].etd_web += 1; logChangesMap[targetKey].total += 1; }
-            else if (col === 'ETA PORT' || col === 'ETA') { logChangesMap[targetKey].eta_port += 1; logChangesMap[targetKey].total += 1; }
+            if (col.includes('CLOSING')) { logChangesMap[k].upd_closing++; logChangesMap[k].total++; }
+            else if (col.includes('ETB')) { logChangesMap[k].etb_web++; logChangesMap[k].total++; }
+            else if (col.includes('ETD')) { logChangesMap[k].etd_web++; logChangesMap[k].total++; }
+            else if (col.includes('ETA')) { logChangesMap[k].eta_port++; logChangesMap[k].total++; }
           }
         });
       }
 
       const { data, error } = await supabaseClient.from('control_schedule').select('*');
-      if (error) {
-        tbody.innerHTML = `<tr><td colspan="14" style="color:#ef4444; text-align:center;">❌ Error: ${error.message}</td></tr>`;
-        return;
-      }
+      if (error) throw error;
 
-      masterDataSchedule = (data || []).map((row) => {
-        const rowIdStr = String(row.id).trim();
-        const logInfo = logChangesMap[rowIdStr] || { total: 0, upd_closing: 0, etb_web: 0, etd_web: 0, eta_port: 0 };
-        let rawVessel = getSupabaseVal(row, ['feeder_vessel', 'vessel']);
-        let rawVoyage = getSupabaseVal(row, ['voyage', 'Voyage']);
-        if (rawVessel.includes("|")) {
-          const parts = rawVessel.split("|");
-          rawVessel = parts[0].trim();
-          if (!rawVoyage) rawVoyage = parts.slice(1).join(" ").trim();
-        }
-        let combinedVesselDisplay = rawVoyage ? `${rawVessel} ${rawVoyage}` : rawVessel;
-
+      masterDataSchedule = (data || []).map(row => {
+        const info = logChangesMap[String(row.id).trim()] || { total: 0, upd_closing: 0, etb_web: 0, etd_web: 0, eta_port: 0 };
+        let v = getSupabaseVal(row, ['feeder_vessel', 'vessel']), vy = getSupabaseVal(row, ['voyage', 'Voyage']);
+        if (v.includes("|")) { const p = v.split("|"); v = p[0].trim(); if (!vy) vy = p.slice(1).join(" ").trim(); }
         return {
-          id: row.id,
-          week: getSupabaseVal(row, ['week', 'Week']),
-          liner: getSupabaseVal(row, ['liner', 'Liner']),
-          port: getSupabaseVal(row, ['port', 'Port']) || 'SRG',
-          vessel_name_only: rawVessel,
-          voyage_only: rawVoyage,
-          feeder_vessel: combinedVesselDisplay,
-          etd_original: formatDateTimeAppScript(getSupabaseVal(row, ['etd_port_origin', 'etd_original', 'etd_orig'])),
+          id: row.id, week: getSupabaseVal(row, ['week', 'Week']), liner: getSupabaseVal(row, ['liner', 'Liner']),
+          port: getSupabaseVal(row, ['port', 'Port']) || 'SRG', vessel_name_only: v, voyage_only: vy, feeder_vessel: vy ? `${v} ${vy}` : v,
+          etd_original: formatDateTimeAppScript(getSupabaseVal(row, ['etd_port_origin', 'etd_original'])),
           closing_cy: formatDateTimeAppScript(getSupabaseVal(row, ['closing_cy', 'closing'])),
-          update_closing_cy: formatDateTimeAppScript(getSupabaseVal(row, ['update_closing', 'update_closing_cy', 'upd_closing'])),
-          etb_website: formatDateTimeAppScript(getSupabaseVal(row, ['etb_atb_website', 'etb_website', 'etb_web'])),
-          etd_website: formatDateTimeAppScript(getSupabaseVal(row, ['etd_atd_website', 'etd_website', 'etd_web'])),
+          update_closing_cy: formatDateTimeAppScript(getSupabaseVal(row, ['update_closing', 'update_closing_cy'])),
+          etb_website: formatDateTimeAppScript(getSupabaseVal(row, ['etb_atb_website', 'etb_website'])),
+          etd_website: formatDateTimeAppScript(getSupabaseVal(row, ['etd_atd_website', 'etd_website'])),
           eta_port: formatDateTimeAppScript(getSupabaseVal(row, ['eta_port', 'etaPort'])),
-          destination: getSupabaseVal(row, ['destination', 'dest']),
-          remark: getSupabaseVal(row, ['remark', 'Remark']),
-          revCount: logInfo.total,
-          revUpdClosing: logInfo.upd_closing,
-          revEtbWeb: logInfo.etb_web,
-          revEtdWeb: logInfo.etd_web,
-          revEtaPort: logInfo.eta_port
+          destination: getSupabaseVal(row, ['destination', 'dest']), remark: getSupabaseVal(row, ['remark', 'Remark']),
+          revCount: info.total, revUpdClosing: info.upd_closing, revEtbWeb: info.etb_web, revEtdWeb: info.etd_web, revEtaPort: info.eta_port
         };
       });
 
-      const now = new Date();
-      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-
+      const today = new Date(); today.setHours(0,0,0,0);
       masterDataSchedule.sort((a, b) => {
-        const isAtdA = String(a.etd_website || '').toUpperCase().includes("ATD");
-        const isAtdB = String(b.etd_website || '').toUpperCase().includes("ATD");
-        const dateA = parseDateForSorting((a.etd_website && a.etd_website !== '-' && !isAtdA) ? a.etd_website : a.etd_original);
-        const dateB = parseDateForSorting((b.etd_website && b.etd_website !== '-' && !isAtdB) ? b.etd_website : b.etd_original);
-        const isPastA = isAtdA || (dateA < today);
-        const isPastB = isAtdB || (dateB < today);
-
-        if (!isPastA && isPastB) return -1;
-        if (isPastA && !isPastB) return 1;
-        if (!isPastA && !isPastB) return dateA - dateB;
-        return dateB - dateA;
+        const isAtdA = a.etd_website.toUpperCase().includes("ATD"), isAtdB = b.etd_website.toUpperCase().includes("ATD");
+        const dA = parseDateForSorting((a.etd_website !== '-' && !isAtdA) ? a.etd_website : a.etd_original);
+        const dB = parseDateForSorting((b.etd_website !== '-' && !isAtdB) ? b.etd_website : b.etd_original);
+        const pA = isAtdA || (dA < today), pB = isAtdB || (dB < today);
+        return (!pA && pB) ? -1 : ((pA && !pB) ? 1 : (!pA && !pB ? dA - dB : dB - dA));
       });
 
-      currentFilteredSchedule = [...masterDataSchedule];
-      currentPage = 1;
-      tampilkanTabelScheduleWithPagination();
-
-    } catch (err) {
-      tbody.innerHTML = `<tr><td colspan="14" style="color:#ef4444; text-align:center;">❌ Error: ${err.message}</td></tr>`;
-    }
+      currentFilteredSchedule = [...masterDataSchedule]; currentPage = 1; tampilkanTabelScheduleWithPagination();
+    } catch (err) { tbody.innerHTML = `<tr><td colspan="14" style="color:#ef4444; text-align:center;">❌ Error: ${err.message}</td></tr>`; }
   }
 
   function tampilkanTabelScheduleWithPagination() {
-    const tbody = document.getElementById("tbody-schedule");
-    tbody.innerHTML = "";
-
-    if (!currentFilteredSchedule || currentFilteredSchedule.length === 0) {
+    const tbody = document.getElementById("tbody-schedule"); tbody.innerHTML = "";
+    if (!currentFilteredSchedule.length) {
       tbody.innerHTML = `<tr><td colspan="14" style="text-align: center; padding: 20px;">Belum ada data Control Schedule.</td></tr>`;
-      renderPaginationControls(0);
-      return;
+      renderPaginationControls(0); return;
     }
 
     let pagedData = currentFilteredSchedule;
     if (pageSize !== 'all') {
-      const pSize = parseInt(pageSize, 10);
-      const totalPages = Math.ceil(currentFilteredSchedule.length / pSize);
+      const pSize = parseInt(pageSize, 10), totalPages = Math.ceil(currentFilteredSchedule.length / pSize);
       if (currentPage > totalPages) currentPage = totalPages || 1;
-      const startIdx = (currentPage - 1) * pSize;
-      const endIdx = startIdx + pSize;
-      pagedData = currentFilteredSchedule.slice(startIdx, endIdx);
+      pagedData = currentFilteredSchedule.slice((currentPage - 1) * pSize, currentPage * pSize);
     }
 
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-
+    const today = new Date(); today.setHours(0,0,0,0);
     pagedData.forEach((item, index) => {
       const tr = document.createElement("tr");
-      const actualDisplayNo = (pageSize === 'all') ? (index + 1) : ((currentPage - 1) * parseInt(pageSize, 10) + index + 1);
-      const revBadgeHtml = item.revCount > 0 ? `<span class="badge-rev-counter">rev ${item.revCount}</span>` : ``;
-      const classUpdClos = getRevColorClass(item.revUpdClosing);
-      const classEtbWeb = getRevColorClass(item.revEtbWeb);
-      const classEtdWeb = getRevColorClass(item.revEtdWeb);
-      const classEtaPort = getRevColorClass(item.revEtaPort);
-      const isAtbRed = String(item.etb_website || '').toUpperCase().includes("ATB") ? "text-actual-red" : "";
-      const isAtdRed = String(item.etd_website || '').toUpperCase().includes("ATD") ? "text-actual-red" : "";
+      const no = (pageSize === 'all') ? (index + 1) : ((currentPage - 1) * parseInt(pageSize, 10) + index + 1);
+      const isAtd = item.etd_website.toUpperCase().includes("ATD");
+      if (isAtd || parseDateForSorting(item.etd_website !== '-' ? item.etd_website : item.etd_original) < today) tr.className = "row-past-atd";
 
-      let isAtd = String(item.etd_website || '').toUpperCase().includes("ATD");
-      let dateEtd = parseDateForSorting(item.etd_website !== '-' ? item.etd_website : item.etd_original);
-      if (isAtd || (dateEtd < today)) { tr.className = "row-past-atd"; }
-
-      const fnDblClick = `bukaModalHistori('${item.id}', ${actualDisplayNo}, '${(item.feeder_vessel || 'Vessel').replace(/'/g, "\\'")}')`;
-
+      const fnDbl = `bukaModalHistori('${item.id}', ${no}, '${(item.feeder_vessel || 'Vessel').replace(/'/g, "\\'")}')`;
       tr.innerHTML = `
-        <td class="col-no" ondblclick="${fnDblClick}">${actualDisplayNo}</td>
-        <td class="col-week" ondblclick="${fnDblClick}">${revBadgeHtml}<span class="badge-week">${item.week || '-'}</span></td>
-        <td class="col-liner" ondblclick="${fnDblClick}"><span class="badge-liner">${item.liner || '-'}</span></td>
-        <td class="col-port" ondblclick="${fnDblClick}">${item.port || '-'}</td>
-        <td class="col-vessel" ondblclick="${fnDblClick}" style="font-weight:700;">${item.feeder_vessel || '-'}</td>
-        <td class="col-etdorig" ondblclick="${fnDblClick}">${item.etd_original || '-'}</td>
-        <td class="col-closing" ondblclick="${fnDblClick}">${item.closing_cy || '-'}</td>
-        <td class="col-updclosing ${classUpdClos}" ondblclick="${fnDblClick}">${item.update_closing_cy || '-'}</td>
-        <td class="col-etbweb ${classEtbWeb} ${isAtbRed}" ondblclick="${fnDblClick}">${item.etb_website || '-'}</td>
-        <td class="col-etdweb ${classEtdWeb} ${isAtdRed}" ondblclick="${fnDblClick}">${item.etd_website || '-'}</td>
-        <td class="col-etaport ${classEtaPort}" ondblclick="${fnDblClick}">${item.eta_port || '-'}</td>
-        <td class="col-dest" ondblclick="${fnDblClick}" style="font-weight:600;">${item.destination || '-'}</td>
-        <td class="col-remark" ondblclick="${fnDblClick}">${item.remark || '-'}</td>
-        <td class="col-aksi-cell"><button type="button" class="btn-aksi-tbl" onclick="toggleMenuAksiSchedule(event, '${item.id}', ${actualDisplayNo})">Aksi ▾</button></td>
+        <td class="col-no" ondblclick="${fnDbl}">${no}</td>
+        <td class="col-week" ondblclick="${fnDbl}">${item.revCount > 0 ? `<span class="badge-rev-counter">rev ${item.revCount}</span>` : ''}<span class="badge-week">${item.week || '-'}</span></td>
+        <td class="col-liner" ondblclick="${fnDbl}"><span class="badge-liner">${item.liner || '-'}</span></td>
+        <td class="col-port" ondblclick="${fnDbl}">${item.port || '-'}</td>
+        <td class="col-vessel" ondblclick="${fnDbl}" style="font-weight:700;">${item.feeder_vessel || '-'}</td>
+        <td class="col-etdorig" ondblclick="${fnDbl}">${item.etd_original || '-'}</td>
+        <td class="col-closing" ondblclick="${fnDbl}">${item.closing_cy || '-'}</td>
+        <td class="col-updclosing ${getRevColorClass(item.revUpdClosing)}" ondblclick="${fnDbl}">${item.update_closing_cy || '-'}</td>
+        <td class="col-etbweb ${getRevColorClass(item.revEtbWeb)} ${item.etb_website.toUpperCase().includes("ATB") ? "text-actual-red" : ""}" ondblclick="${fnDbl}">${item.etb_website || '-'}</td>
+        <td class="col-etdweb ${getRevColorClass(item.revEtdWeb)} ${item.etd_website.toUpperCase().includes("ATD") ? "text-actual-red" : ""}" ondblclick="${fnDbl}">${item.etd_website || '-'}</td>
+        <td class="col-etaport ${getRevColorClass(item.revEtaPort)}" ondblclick="${fnDbl}">${item.eta_port || '-'}</td>
+        <td class="col-dest" ondblclick="${fnDbl}" style="font-weight:600;">${item.destination || '-'}</td>
+        <td class="col-remark" ondblclick="${fnDbl}">${item.remark || '-'}</td>
+        <td class="col-aksi-cell"><button type="button" class="btn-aksi-tbl" onclick="toggleMenuAksiSchedule(event, '${item.id}', ${no})">Aksi ▾</button></td>
       `;
       tbody.appendChild(tr);
     });
-
     renderPaginationControls(currentFilteredSchedule.length);
   }
 
   function renderPaginationControls(totalItems) {
-    const container = document.getElementById("paginationNavButtons");
-    container.innerHTML = "";
-    if (pageSize === 'all' || totalItems === 0) return;
-    const pSize = parseInt(pageSize, 10);
-    const totalPages = Math.ceil(totalItems / pSize);
+    const container = document.getElementById("paginationNavButtons"); container.innerHTML = "";
+    if (pageSize === 'all' || !totalItems) return;
+    const pSize = parseInt(pageSize, 10), totalPages = Math.ceil(totalItems / pSize);
 
-    const btnPrev = document.createElement("button");
-    btnPrev.type = "button"; btnPrev.className = "btn-page"; btnPrev.innerText = "<";
-    btnPrev.disabled = currentPage === 1;
-    btnPrev.onclick = () => { currentPage--; tampilkanTabelScheduleWithPagination(); };
+    const btnPrev = document.createElement("button"); btnPrev.type = "button"; btnPrev.className = "btn-page"; btnPrev.innerText = "<";
+    btnPrev.disabled = currentPage === 1; btnPrev.onclick = () => { currentPage--; tampilkanTabelScheduleWithPagination(); };
     container.appendChild(btnPrev);
 
-    let startPage = Math.max(1, currentPage - 2);
-    let endPage = Math.min(totalPages, startPage + 4);
-    if (endPage - startPage < 4) startPage = Math.max(1, endPage - 4);
-
-    for (let p = startPage; p <= endPage; p++) {
-      const btnP = document.createElement("button");
-      btnP.type = "button"; btnP.className = `btn-page ${p === currentPage ? 'active' : ''}`; btnP.innerText = p;
+    let start = Math.max(1, currentPage - 2), end = Math.min(totalPages, start + 4);
+    if (end - start < 4) start = Math.max(1, end - 4);
+    for (let p = start; p <= end; p++) {
+      const btnP = document.createElement("button"); btnP.type = "button"; btnP.className = `btn-page ${p === currentPage ? 'active' : ''}`; btnP.innerText = p;
       btnP.onclick = () => { currentPage = p; tampilkanTabelScheduleWithPagination(); };
       container.appendChild(btnP);
     }
 
-    const btnNext = document.createElement("button");
-    btnNext.type = "button"; btnNext.className = "btn-page"; btnNext.innerText = ">";
-    btnNext.disabled = currentPage === totalPages || totalPages === 0;
-    btnNext.onclick = () => { currentPage++; tampilkanTabelScheduleWithPagination(); };
+    const btnNext = document.createElement("button"); btnNext.type = "button"; btnNext.className = "btn-page"; btnNext.innerText = ">";
+    btnNext.disabled = currentPage === totalPages || totalPages === 0; btnNext.onclick = () => { currentPage++; tampilkanTabelScheduleWithPagination(); };
     container.appendChild(btnNext);
   }
 
@@ -1028,10 +766,8 @@
   function toggleMenuAksiSchedule(event, rowId, displayNo) {
     if (event) { event.preventDefault(); event.stopPropagation(); }
     tutupSemuaMenuAksiSchedule();
-    const btn = event.currentTarget;
-    const rect = btn.getBoundingClientRect();
-    const menu = document.createElement("div");
-    menu.className = "aksi-menu-popup"; menu.id = "activeAksiPopup";
+    const rect = event.currentTarget.getBoundingClientRect();
+    const menu = document.createElement("div"); menu.id = "activeAksiPopup";
     menu.style.cssText = `position: fixed; top: ${rect.bottom + 4}px; left: ${rect.left - 90}px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; width: 125px; box-shadow: 0 10px 25px rgba(0,0,0,0.9); z-index: 9999999; overflow: hidden;`;
     menu.innerHTML = `
       <button type="button" onclick="editScheduleByGlobalId('${rowId}')" style="display:block; width:100%; text-align:left; background:none; border:none; padding:7px 9px; color:#f59e0b; font-size:11px; cursor:pointer; font-weight:600;">✏️ Edit Data</button>
@@ -1040,168 +776,103 @@
     document.body.appendChild(menu);
   }
 
-  function tutupSemuaMenuAksiSchedule() {
-    const existing = document.getElementById("activeAksiPopup");
-    if (existing) existing.remove();
-  }
-
-  window.addEventListener('click', function() {
-    tutupSemuaMenuAksiSchedule();
-    document.querySelectorAll('.export-menu-list').forEach(m => m.style.display = 'none');
-  });
+  function tutupSemuaMenuAksiSchedule() { const ex = document.getElementById("activeAksiPopup"); if (ex) ex.remove(); }
+  window.addEventListener('click', () => { tutupSemuaMenuAksiSchedule(); document.querySelectorAll('.export-menu-list').forEach(m => m.style.display = 'none'); });
 
   function autoHitungClosingCYFrontend() {
-    const etdVal = document.getElementById("sched-etdorig").value;
-    const targetInp = document.getElementById("sched-closingcy");
-    if (!etdVal) { targetInp.value = ""; return; }
+    const etdVal = document.getElementById("sched-etdorig").value; if (!etdVal) return;
     const parts = etdVal.split("-");
     if(parts.length === 3) {
-      const d = new Date(parts[2], parts[1] - 1, parts[0]);
-      d.setDate(d.getDate() - 1);
-      targetInp.value = `${("0" + d.getDate()).slice(-2)}-${("0" + (d.getMonth() + 1)).slice(-2)}-${d.getFullYear()}`;
+      const d = new Date(parts[2], parts[1] - 1, parts[0]); d.setDate(d.getDate() - 1);
+      document.getElementById("sched-closingcy").value = `${("0" + d.getDate()).slice(-2)}-${("0" + (d.getMonth() + 1)).slice(-2)}-${d.getFullYear()}`;
     }
   }
 
   function onLinerChanged() {
     if (isEditMode) return;
-    const liner = document.getElementById("sched-liner").value;
-    const dests = masterTermMap[liner] || [];
+    const dests = masterTermMap[document.getElementById("sched-liner").value] || [];
     document.getElementById("dest-rows-wrapper").innerHTML = "";
-    if (dests.length > 0) { dests.forEach(d => tambahDestinasiRowInForm(d, '', '', true, false)); }
-    else { tambahDestinasiRowInForm("", "", "", true, false); }
+    if (dests.length > 0) dests.forEach(d => tambahDestinasiRowInForm(d, '', '', true, false));
+    else tambahDestinasiRowInForm("", "", "", true, false);
   }
 
   function refreshAllDestinationOptions() {
     const linerSelect = document.getElementById("sched-liner");
-    const liner = linerSelect ? (linerSelect.value || linerSelect.getAttribute("data-current-liner")) : "";
-    const allowedList = masterTermMap[liner] || ["NAGOYA","OSAKA","TOKYO","YOKOHAMA","SENDAI","SHIMIZU","HIROSHIMA","HAKATA","LAEM CHABANG"];
+    const allowedList = masterTermMap[linerSelect ? (linerSelect.value || linerSelect.getAttribute("data-current-liner")) : ""] || ["NAGOYA","OSAKA","TOKYO","YOKOHAMA","SENDAI","SHIMIZU","HIROSHIMA","HAKATA","LAEM CHABANG"];
+    const sel = Array.from(document.querySelectorAll("#dest-rows-wrapper .inp-dest-val")).map(s => s.value).filter(Boolean);
 
-    const selectedDestinations = [];
-    document.querySelectorAll("#dest-rows-wrapper .inp-dest-val").forEach(sel => { if (sel.value) selectedDestinations.push(sel.value); });
-
-    document.querySelectorAll("#dest-rows-wrapper .inp-dest-val").forEach(sel => {
-      const currentValue = sel.value || sel.getAttribute("data-initial-val");
-      let optionsHtml = `<option value="">-- Select Destination --</option>`;
-      allowedList.forEach(d => {
-        if (!selectedDestinations.includes(d) || d === currentValue) {
-          optionsHtml += `<option value="${d}" ${d === currentValue ? 'selected' : ''}>${d}</option>`;
-        }
-      });
-      sel.innerHTML = optionsHtml;
-      if (currentValue) sel.value = currentValue;
+    document.querySelectorAll("#dest-rows-wrapper .inp-dest-val").forEach(elem => {
+      const curr = elem.value || elem.getAttribute("data-initial-val");
+      elem.innerHTML = `<option value="">-- Select Destination --</option>` + 
+        allowedList.filter(d => !sel.includes(d) || d === curr).map(d => `<option value="${d}" ${d === curr ? 'selected' : ''}>${d}</option>`).join('');
+      if (curr) elem.value = curr;
     });
 
     const btnAdd = document.getElementById("btn-add-dest-row");
-    if (selectedDestinations.length >= allowedList.length && allowedList.length > 0) {
-      btnAdd.disabled = true; btnAdd.style.opacity = "0.5"; btnAdd.style.cursor = "not-allowed";
-    } else {
-      btnAdd.disabled = false; btnAdd.style.opacity = "1"; btnAdd.style.cursor = "pointer";
-    }
+    btnAdd.disabled = sel.length >= allowedList.length && allowedList.length > 0;
+    btnAdd.style.opacity = btnAdd.disabled ? "0.5" : "1";
   }
 
   function tambahDestinasiRowInForm(selectedDest = "", etaValue = "", remarkValue = "", syncCheck = true, lockDestination = false) {
-    const linerSelect = document.getElementById("sched-liner");
-    const liner = linerSelect ? (linerSelect.value || linerSelect.getAttribute("data-current-liner")) : "";
-    const allowedList = masterTermMap[liner] || ["NAGOYA","OSAKA","TOKYO","YOKOHAMA","SENDAI","SHIMIZU","HIROSHIMA","HAKATA","LAEM CHABANG"];
-
-    const existingRows = document.querySelectorAll("#dest-rows-wrapper .dest-row-item");
-    if (!selectedDest && existingRows.length >= allowedList.length && allowedList.length > 0 && !isEditMode) {
-      showCustomAlert(`⚠️ Semua destination liner ${liner || ''} yang dipilih sudah terisi semua sesuai kontrak.`);
-      return;
-    }
-
     const wrapper = document.getElementById("dest-rows-wrapper");
-    const div = document.createElement("div");
-    div.className = "dest-row-item";
+    const div = document.createElement("div"); div.className = "dest-row-item";
     div.innerHTML = `
-      <div>
-        <label style="font-size:9.5px; color:#94a3b8; display:block;">DESTINATION *</label>
-        <select class="inp-dest-val" data-initial-val="${selectedDest}" ${lockDestination ? 'disabled' : ''} onchange="refreshAllDestinationOptions()"></select>
-      </div>
-      <div>
-        <label style="font-size:9.5px; color:#94a3b8; display:block;">ETA PORT</label>
-        <input type="text" class="inp-eta-val fp-date" value="${etaValue}" placeholder="dd-mm-yyyy" autocomplete="off">
-      </div>
-      <div>
-        <label style="font-size:9.5px; color:#94a3b8; display:block;">REMARK DESTINATION</label>
-        <input type="text" class="inp-dest-remark" value="${remarkValue}" placeholder="Remark kota" autocomplete="off">
-      </div>
-      <div style="text-align:center;">
-        <label style="font-size:9.5px; color:#38bdf8; display:block;">Sync</label>
-        <input type="checkbox" class="chk-sync-remark" ${syncCheck ? 'checked' : ''} onchange="onToggleSyncRemark(this)">
-      </div>
-      <div style="text-align:right;">
-        ${lockDestination ? '' : `<button type="button" onclick="this.closest('.dest-row-item').remove(); refreshAllDestinationOptions();" style="background:#ef4444; color:#fff; border:none; padding:5px 7px; border-radius:4px; font-size:10px; cursor:pointer;">🗑️</button>`}
-      </div>
+      <div><label style="font-size:9.5px; color:#94a3b8; display:block;">DESTINATION *</label><select class="inp-dest-val" data-initial-val="${selectedDest}" ${lockDestination ? 'disabled' : ''} onchange="refreshAllDestinationOptions()"></select></div>
+      <div><label style="font-size:9.5px; color:#94a3b8; display:block;">ETA PORT</label><input type="text" class="inp-eta-val fp-date" value="${etaValue}" placeholder="dd-mm-yyyy" autocomplete="off"></div>
+      <div><label style="font-size:9.5px; color:#94a3b8; display:block;">REMARK DESTINATION</label><input type="text" class="inp-dest-remark" value="${remarkValue}" placeholder="Remark kota" autocomplete="off"></div>
+      <div style="text-align:center;"><label style="font-size:9.5px; color:#38bdf8; display:block;">Sync</label><input type="checkbox" class="chk-sync-remark" ${syncCheck ? 'checked' : ''} onchange="onToggleSyncRemark(this)"></div>
+      <div style="text-align:right;">${lockDestination ? '' : `<button type="button" onclick="this.closest('.dest-row-item').remove(); refreshAllDestinationOptions();" style="background:#ef4444; color:#fff; border:none; padding:5px 7px; border-radius:4px; font-size:10px; cursor:pointer;">🗑️</button>`}</div>
     `;
-
     wrapper.appendChild(div);
     if (selectedDest) div.querySelector(".inp-dest-val").setAttribute("data-initial-val", selectedDest);
-    refreshAllDestinationOptions();
-    initFlatpickrInputs();
+    refreshAllDestinationOptions(); initFlatpickrInputs();
   }
 
   function onToggleSyncRemark(chk) {
-    const inpRemark = chk.closest(".dest-row-item").querySelector(".inp-dest-remark");
-    const mainRemark = document.getElementById("sched-remark").value;
-    if (chk.checked) {
-      inpRemark.value = mainRemark; inpRemark.readOnly = true; inpRemark.style.background = "#0f172a"; inpRemark.style.color = "#94a3b8";
-    } else {
-      inpRemark.readOnly = false; inpRemark.style.background = "#0f172a"; inpRemark.style.color = "#ffffff";
-    }
+    const inp = chk.closest(".dest-row-item").querySelector(".inp-dest-remark");
+    if (chk.checked) { inp.value = document.getElementById("sched-remark").value; inp.readOnly = true; inp.style.background = "#0f172a"; }
+    else { inp.readOnly = false; }
   }
 
   function syncAllChildRemarks() {
-    const mainRemark = document.getElementById("sched-remark").value;
+    const val = document.getElementById("sched-remark").value;
     document.querySelectorAll("#dest-rows-wrapper .dest-row-item").forEach(r => {
-      const chk = r.querySelector(".chk-sync-remark");
-      if (chk && chk.checked) r.querySelector(".inp-dest-remark").value = mainRemark;
+      if (r.querySelector(".chk-sync-remark")?.checked) r.querySelector(".inp-dest-remark").value = val;
     });
   }
 
   function bukaModalSchedule(mode) {
     document.getElementById("sched-alert").innerText = "";
+    muatMasterLinerDariSupabase();
     if (mode === 'add') {
       isEditMode = false;
       document.getElementById("modal-schedule-title").innerText = "🚢 Form Tambah Control Schedule";
       document.getElementById("sched-group-ids").value = "";
       document.getElementById("sched-week").value = getCurrentWeekNumber();
-      const linerElem = document.getElementById("sched-liner");
-      linerElem.value = ""; linerElem.disabled = false; linerElem.removeAttribute("data-current-liner");
+      const l = document.getElementById("sched-liner"); l.value = ""; l.disabled = false; l.removeAttribute("data-current-liner");
       document.getElementById("sched-port").value = "SRG";
-      document.getElementById("sched-vessel-name").value = ""; document.getElementById("sched-vessel-name").disabled = false;
-      document.getElementById("sched-voyage").value = ""; document.getElementById("sched-voyage").disabled = false;
-      document.getElementById("sched-etdorig").value = ""; document.getElementById("sched-closingcy").value = "";
-      document.getElementById("sched-updclosing").value = ""; document.getElementById("sched-etbweb").value = "";
-      document.getElementById("sched-etdweb").value = ""; document.getElementById("sched-remark").value = "";
-      document.getElementById("btn-add-dest-row").style.display = "block";
+      const v = document.getElementById("sched-vessel-name"); v.value = ""; v.disabled = false;
+      document.getElementById("sched-voyage").value = ""; document.getElementById("sched-etdorig").value = "";
+      document.getElementById("sched-closingcy").value = ""; document.getElementById("sched-updclosing").value = "";
+      document.getElementById("sched-etbweb").value = ""; document.getElementById("sched-etdweb").value = "";
+      document.getElementById("sched-remark").value = ""; document.getElementById("btn-add-dest-row").style.display = "block";
       document.getElementById("dest-rows-wrapper").innerHTML = "";
       tambahDestinasiRowInForm("", "", "", true, false);
     }
-    document.getElementById("modalSchedule").style.display = "flex";
-    initFlatpickrInputs();
+    document.getElementById("modalSchedule").style.display = "flex"; initFlatpickrInputs();
   }
 
   function editScheduleByGlobalId(targetId) {
-    tutupSemuaMenuAksiSchedule();
-    isEditMode = true;
-    const itemTarget = masterDataSchedule.find(x => String(x.id) === String(targetId));
-    if (!itemTarget) return;
-
-    const groupItems = masterDataSchedule.filter(x => 
-      String(x.liner).trim().toUpperCase() === String(itemTarget.liner).trim().toUpperCase() &&
-      String(x.feeder_vessel).trim().toUpperCase() === String(itemTarget.feeder_vessel).trim().toUpperCase()
-    );
+    tutupSemuaMenuAksiSchedule(); isEditMode = true; muatMasterLinerDariSupabase();
+    const itemTarget = masterDataSchedule.find(x => String(x.id) === String(targetId)); if (!itemTarget) return;
+    const groupItems = masterDataSchedule.filter(x => String(x.liner).trim().toUpperCase() === String(itemTarget.liner).trim().toUpperCase() && String(x.feeder_vessel).trim().toUpperCase() === String(itemTarget.feeder_vessel).trim().toUpperCase());
 
     document.getElementById("sched-group-ids").value = JSON.stringify(groupItems.map(x => x.id));
     document.getElementById("modal-schedule-title").innerText = `✏️ Edit Grup Kapal: ${itemTarget.feeder_vessel} (${groupItems.length} Destinasi)`;
     document.getElementById("sched-week").value = (itemTarget.week || '').replace(/\D/g, '');
-    
-    const linerElem = document.getElementById("sched-liner");
-    linerElem.value = itemTarget.liner || ''; linerElem.setAttribute("data-current-liner", itemTarget.liner || ''); linerElem.disabled = true;
-
+    const l = document.getElementById("sched-liner"); l.value = itemTarget.liner || ''; l.setAttribute("data-current-liner", itemTarget.liner || ''); l.disabled = true;
     document.getElementById("sched-port").value = itemTarget.port || 'SRG';
-    document.getElementById("sched-vessel-name").value = itemTarget.vessel_name_only || itemTarget.feeder_vessel || ""; document.getElementById("sched-vessel-name").disabled = true;
+    const v = document.getElementById("sched-vessel-name"); v.value = itemTarget.vessel_name_only || itemTarget.feeder_vessel || ""; v.disabled = true;
     document.getElementById("sched-voyage").value = itemTarget.voyage_only || "";
     document.getElementById("sched-etdorig").value = parseToInputDate(itemTarget.etd_original);
     document.getElementById("sched-closingcy").value = itemTarget.closing_cy || '';
@@ -1210,133 +881,82 @@
     document.getElementById("sched-etdweb").value = parseToInputDateTimeLocal(itemTarget.etd_website);
     document.getElementById("sched-remark").value = itemTarget.remark || '';
     document.getElementById("btn-add-dest-row").style.display = "none";
-
     document.getElementById("dest-rows-wrapper").innerHTML = "";
-    groupItems.forEach(g => {
-      tambahDestinasiRowInForm(g.destination || '', g.eta_port || '', g.remark || '', false, true);
-    });
-
-    document.getElementById("modalSchedule").style.display = "flex";
-    initFlatpickrInputs();
+    groupItems.forEach(g => tambahDestinasiRowInForm(g.destination || '', g.eta_port || '', g.remark || '', false, true));
+    document.getElementById("modalSchedule").style.display = "flex"; initFlatpickrInputs();
   }
 
   function tutupModalSchedule() {
-    document.getElementById("sched-liner").disabled = false;
-    document.getElementById("sched-vessel-name").disabled = false;
+    document.getElementById("sched-liner").disabled = false; document.getElementById("sched-vessel-name").disabled = false;
     document.getElementById("modalSchedule").style.display = "none";
   }
 
   async function catatLogChangesServer(rowTarget, user, aksi, kolom, oldVal, newVal) {
     try {
-      const now = new Date();
-      const hariArr = ["minggu", "senin", "selasa", "rabu", "kamis", "jumat", "sabtu"];
-      const ts = `${hariArr[now.getDay()]}, ${String(now.getDate()).padStart(2,'0')}-${String(now.getMonth()+1).padStart(2,'0')}-${now.getFullYear()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+      const now = new Date(), hari = ["minggu", "senin", "selasa", "rabu", "kamis", "jumat", "sabtu"];
+      const ts = `${hari[now.getDay()]}, ${String(now.getDate()).padStart(2,'0')}-${String(now.getMonth()+1).padStart(2,'0')}-${now.getFullYear()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
       await supabaseClient.from('log_changes').insert([{ timestamp: ts, row_target: String(rowTarget), user: user || 'Aditya', aksi: aksi, kolom: kolom, nilai_lama: String(oldVal || '-'), nilai_baru: String(newVal || '-') }]);
-    } catch(e) { console.error("Log error:", e); }
+    } catch(e) {}
   }
 
   async function simpanSchedule() {
-    const groupIdsStr = document.getElementById("sched-group-ids").value;
-    const weekInp = document.getElementById("sched-week").value.trim();
-    const linerInp = document.getElementById("sched-liner").value.trim().toUpperCase();
-    const vesselInp = document.getElementById("sched-vessel-name").value.trim().toUpperCase();
-    const voyageInp = document.getElementById("sched-voyage").value.trim().toUpperCase();
-    const alertDiv = document.getElementById("sched-alert");
-    const fullVesselNameDisplay = voyageInp ? `${vesselInp} ${voyageInp}` : vesselInp;
+    const groupIdsStr = document.getElementById("sched-group-ids").value, weekInp = document.getElementById("sched-week").value.trim();
+    const linerInp = document.getElementById("sched-liner").value.trim().toUpperCase(), vesselInp = document.getElementById("sched-vessel-name").value.trim().toUpperCase();
+    const voyageInp = document.getElementById("sched-voyage").value.trim().toUpperCase(), alertDiv = document.getElementById("sched-alert");
     const destRows = document.querySelectorAll("#dest-rows-wrapper .dest-row-item");
 
-    if (!linerInp || !vesselInp || destRows.length === 0) {
-      alertDiv.style.color = "#ef4444"; alertDiv.innerText = "⚠️ Harap isi Liner, Feeder Vessel, dan minimal 1 Destination!"; return;
-    }
-
+    if (!linerInp || !vesselInp || !destRows.length) { alertDiv.style.color = "#ef4444"; alertDiv.innerText = "⚠️ Harap isi Liner, Feeder Vessel, dan minimal 1 Destination!"; return; }
     alertDiv.style.color = "#38bdf8"; alertDiv.innerText = "⏳ Menyimpan data grup kapal ke Supabase...";
 
     try {
-      let existingIds = groupIdsStr ? JSON.parse(groupIdsStr) : [];
-      let isUpdateAction = existingIds.length > 0;
-      let oldGroupDataMap = {};
-      if (isUpdateAction) {
-        existingIds.forEach(id => {
-          const found = masterDataSchedule.find(m => String(m.id) === String(id));
-          if (found) oldGroupDataMap[found.destination] = found;
-        });
-      }
+      let existingIds = groupIdsStr ? JSON.parse(groupIdsStr) : [], oldGroupMap = {};
+      if (existingIds.length) existingIds.forEach(id => { const f = masterDataSchedule.find(m => String(m.id) === String(id)); if (f) oldGroupMap[f.destination] = f; });
 
       for (let r of destRows) {
-        const destVal = r.querySelector(".inp-dest-val").value;
-        const etaIsoVal = r.querySelector(".inp-eta-val").value;
-        const remVal = r.querySelector(".inp-dest-remark").value;
-        const etdOrigFormatted = document.getElementById("sched-etdorig").value;
-        const updClosingFormatted = document.getElementById("sched-updclosing").value;
-        const etbWebFormatted = document.getElementById("sched-etbweb").value;
-        const etdWebFormatted = document.getElementById("sched-etdweb").value;
+        const destVal = r.querySelector(".inp-dest-val").value, etaIsoVal = r.querySelector(".inp-eta-val").value, remVal = r.querySelector(".inp-dest-remark").value;
+        const etdOrigFormatted = document.getElementById("sched-etdorig").value, updClosingFormatted = document.getElementById("sched-updclosing").value;
+        const etbWebFormatted = document.getElementById("sched-etbweb").value, etdWebFormatted = document.getElementById("sched-etdweb").value;
 
         const payload = {
-          week: weekInp ? `WEEK ${weekInp}` : '',
-          liner: linerInp,
-          port: document.getElementById("sched-port").value,
-          feeder_vessel: vesselInp,
-          voyage: voyageInp,
-          etd_port_origin: etdOrigFormatted,
-          closing_cy: document.getElementById("sched-closingcy").value,
+          week: weekInp ? `WEEK ${weekInp}` : '', liner: linerInp, port: document.getElementById("sched-port").value,
+          feeder_vessel: vesselInp, voyage: voyageInp, etd_port_origin: etdOrigFormatted, closing_cy: document.getElementById("sched-closingcy").value,
           update_closing: updClosingFormatted,
           etb_atb_website: etbWebFormatted ? (etbWebFormatted.toUpperCase().includes('ATB') ? etbWebFormatted : `ATB: ${etbWebFormatted}`) : '',
           etd_atd_website: etdWebFormatted ? (etdWebFormatted.toUpperCase().includes('ETD') || etdWebFormatted.toUpperCase().includes('ATD') ? etdWebFormatted : `ETD: ${etdWebFormatted}`) : '',
-          eta_port: etaIsoVal,
-          destination: destVal,
-          remark: remVal || document.getElementById("sched-remark").value.trim()
+          eta_port: etaIsoVal, destination: destVal, remark: remVal || document.getElementById("sched-remark").value.trim()
         };
 
-        const oldData = oldGroupDataMap[destVal] || {};
-        let targetRowId = oldData.id || null;
+        const oldData = oldGroupMap[destVal] || {}; let targetRowId = oldData.id || null;
+        if (targetRowId) { await supabaseClient.from('control_schedule').update(payload).eq('id', targetRowId); }
+        else { const { data: n } = await supabaseClient.from('control_schedule').insert([payload]).select(); if (n?.[0]) targetRowId = n[0].id; }
 
         if (targetRowId) {
-          await supabaseClient.from('control_schedule').update(payload).eq('id', targetRowId);
-        } else {
-          const { data: newRow } = await supabaseClient.from('control_schedule').insert([payload]).select();
-          if (newRow && newRow[0]) targetRowId = newRow[0].id;
-        }
-
-        if (targetRowId) {
-          if (!isUpdateAction) {
-            await catatLogChangesServer(targetRowId, "Aditya", "BARU", "ALL", "-", fullVesselNameDisplay);
-          } else {
-            const cleanPrefix = (str) => String(str || '').replace(/^(ATB:|ETD:|ATD:)\s*/i, '').trim();
-            if (cleanPrefix(oldData.update_closing_cy) !== cleanPrefix(updClosingFormatted) && updClosingFormatted !== '' && oldData.update_closing_cy !== '-') {
-              await catatLogChangesServer(targetRowId, "Aditya", "UPDATE", "UPDATE CLOSING CY", oldData.update_closing_cy, updClosingFormatted);
-            }
-            if (cleanPrefix(oldData.etb_website) !== cleanPrefix(payload.etb_atb_website) && payload.etb_atb_website !== '' && oldData.etb_website !== '-') {
-              await catatLogChangesServer(targetRowId, "Aditya", "UPDATE", "ETB/ATB WEBSITE", oldData.etb_website, payload.etb_atb_website);
-            }
-            if (cleanPrefix(oldData.etd_website) !== cleanPrefix(payload.etd_atd_website) && payload.etd_atd_website !== '' && oldData.etd_website !== '-') {
-              await catatLogChangesServer(targetRowId, "Aditya", "UPDATE", "ETD/ATD WEBSITE", oldData.etd_website, payload.etd_atd_website);
-            }
-            if (cleanPrefix(oldData.eta_port) !== cleanPrefix(etaIsoVal) && etaIsoVal !== '' && oldData.eta_port !== '-') {
-              await catatLogChangesServer(targetRowId, "Aditya", "UPDATE", "ETA PORT", oldData.eta_port, etaIsoVal);
-            }
+          if (!existingIds.length) { await catatLogChangesServer(targetRowId, "Aditya", "BARU", "ALL", "-", voyageInp ? `${vesselInp} ${voyageInp}` : vesselInp); }
+          else {
+            const clean = (s) => String(s || '').replace(/^(ATB:|ETD:|ATD:)\s*/i, '').trim();
+            if (clean(oldData.update_closing_cy) !== clean(updClosingFormatted) && updClosingFormatted) await catatLogChangesServer(targetRowId, "Aditya", "UPDATE", "UPDATE CLOSING CY", oldData.update_closing_cy, updClosingFormatted);
+            if (clean(oldData.etb_website) !== clean(payload.etb_atb_website) && payload.etb_atb_website) await catatLogChangesServer(targetRowId, "Aditya", "UPDATE", "ETB/ATB WEBSITE", oldData.etb_website, payload.etb_atb_website);
+            if (clean(oldData.etd_website) !== clean(payload.etd_atd_website) && payload.etd_atd_website) await catatLogChangesServer(targetRowId, "Aditya", "UPDATE", "ETD/ATD WEBSITE", oldData.etd_website, payload.etd_atd_website);
+            if (clean(oldData.eta_port) !== clean(etaIsoVal) && etaIsoVal) await catatLogChangesServer(targetRowId, "Aditya", "UPDATE", "ETA PORT", oldData.eta_port, etaIsoVal);
           }
         }
       }
-
       alertDiv.style.color = "#4ade80"; alertDiv.innerText = "✅ Data Schedule berhasil disimpan!";
       setTimeout(() => { tutupModalSchedule(); muatDataSchedule(); }, 1000);
-    } catch(err) {
-      alertDiv.style.color = "#ef4444"; alertDiv.innerText = "❌ Gagal menyimpan: " + err.message;
-    }
+    } catch(err) { alertDiv.style.color = "#ef4444"; alertDiv.innerText = "❌ Gagal menyimpan: " + err.message; }
   }
 
   async function hapusSchedule(event, displayNo, rowId) {
     if (event) { event.preventDefault(); event.stopPropagation(); }
     tutupSemuaMenuAksiSchedule();
     const targetId = isNaN(rowId) ? rowId : parseInt(rowId, 10);
-    if (!await showCustomConfirm(`⚠️ Apakah Anda yakin ingin menghapus data Schedule pada baris ke-${displayNo} (ID: ${targetId}) ini?`)) return false;
+    if (!await showCustomConfirm(`⚠️ Apakah Anda yakin ingin menghapus data Schedule pada baris ke-${displayNo} (ID: ${targetId}) ini?`)) return;
 
     try {
       const { error } = await supabaseClient.from('control_schedule').delete().eq('id', targetId);
-      if (error) { await showCustomAlert("❌ Gagal hapus data Supabase: " + error.message); return; }
+      if (error) throw error;
       try { await supabaseClient.from('log_changes').delete().eq('row_target', String(targetId)); } catch (e) {}
-      await showCustomAlert("✅ Data Schedule berhasil dihapus!");
-      muatDataSchedule();
+      await showCustomAlert("✅ Data Schedule berhasil dihapus!"); muatDataSchedule();
     } catch(err) { await showCustomAlert("❌ Error Sistem: " + err.message); }
   }
 
@@ -1346,26 +966,12 @@
     tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:15px;">⏳ Memuat log histori...</td></tr>`;
     document.getElementById("modalHistoriLog").style.display = "flex";
 
-    const targetStr = String(rowId).trim();
     const { data } = await supabaseClient.from('log_changes').select('*').order('id', { ascending: false });
+    const targetStr = String(rowId).trim();
+    const filtered = (data || []).filter(l => String(l.row_target || l.target_id || l.row_id || '').trim() === targetStr || String(l.row_target || '').trim() === titleInfo.trim());
 
-    if (!data || data.length === 0) { tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#94a3b8; padding:15px;">Belum ada catatan histori log untuk baris ini.</td></tr>`; return; }
-
-    const filteredLogs = data.filter(l => String(l.row_target || l.target_id || l.row_id || '').trim() === targetStr || String(l.row_target || '').trim() === titleInfo.trim());
-    if (filteredLogs.length === 0) { tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#94a3b8; padding:15px;">Belum ada catatan histori log untuk baris ini.</td></tr>`; return; }
-
-    tbody.innerHTML = "";
-    filteredLogs.forEach(l => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${l.timestamp || l.created_at || '-'}</td>
-        <td><b style="color:#38bdf8;">${l.user || 'Aditya'}</b></td>
-        <td><b style="color:#f59e0b;">${l.column_name || l.kolom || 'UPDATE'}</b></td>
-        <td style="color:#f87171;">${l.nilai_lama || '-'}</td>
-        <td style="color:#4ade80;">${l.nilai_baru || '-'}</td>
-      `;
-      tbody.appendChild(tr);
-    });
+    if (!filtered.length) { tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#94a3b8; padding:15px;">Belum ada catatan histori log untuk baris ini.</td></tr>`; return; }
+    tbody.innerHTML = filtered.map(l => `<tr><td>${l.timestamp || l.created_at || '-'}</td><td><b style="color:#38bdf8;">${l.user || 'Aditya'}</b></td><td><b style="color:#f59e0b;">${l.column_name || l.kolom || 'UPDATE'}</b></td><td style="color:#f87171;">${l.nilai_lama || '-'}</td><td style="color:#4ade80;">${l.nilai_baru || '-'}</td></tr>`).join('');
   }
 
   function tutupModalHistori() { document.getElementById("modalHistoriLog").style.display = "none"; }
@@ -1373,148 +979,77 @@
   /* --- FUNGSI UTAMA SINKRONISASI WEB TPKS SEMARANG (PORT SRG) --- */
   window.syncDataTPKS = async function(event, isAutoCron = false) {
     if (event) { event.preventDefault(); event.stopPropagation(); }
-    
-    if (!isAutoCron) {
-      if (!await showCustomConfirm("⚡ Jalankan sinkronisasi otomatis status kapal TPKS (Port SRG)?")) return false;
-    }
+    if (!isAutoCron && !await showCustomConfirm("⚡ Jalankan sinkronisasi otomatis status kapal TPKS (Port SRG)?")) return false;
 
     try {
-      if (typeof supabaseClient === 'undefined' || !supabaseClient) { 
-        if(!isAutoCron) await showCustomAlert("❌ Error: Koneksi database Supabase belum siap."); 
-        return false; 
-      }
+      if (typeof supabaseClient === 'undefined' || !supabaseClient) { if(!isAutoCron) await showCustomAlert("❌ Error: Supabase belum siap."); return false; }
 
-      // 1. Ambil data kapal aplikasi khusus Port SRG
       const { data: srgRows, error: fetchErr } = await supabaseClient.from('control_schedule').select('*').eq('port', 'SRG');
-      if (fetchErr || !srgRows || srgRows.length === 0) { 
-        if(!isAutoCron) await showCustomAlert("ℹ️ Tidak ditemukan baris kapal PORT 'SRG' di database aplikasi."); 
-        return false; 
-      }
+      if (fetchErr || !srgRows || !srgRows.length) { if(!isAutoCron) await showCustomAlert("ℹ️ Tidak ditemukan baris kapal PORT 'SRG'."); return false; }
 
-      // 2. Parser HTML Web TPKS Semarang
-      const tpksRawHtml = document.getElementById("tpks-source-data") ? document.getElementById("tpks-source-data").innerHTML : (window.tpksHtmlData || '');
+      const tpksRawHtml = document.getElementById("tpks-source-data")?.innerHTML || window.tpksHtmlData || '';
       let parsedTpksVessels = [];
 
       if (tpksRawHtml) {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(tpksRawHtml, "text/html");
-        const vesselBlocks = doc.querySelectorAll(".ves_along_sched");
-        
+        const doc = new DOMParser().parseFromString(tpksRawHtml, "text/html");
         let currentVessel = null;
-        vesselBlocks.forEach(block => {
-          const boldTxt = block.querySelector("b");
-          const rawText = block.innerText.trim();
-
-          // Deteksi Nama Kapal
+        doc.querySelectorAll(".ves_along_sched").forEach(block => {
+          const boldTxt = block.querySelector("b"), rawText = block.innerText.trim();
           if (boldTxt && !rawText.includes(":") && !rawText.includes("/")) {
-            if (currentVessel && currentVessel.name) parsedTpksVessels.push(currentVessel);
-            
-            // Extract nama kapal murni tanpa ID dalam kurung
-            let vName = boldTxt.innerText.replace(/\s*\([A-Z0-9]+\)\s*/gi, '').trim().toUpperCase();
-            currentVessel = { name: vName, voyage: '', etb: '', atb: '', etd: '', atd: '', closing: '' };
-          } 
-          else if (currentVessel) {
-            // Extract Voyage (Mengambil Voyage Out / bagian kanan dari '/')
-            if (rawText.includes("/")) {
-              const voyParts = rawText.split("/");
-              if (voyParts.length === 2) {
-                currentVessel.voyage = voyParts[1].trim().toUpperCase();
-              }
-            } 
-            // Extract ATB / ETB / ATD / ETD / Closing Time
+            if (currentVessel?.name) parsedTpksVessels.push(currentVessel);
+            currentVessel = { name: boldTxt.innerText.replace(/\s*\([A-Z0-9]+\)\s*/gi, '').trim().toUpperCase(), voyage: '', etb: '', atb: '', etd: '', atd: '', closing: '' };
+          } else if (currentVessel) {
+            if (rawText.includes("/")) { const p = rawText.split("/"); if (p.length === 2) currentVessel.voyage = p[1].trim().toUpperCase(); }
             else if (rawText.startsWith("ATB :")) currentVessel.atb = rawText.replace("ATB :", "").trim();
             else if (rawText.startsWith("ETB :")) currentVessel.etb = rawText.replace("ETB :", "").trim();
             else if (rawText.startsWith("ATD :")) currentVessel.atd = rawText.replace("ATD :", "").trim();
             else if (rawText.startsWith("ETD :")) currentVessel.etd = rawText.replace("ETD :", "").trim();
-            else if (rawText.startsWith("Closing Time")) {
-              currentVessel.closing = rawText.replace(/Closing Time\s*:\s*/gi, "").trim();
-            }
+            else if (rawText.startsWith("Closing Time")) currentVessel.closing = rawText.replace(/Closing Time\s*:\s*/gi, "").trim();
           }
         });
-        if (currentVessel && currentVessel.name) parsedTpksVessels.push(currentVessel);
+        if (currentVessel?.name) parsedTpksVessels.push(currentVessel);
       }
 
       let updatedVesselsList = [];
-
-      // 3. Bandingkan & Sync ke Database Supabase
       for (let row of srgRows) {
-        const rowVessel = String(row.feeder_vessel || '').trim().toUpperCase();
-        const rowVoyage = String(row.voyage || '').trim().toUpperCase();
+        const rVessel = String(row.feeder_vessel || '').trim().toUpperCase(), rVoyage = String(row.voyage || '').trim().toUpperCase();
+        let matched = parsedTpksVessels.find(v => v.name === rVessel && (v.voyage === rVoyage || rVoyage.includes(v.voyage) || v.voyage.includes(rVoyage))) || parsedTpksVessels.find(v => v.name === rVessel);
 
-        // Cari pencocokan berdasarkan Nama Kapal & Voyage
-        let matchedTpks = parsedTpksVessels.find(v => 
-          v.name === rowVessel && (v.voyage === rowVoyage || rowVoyage.includes(v.voyage) || v.voyage.includes(rowVoyage))
-        );
-
-        // Jika tidak ketemu voyage persis, fallback ke pencocokan nama kapal
-        if (!matchedTpks) {
-          matchedTpks = parsedTpksVessels.find(v => v.name === rowVessel);
-        }
-
-        if (matchedTpks) {
-          let isModified = false;
-          let updatePayload = {};
-
-          // Sync Update Closing CY ("Closing Time")
-          if (matchedTpks.closing) {
-            const newClosing = matchedTpks.closing;
-            if (row.update_closing !== newClosing) {
-              updatePayload.update_closing = newClosing;
-              isModified = true;
-              await catatLogChangesServer(row.id, "system TPKS", "UPDATE", "UPDATE CLOSING CY", row.update_closing, newClosing);
-            }
+        if (matched) {
+          let isMod = false, updatePayload = {};
+          if (matched.closing && row.update_closing !== matched.closing) {
+            updatePayload.update_closing = matched.closing; isMod = true;
+            await catatLogChangesServer(row.id, "system TPKS", "UPDATE", "UPDATE CLOSING CY", row.update_closing, matched.closing);
           }
-
-          // Sync ETB/ATB WEBSITE
-          let newEtbAtb = matchedTpks.atb ? `ATB: ${matchedTpks.atb}` : (matchedTpks.etb ? `ETB: ${matchedTpks.etb}` : '');
+          let newEtbAtb = matched.atb ? `ATB: ${matched.atb}` : (matched.etb ? `ETB: ${matched.etb}` : '');
           if (newEtbAtb && row.etb_atb_website !== newEtbAtb) {
-            updatePayload.etb_atb_website = newEtbAtb;
-            isModified = true;
+            updatePayload.etb_atb_website = newEtbAtb; isMod = true;
             await catatLogChangesServer(row.id, "system TPKS", "UPDATE", "ETB/ATB WEBSITE", row.etb_atb_website, newEtbAtb);
           }
-
-          // Sync ETD/ATD WEBSITE
-          let newEtdAtd = matchedTpks.atd ? `ATD: ${matchedTpks.atd}` : (matchedTpks.etd ? `ETD: ${matchedTpks.etd}` : '');
+          let newEtdAtd = matched.atd ? `ATD: ${matched.atd}` : (matched.etd ? `ETD: ${matched.etd}` : '');
           if (newEtdAtd && row.etd_atd_website !== newEtdAtd) {
-            updatePayload.etd_atd_website = newEtdAtd;
-            isModified = true;
+            updatePayload.etd_atd_website = newEtdAtd; isMod = true;
             await catatLogChangesServer(row.id, "system TPKS", "UPDATE", "ETD/ATD WEBSITE", row.etd_atd_website, newEtdAtd);
           }
-
-          // Eksekusi Update jika ada perubahan data
-          if (isModified) {
+          if (isMod) {
             await supabaseClient.from('control_schedule').update(updatePayload).eq('id', row.id);
-            const vDisplay = row.voyage ? `${row.feeder_vessel} ${row.voyage}` : row.feeder_vessel;
-            if (!updatedVesselsList.includes(vDisplay)) updatedVesselsList.push(vDisplay);
+            const vDisp = row.voyage ? `${row.feeder_vessel} ${row.voyage}` : row.feeder_vessel;
+            if (!updatedVesselsList.includes(vDisp)) updatedVesselsList.push(vDisp);
           }
         }
       }
 
-      // 4. Notifikasi Hasil Sync
       if (updatedVesselsList.length > 0) {
-        if(!isAutoCron) {
-          await showCustomAlert(`⚡ SINKRONISASI TPKS BERHASIL!\n\nBerikut ${updatedVesselsList.length} Kapal yang diperbarui datanya dari Web TPKS:\n\n${updatedVesselsList.map((v, i) => `${i + 1}. ${v}`).join("\n")}`);
-        } else {
-          console.log("⚡ Auto Sync 06:00 AM TPKS Selesai. Kapal direvisi:", updatedVesselsList);
-        }
-      } else {
-        if(!isAutoCron) await showCustomAlert("⚡ Status Web TPKS Semarang sudah sinkron (Tidak ada perubahan jadwal).");
-      }
-
+        if(!isAutoCron) await showCustomAlert(`⚡ SINKRONISASI TPKS BERHASIL!\n\nBerikut ${updatedVesselsList.length} Kapal diperbarui:\n\n${updatedVesselsList.map((v, i) => `${i + 1}. ${v}`).join("\n")}`);
+      } else if(!isAutoCron) { await showCustomAlert("⚡ Status Web TPKS Semarang sudah sinkron."); }
       muatDataSchedule();
-
-    } catch(err) { 
-      if(!isAutoCron) await showCustomAlert("❌ Error sync TPKS: " + err.message); 
-    }
+    } catch(err) { if(!isAutoCron) await showCustomAlert("❌ Error sync TPKS: " + err.message); }
   };
 
-  /* --- JADWAL OTOMATIS RUN SETIAP JAM 06:00 AM --- */
+  /* AUTO CRON SYNC 06:00 AM */
   setInterval(() => {
     const now = new Date();
-    if (now.getHours() === 6 && now.getMinutes() === 0 && now.getSeconds() < 5) {
-      console.log("⏰ Menjalankan Auto-Sync TPKS Otomatis Jam 06:00 AM...");
-      window.syncDataTPKS(null, true);
-    }
+    if (now.getHours() === 6 && now.getMinutes() === 0 && now.getSeconds() < 5) window.syncDataTPKS(null, true);
   }, 5000);
 
   function bukaModalExportPreview() { document.getElementById("modalExportPreview").style.display = "flex"; document.getElementById("preview-total-count").innerText = currentFilteredSchedule.length; renderExportPreviewContent(); }
@@ -1522,140 +1057,98 @@
   function setPreviewMode(mode) { currentPreviewMode = mode; document.getElementById("btn-mode-normal").classList.toggle("active-mode", mode === 'normal'); document.getElementById("btn-mode-rapi").classList.toggle("active-mode", mode === 'rapi'); renderExportPreviewContent(); }
 
   function renderExportPreviewContent() {
-    const tbody = document.getElementById("tbody-export-preview");
-    tbody.innerHTML = "";
-    if (!currentFilteredSchedule || currentFilteredSchedule.length === 0) { tbody.innerHTML = `<tr><td colspan="13" style="text-align:center; padding:15px; color:#ef4444;">Tidak ada data untuk di-export!</td></tr>`; return; }
+    const tbody = document.getElementById("tbody-export-preview"); tbody.innerHTML = "";
+    if (!currentFilteredSchedule.length) { tbody.innerHTML = `<tr><td colspan="13" style="text-align:center; padding:15px; color:#ef4444;">Tidak ada data untuk di-export!</td></tr>`; return; }
 
-    const baseTdStyle = "border: 1px solid #000000; padding: 4px 6px; font-size: 10px; color: #000000; text-align: center; font-family: Calibri, sans-serif;";
-    const baseTdLeftStyle = "border: 1px solid #000000; padding: 4px 6px; font-size: 10px; color: #000000; text-align: left; font-family: Calibri, sans-serif;";
-
+    const bTd = "border: 1px solid #000000; padding: 4px 6px; font-size: 10px; color: #000000; text-align: center;", bTdL = "border: 1px solid #000000; padding: 4px 6px; font-size: 10px; color: #000000; text-align: left;";
     if (currentPreviewMode === 'normal') {
-      currentFilteredSchedule.forEach((item, index) => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td style="${baseTdStyle}">${index + 1}</td><td style="${baseTdStyle}"><b>${item.week || '-'}</b></td>
-          <td style="${baseTdStyle}"><b>${item.liner || '-'}</b></td><td style="${baseTdStyle}">${item.port || '-'}</td>
-          <td style="${baseTdLeftStyle}"><b>${item.feeder_vessel || '-'}</b></td><td style="${baseTdStyle}">${item.etd_original || '-'}</td>
-          <td style="${baseTdStyle}">${item.closing_cy || '-'}</td><td style="${baseTdStyle} ${getRevInlineStyle(item.revUpdClosing)}">${item.update_closing_cy || '-'}</td>
-          <td style="${baseTdStyle} ${getRevInlineStyle(item.revEtbWeb)}">${item.etb_website || '-'}</td><td style="${baseTdStyle} ${getRevInlineStyle(item.revEtdWeb)}">${item.etd_website || '-'}</td>
-          <td style="${baseTdStyle} ${getRevInlineStyle(item.revEtaPort)}">${item.eta_port || '-'}</td><td style="${baseTdStyle}"><b>${item.destination || '-'}</b></td>
-          <td style="${baseTdLeftStyle}">${item.remark || '-'}</td>
-        `;
-        tbody.appendChild(tr);
+      currentFilteredSchedule.forEach((item, i) => {
+        tbody.innerHTML += `<tr><td style="${bTd}">${i + 1}</td><td style="${bTd}"><b>${item.week || '-'}</b></td><td style="${bTd}"><b>${item.liner || '-'}</b></td><td style="${bTd}">${item.port || '-'}</td><td style="${bTdL}"><b>${item.feeder_vessel || '-'}</b></td><td style="${bTd}">${item.etd_original || '-'}</td><td style="${bTd}">${item.closing_cy || '-'}</td><td style="${bTd} ${getRevInlineStyle(item.revUpdClosing)}">${item.update_closing_cy || '-'}</td><td style="${bTd} ${getRevInlineStyle(item.revEtbWeb)}">${item.etb_website || '-'}</td><td style="${bTd} ${getRevInlineStyle(item.revEtdWeb)}">${item.etd_website || '-'}</td><td style="${bTd} ${getRevInlineStyle(item.revEtaPort)}">${item.eta_port || '-'}</td><td style="${bTd}"><b>${item.destination || '-'}</b></td><td style="${bTdL}">${item.remark || '-'}</td></tr>`;
       });
       return;
     }
 
     let groups = [];
     currentFilteredSchedule.forEach(item => {
-      const key = `${item.week}_${item.liner}_${item.feeder_vessel}`;
-      let group = groups.find(g => g.key === key);
-      if (!group) { group = { key: key, items: [] }; groups.push(group); }
-      group.items.push(item);
+      const k = `${item.week}_${item.liner}_${item.feeder_vessel}`;
+      let g = groups.find(x => x.key === k); if (!g) { g = { key: k, items: [] }; groups.push(g); } g.items.push(item);
     });
 
     let displayNo = 1;
     groups.forEach(group => {
-      const items = group.items;
-      items.forEach((item, idx) => {
-        const tr = document.createElement("tr");
+      group.items.forEach((item, idx) => {
+        let trHtml = "<tr>";
         if (idx === 0) {
-          tr.innerHTML += `<td rowspan="${items.length}" style="${baseTdStyle}">${displayNo++}</td>`;
-          tr.innerHTML += `<td rowspan="${items.length}" style="${baseTdStyle}"><b>${item.week || '-'}</b></td>`;
-          tr.innerHTML += `<td rowspan="${items.length}" style="${baseTdStyle}"><b>${item.liner || '-'}</b></td>`;
-          tr.innerHTML += `<td rowspan="${items.length}" style="${baseTdStyle}">${item.port || '-'}</td>`;
-          tr.innerHTML += `<td rowspan="${items.length}" style="${baseTdLeftStyle}"><b>${item.feeder_vessel || '-'}</b></td>`;
-          tr.innerHTML += `<td rowspan="${items.length}" style="${baseTdStyle}">${item.etd_original || '-'}</td>`;
-          tr.innerHTML += `<td rowspan="${items.length}" style="${baseTdStyle}">${item.closing_cy || '-'}</td>`;
-          tr.innerHTML += `<td rowspan="${items.length}" style="${baseTdStyle} ${getRevInlineStyle(item.revUpdClosing)}">${item.update_closing_cy || '-'}</td>`;
-          tr.innerHTML += `<td rowspan="${items.length}" style="${baseTdStyle} ${getRevInlineStyle(item.revEtbWeb)}">${item.etb_website || '-'}</td>`;
-          tr.innerHTML += `<td rowspan="${items.length}" style="${baseTdStyle} ${getRevInlineStyle(item.revEtdWeb)}">${item.etd_website || '-'}</td>`;
+          const rSpan = `rowspan="${group.items.length}"`;
+          trHtml += `<td ${rSpan} style="${bTd}">${displayNo++}</td><td ${rSpan} style="${bTd}"><b>${item.week || '-'}</b></td><td ${rSpan} style="${bTd}"><b>${item.liner || '-'}</b></td><td ${rSpan} style="${bTd}">${item.port || '-'}</td><td ${rSpan} style="${bTdL}"><b>${item.feeder_vessel || '-'}</b></td><td ${rSpan} style="${bTd}">${item.etd_original || '-'}</td><td ${rSpan} style="${bTd}">${item.closing_cy || '-'}</td><td ${rSpan} style="${bTd} ${getRevInlineStyle(item.revUpdClosing)}">${item.update_closing_cy || '-'}</td><td ${rSpan} style="${bTd} ${getRevInlineStyle(item.revEtbWeb)}">${item.etb_website || '-'}</td><td ${rSpan} style="${bTd} ${getRevInlineStyle(item.revEtdWeb)}">${item.etd_website || '-'}</td>`;
         }
-        tr.innerHTML += `<td style="${baseTdStyle} ${getRevInlineStyle(item.revEtaPort)}">${item.eta_port || '-'}</td>`;
-        tr.innerHTML += `<td style="${baseTdStyle}"><b>${item.destination || '-'}</b></td>`;
-        tr.innerHTML += `<td style="${baseTdLeftStyle}">${item.remark || '-'}</td>`;
-        tbody.appendChild(tr);
+        trHtml += `<td style="${bTd} ${getRevInlineStyle(item.revEtaPort)}">${item.eta_port || '-'}</td><td style="${bTd}"><b>${item.destination || '-'}</b></td><td style="${bTdL}">${item.remark || '-'}</td></tr>`;
+        tbody.innerHTML += trHtml;
       });
     });
   }
 
   function cetakPDFJendelaBaru() {
-    const printWindow = window.open('', '_blank', 'width=1250,height=850');
-    printWindow.document.write(`
-      <!DOCTYPE html><html><head><title>Control Schedule Export</title>
-      <style>@page { size: A4 landscape; margin: 8mm 6mm; } body { font-family: Calibri, sans-serif; background: #fff; color: #000; margin: 0; padding: 8px; } table { width: 100%; border-collapse: collapse; } .preview-table th { background: #0284c7; color: #fff; border: 1px solid #000; padding: 5px; font-size: 10px; } .preview-table td { border: 1px solid #000; padding: 4px; font-size: 9.5px; text-align: center; }</style>
-      </head><body>${document.getElementById("printableArea").innerHTML}<script>setTimeout(() => { window.print(); window.close(); }, 500);<\/script></body></html>
-    `);
-    printWindow.document.close();
+    const w = window.open('', '_blank', 'width=1250,height=850');
+    w.document.write(`<!DOCTYPE html><html><head><title>Control Schedule Export</title><style>@page { size: A4 landscape; margin: 8mm 6mm; } body { font-family: Calibri, sans-serif; } table { width: 100%; border-collapse: collapse; } th { background: #0284c7; color: #fff; border: 1px solid #000; padding: 5px; font-size: 10px; } td { border: 1px solid #000; padding: 4px; font-size: 9.5px; text-align: center; }</style></head><body>${document.getElementById("printableArea").innerHTML}<script>setTimeout(() => { window.print(); window.close(); }, 500);<\/script></body></html>`);
+    w.document.close();
   }
 
   async function copyTableWithInlineStyles() {
     try {
-      const cloneArea = document.getElementById("printableArea").cloneNode(true);
-      const fullOfficeHtml = `<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head><body style="font-family: Calibri, sans-serif;">${cloneArea.innerHTML}</body></html>`;
-      if (navigator.clipboard && window.ClipboardItem) {
-        await navigator.clipboard.write([new ClipboardItem({ 'text/html': new Blob([fullOfficeHtml], { type: 'text/html' }), 'text/plain': new Blob([cloneArea.innerText], { type: 'text/plain' }) })]);
-        await showCustomAlert("✅ Berhasil Di-copy!");
-      }
+      const clone = document.getElementById("printableArea").cloneNode(true);
+      const html = `<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head><body>${clone.innerHTML}</body></html>`;
+      await navigator.clipboard.write([new ClipboardItem({ 'text/html': new Blob([html], { type: 'text/html' }), 'text/plain': new Blob([clone.innerText], { type: 'text/plain' }) })]);
+      await showCustomAlert("✅ Berhasil Di-copy!");
     } catch (err) { await showCustomAlert("❌ Gagal menyalin: " + err.message); }
   }
 
   function filterMultiColumn() {
     const inputs = document.querySelectorAll(".header-filter-input");
-    currentFilteredSchedule = masterDataSchedule.filter(item => {
-      let isMatch = true;
-      inputs.forEach(inp => {
-        const filterVal = inp.value.trim().toLowerCase();
-        if (filterVal && !String(item[inp.getAttribute("data-key")] || "").toLowerCase().includes(filterVal)) isMatch = false;
-      });
-      return isMatch;
-    });
+    currentFilteredSchedule = masterDataSchedule.filter(item => Array.from(inputs).every(inp => {
+      const v = inp.value.trim().toLowerCase();
+      return !v || String(item[inp.getAttribute("data-key")] || "").toLowerCase().includes(v);
+    }));
     currentPage = 1; tampilkanTabelScheduleWithPagination();
   }
 
-  function urutkanKolomData(columnKey) {
-    let direction = (currentSortState.column === columnKey && currentSortState.direction === 'asc') ? 'desc' : 'asc';
-    currentSortState = { column: columnKey, direction: direction };
-    currentFilteredSchedule.sort((a, b) => {
-      let valA = a[columnKey] ? String(a[columnKey]).trim().toLowerCase() : '';
-      let valB = b[columnKey] ? String(b[columnKey]).trim().toLowerCase() : '';
-      return direction === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
-    });
+  function urutkanKolomData(k) {
+    let dir = (currentSortState.column === k && currentSortState.direction === 'asc') ? 'desc' : 'asc';
+    currentSortState = { column: k, direction: dir };
+    currentFilteredSchedule.sort((a, b) => dir === 'asc' ? String(a[k]||'').localeCompare(String(b[k]||'')) : String(b[k]||'').localeCompare(String(a[k]||'')));
     tampilkanTabelScheduleWithPagination();
   }
 
   function resetFilterSchedule() {
-    document.querySelectorAll(".header-filter-input").forEach(inp => inp.value = "");
+    document.querySelectorAll(".header-filter-input").forEach(i => i.value = "");
     currentFilteredSchedule = [...masterDataSchedule]; currentPage = 1; tampilkanTabelScheduleWithPagination();
   }
 
-  function toggleImportMenu(e) { if(e) e.stopPropagation(); const menu = document.getElementById("importMenuList"); menu.style.display = (menu.style.display === "block") ? "none" : "block"; }
-  function toggleExportMenu(e) { if(e) e.stopPropagation(); const menu = document.getElementById("exportMenuList"); menu.style.display = (menu.style.display === "block") ? "none" : "block"; }
-  function toggleColumnBox() { const box = document.getElementById("colBox"); box.style.display = (box.style.display === "block") ? "none" : "block"; }
+  function toggleImportMenu(e) { if(e) e.stopPropagation(); const m = document.getElementById("importMenuList"); m.style.display = m.style.display === "block" ? "none" : "block"; }
+  function toggleExportMenu(e) { if(e) e.stopPropagation(); const m = document.getElementById("exportMenuList"); m.style.display = m.style.display === "block" ? "none" : "block"; }
+  function toggleColumnBox() { const b = document.getElementById("colBox"); b.style.display = b.style.display === "block" ? "none" : "block"; }
 
   function downloadFormatUploadSchedule() {
     let csv = "WEEK,LINER,PORT,FEEDER VESSEL,ETD PORT ORIGINAL,ETB/ATB WEBSITE,ETD/ATD WEBSITE,ETA PORT,DESTINATION,REMARK,UPDATE CLOSING CY,VOYAGE\nWEEK 36,WAN HAI,SRG,WAN HAI 311,25-08-2026,ATB: 24-08-2026 10:00,ETD: 26-08-2026 14:00,30-08-2026,NAGOYA,Sample Remark,24-08-2026 12:00,V.001\n";
-    const link = document.createElement("a"); link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); link.download = "Template_Import_Control_Schedule.csv"; link.click();
+    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); a.download = "Template_Import_Control_Schedule.csv"; a.click();
   }
 
   function bukaModalImportSchedule() {
-    document.getElementById("importMenuList").style.display = "none";
-    document.getElementById("fileImportInput").value = ""; document.getElementById("import-file-name").innerText = "";
-    document.getElementById("import-status-alert").innerText = ""; document.getElementById("btnProsesImportExec").disabled = true;
-    parsedImportRows = []; document.getElementById("modalImportSchedule").style.display = "flex";
+    document.getElementById("importMenuList").style.display = "none"; document.getElementById("fileImportInput").value = "";
+    document.getElementById("import-file-name").innerText = ""; document.getElementById("import-status-alert").innerText = "";
+    document.getElementById("btnProsesImportExec").disabled = true; parsedImportRows = [];
+    document.getElementById("modalImportSchedule").style.display = "flex";
   }
   function tutupModalImportSchedule() { document.getElementById("modalImportSchedule").style.display = "none"; }
 
   function prosesFileImportSelected(e) {
     const file = e.target.files[0]; if (!file) return;
     document.getElementById("import-file-name").innerText = `📄 File terpilih: ${file.name}`;
-    document.getElementById("import-status-alert").style.color = "#38bdf8"; document.getElementById("import-status-alert").innerText = "⏳ Membaca isi file...";
-
     const reader = new FileReader();
     reader.onload = function(evt) {
       try {
         const jsonData = XLSX.utils.sheet_to_json(XLSX.read(new Uint8Array(evt.target.result), { type: 'array' }).Sheets[XLSX.read(new Uint8Array(evt.target.result), { type: 'array' }).SheetNames[0]], { header: 1 });
-        if (jsonData.length <= 1) { document.getElementById("import-status-alert").style.color = "#ef4444"; document.getElementById("import-status-alert").innerText = "❌ File kosong!"; return; }
+        if (jsonData.length <= 1) throw new Error("File kosong!");
         parsedImportRows = jsonData.slice(1);
         document.getElementById("import-status-alert").style.color = "#4ade80"; document.getElementById("import-status-alert").innerText = `✅ File Siap! ${parsedImportRows.length} baris data ditemukan.`;
         document.getElementById("btnProsesImportExec").disabled = false;
@@ -1665,20 +1158,19 @@
   }
 
   async function eksekusiUploadImport() {
-    if (!parsedImportRows || parsedImportRows.length === 0) return;
-    const btnExec = document.getElementById("btnProsesImportExec"); const statusDiv = document.getElementById("import-status-alert");
+    if (!parsedImportRows.length) return;
+    const btnExec = document.getElementById("btnProsesImportExec"), statusDiv = document.getElementById("import-status-alert");
     btnExec.disabled = true; statusDiv.style.color = "#38bdf8"; statusDiv.innerText = "⏳ Sedang mengunggah data...";
-
     try {
-      let addedCount = 0;
+      let added = 0;
       for (let r of parsedImportRows) {
         if (!r[1] && !r[3]) continue;
         const payload = { week: r[0] ? (String(r[0]).toUpperCase().includes("WEEK") ? r[0] : `WEEK ${r[0]}`) : '', liner: String(r[1] || '').toUpperCase(), port: String(r[2] || 'SRG').toUpperCase(), feeder_vessel: String(r[3] || '').toUpperCase(), etd_port_origin: r[4] || '', etb_atb_website: r[5] || '', etd_atd_website: r[6] || '', eta_port: r[7] || '', destination: String(r[8] || '').toUpperCase(), remark: r[9] || '', update_closing: r[10] || '', voyage: String(r[11] || '').toUpperCase() };
-        const { data: inserted } = await supabaseClient.from('control_schedule').insert([payload]).select();
-        if (inserted && inserted[0]) { await catatLogChangesServer(inserted[0].id, "Aditya (Import)", "BARU", "ALL", "-", payload.voyage ? `${payload.feeder_vessel} ${payload.voyage}` : payload.feeder_vessel); }
-        addedCount++;
+        const { data: ins } = await supabaseClient.from('control_schedule').insert([payload]).select();
+        if (ins?.[0]) await catatLogChangesServer(ins[0].id, "Aditya (Import)", "BARU", "ALL", "-", payload.voyage ? `${payload.feeder_vessel} ${payload.voyage}` : payload.feeder_vessel);
+        added++;
       }
-      statusDiv.style.color = "#4ade80"; statusDiv.innerText = `✅ Import Selesai! ${addedCount} baris data ditambahkan.`;
+      statusDiv.style.color = "#4ade80"; statusDiv.innerText = `✅ Import Selesai! ${added} baris data ditambahkan.`;
       setTimeout(() => { tutupModalImportSchedule(); muatDataSchedule(); }, 1200);
     } catch(err) { statusDiv.style.color = "#ef4444"; statusDiv.innerText = "❌ Error import: " + err.message; btnExec.disabled = false; }
   }
@@ -1686,19 +1178,19 @@
   function downloadCSVExport() {
     let csv = "NO,WEEK,LINER,PORT,FEEDER VESSEL,ETD ORIGINAL,CLOSING CY,UPDATE CLOSING CY,ETB/ATB WEBSITE,ETD/ATD WEBSITE,ETA PORT,DESTINATION,REMARK\n";
     currentFilteredSchedule.forEach((item, i) => { csv += `"${i+1}","${item.week}","${item.liner}","${item.port}","${item.feeder_vessel}","${item.etd_original}","${item.closing_cy}","${item.update_closing_cy}","${item.etb_website}","${item.etd_website}","${item.eta_port}","${item.destination}","${item.remark}"\n`; });
-    const link = document.createElement("a"); link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); link.download = "ControlSchedule.csv"; link.click();
+    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); a.download = "ControlSchedule.csv"; a.click();
   }
 
   function downloadExcelExport() {
     let html = `<table border="1"><tr><th>NO</th><th>WEEK</th><th>LINER</th><th>PORT</th><th>FEEDER VESSEL</th><th>ETD ORIGINAL</th><th>CLOSING CY</th><th>UPDATE CLOSING CY</th><th>ETB/ATB WEBSITE</th><th>ETD/ATD WEBSITE</th><th>ETA PORT</th><th>DESTINATION</th><th>REMARK</th></tr>`;
     currentFilteredSchedule.forEach((item, i) => { html += `<tr><td>${i+1}</td><td>${item.week}</td><td>${item.liner}</td><td>${item.port}</td><td>${item.feeder_vessel}</td><td>${item.etd_original}</td><td>${item.closing_cy}</td><td>${item.update_closing_cy}</td><td>${item.etb_website}</td><td>${item.etd_website}</td><td>${item.eta_port}</td><td>${item.destination}</td><td>${item.remark}</td></tr>`; });
-    const link = document.createElement("a"); link.href = URL.createObjectURL(new Blob([html], { type: 'application/vnd.ms-excel' })); link.download = "ControlSchedule.xls"; link.click();
+    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([html], { type: 'application/vnd.ms-excel' })); a.download = "ControlSchedule.xls"; a.click();
   }
 
   document.querySelectorAll('.col-toggle').forEach(chk => {
     chk.addEventListener('change', function() {
-      const colClass = this.getAttribute('data-col'); const isChecked = this.checked;
-      document.querySelectorAll('.' + colClass).forEach(cell => { cell.style.display = isChecked ? '' : 'none'; });
+      const colClass = this.getAttribute('data-col'), isChecked = this.checked;
+      document.querySelectorAll('.' + colClass).forEach(cell => cell.style.display = isChecked ? '' : 'none');
     });
   });
 </script>
