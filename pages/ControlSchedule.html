@@ -226,7 +226,7 @@
   .upload-dropzone { border: 2px dashed #0284c7; border-radius: 8px; padding: 20px; text-align: center; background: #0f172a; cursor: pointer; transition: 0.3s; margin-top: 8px; }
   .upload-dropzone:hover { background: rgba(2, 132, 199, 0.1); }
 
-  /* STYLING DIALOG POPUP ATAS TENGAH (POSISI 5% DARI PALING ATAS) */
+  /* STYLING DIALOG POPUP ATAS TENGAH */
   .nexportal-dialog-overlay {
     position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
     background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(4px);
@@ -409,7 +409,7 @@
 
     <p style="font-size:11px; color:#cbd5e1; line-height:1.4;">
       Pastikan kolom urutan file Excel/CSV sesuai:<br>
-      <b>A: WEEK | B: LINER | C: PORT | D: FEEDER VESSEL | E: ETD ORIGINAL | F: ETB/ATB WEBSITE | G: ETD/ATD WEBSITE | H: ETA PORT | I: DESTINATION | J: REMARK | K: UPDATE CLOSING CY</b>
+      <b>A: WEEK | B: LINER | C: PORT | D: FEEDER VESSEL | E: ETD ORIGINAL | F: ETB/ATB WEBSITE | G: ETD/ATD WEBSITE | H: ETA PORT | I: DESTINATION | J: REMARK | K: UPDATE CLOSING CY | L: VOYAGE</b>
     </p>
 
     <div class="upload-dropzone" onclick="document.getElementById('fileImportInput').click()">
@@ -670,7 +670,7 @@
   };
 
   /* =========================================================================
-     HELPER CUSTOM DIALOG ATAS TENGAH (POSISI 5% DARI PALING ATAS)
+     HELPER CUSTOM DIALOG ATAS TENGAH
      ========================================================================= */
   function showCustomConfirm(message) {
     return new Promise((resolve) => {
@@ -863,7 +863,6 @@
           const targetKey = String(l.row_target || l.target_id || l.row_id || '').trim();
           const aksiType = String(l.aksi || l.action || '').toUpperCase().trim();
 
-          /* HITUNG REVISI HANYA JIKA BUKAN DATA BARU / BARU DIBUAT */
           if (targetKey && aksiType !== 'BARU' && aksiType !== 'INPUT PERTAMA') {
             if (!logChangesMap[targetKey]) {
               logChangesMap[targetKey] = { total: 0, upd_closing: 0, etb_web: 0, etd_web: 0, eta_port: 0 };
@@ -871,7 +870,6 @@
             
             const col = String(l.kolom || l.column_name || l.field || '').toUpperCase().trim();
             
-            // Pencocokan Eksak/Spesifik per Sel
             if (col === 'UPDATE CLOSING CY' || col === 'UPDATE CLOSING') {
               logChangesMap[targetKey].upd_closing += 1;
               logChangesMap[targetKey].total += 1;
@@ -900,12 +898,23 @@
         const rowIdStr = String(row.id).trim();
         const logInfo = logChangesMap[rowIdStr] || { total: 0, upd_closing: 0, etb_web: 0, etd_web: 0, eta_port: 0 };
 
+        // PENYESUAIAN PENGGABUNGAN NAMA VESSEL + VOYAGE UNTUK FRONTEND
+        let rawVessel = getSupabaseVal(row, ['feeder_vessel', 'vessel']);
+        let rawVoyage = getSupabaseVal(row, ['voyage', 'Voyage']);
+        
+        let combinedVesselDisplay = rawVessel;
+        if (rawVoyage) {
+          combinedVesselDisplay = `${rawVessel} | ${rawVoyage}`;
+        }
+
         return {
           id: row.id,
           week: getSupabaseVal(row, ['week', 'Week']),
           liner: getSupabaseVal(row, ['liner', 'Liner']),
           port: getSupabaseVal(row, ['port', 'Port']) || 'SRG',
-          feeder_vessel: getSupabaseVal(row, ['feeder_vessel', 'vessel']),
+          vessel_name_only: rawVessel,
+          voyage_only: rawVoyage,
+          feeder_vessel: combinedVesselDisplay,
           etd_original: formatDateTimeAppScript(getSupabaseVal(row, ['etd_port_origin', 'etd_original', 'etd_orig'])),
           closing_cy: formatDateTimeAppScript(getSupabaseVal(row, ['closing_cy', 'closing'])),
           update_closing_cy: formatDateTimeAppScript(getSupabaseVal(row, ['update_closing', 'update_closing_cy', 'upd_closing'])),
@@ -1262,9 +1271,10 @@
     document.getElementById("sched-liner").disabled = true;
     document.getElementById("sched-port").value = itemTarget.port || 'SRG';
 
-    let vName = itemTarget.feeder_vessel || "";
-    let vVoy = "";
-    if (vName.includes("|")) {
+    // AMBIL KONTEN MURNI NAMA VESSEL DAN VOYAGE
+    let vName = itemTarget.vessel_name_only || itemTarget.feeder_vessel || "";
+    let vVoy = itemTarget.voyage_only || "";
+    if (!vVoy && vName.includes("|")) {
       const parts = vName.split("|");
       vName = parts[0].trim();
       vVoy = parts.slice(1).join("|").trim();
@@ -1322,7 +1332,7 @@
     const voyageInp = document.getElementById("sched-voyage").value.trim().toUpperCase();
     const alertDiv = document.getElementById("sched-alert");
 
-    const fullVesselName = voyageInp ? `${vesselInp} | ${voyageInp}` : vesselInp;
+    const fullVesselNameDisplay = voyageInp ? `${vesselInp} | ${voyageInp}` : vesselInp;
     const destRows = document.querySelectorAll("#dest-rows-wrapper .dest-row-item");
 
     if (!linerInp || !vesselInp || destRows.length === 0) {
@@ -1338,7 +1348,6 @@
       let existingIds = groupIdsStr ? JSON.parse(groupIdsStr) : [];
       let isUpdateAction = existingIds.length > 0;
 
-      /* Simpan Peta Data Lama per Destinasi untuk Pengecekan Perubahan Sel */
       let oldGroupDataMap = {};
       if (isUpdateAction) {
         existingIds.forEach(id => {
@@ -1360,11 +1369,13 @@
         const etdWebFormatted = formatInputDateTimeToDDMMYYYYHHMM(document.getElementById("sched-etdweb").value);
         const etaFormatted = formatInputDateToDDMMYYYY(etaIsoVal);
 
+        // SUPABASE PAYLOAD: DIPISAHKAN ANTARA VESSEL DAN VOYAGE
         const payload = {
           week: weekInp ? `WEEK ${weekInp}` : '',
           liner: linerInp,
           port: document.getElementById("sched-port").value,
-          feeder_vessel: fullVesselName,
+          feeder_vessel: vesselInp,
+          voyage: voyageInp,
           etd_port_origin: etdOrigFormatted,
           closing_cy: document.getElementById("sched-closingcy").value,
           update_closing: updClosingFormatted,
@@ -1390,11 +1401,9 @@
         if (targetRowId) {
           if (!isUpdateAction) {
             /* INPUT BARU / PERTAMA KALI */
-            await catatLogChangesServer(targetRowId, "Aditya", "BARU", "ALL", "-", fullVesselName);
+            await catatLogChangesServer(targetRowId, "Aditya", "BARU", "ALL", "-", fullVesselNameDisplay);
           } else {
-            /* CEK DAN CATAT PERUBAHAN PER-SEL SECARA INDIVIDUAL (Presisi per Cell) */
-            
-            // Helper untuk membersihkan prefix "ATB:", "ETD:", "ATD:" saat perbandingan string
+            /* CEK DAN CATAT PERUBAHAN PER-SEL SECARA INDIVIDUAL */
             const cleanPrefix = (str) => String(str || '').replace(/^(ATB:|ETD:|ATD:)\s*/i, '').trim();
 
             // 1. Cek UPDATE CLOSING CY
@@ -1404,14 +1413,14 @@
               await catatLogChangesServer(targetRowId, "Aditya", "UPDATE", "UPDATE CLOSING CY", oldData.update_closing_cy, updClosingFormatted);
             }
 
-            // 2. Cek ETB/ATB WEBSITE (Dibandingkan tanpa prefix ATB:)
+            // 2. Cek ETB/ATB WEBSITE
             const oldEtb = cleanPrefix(oldData.etb_website);
             const newEtb = cleanPrefix(payload.etb_atb_website);
             if (oldEtb !== newEtb && newEtb !== '' && oldEtb !== '-') {
               await catatLogChangesServer(targetRowId, "Aditya", "UPDATE", "ETB/ATB WEBSITE", oldData.etb_website, payload.etb_atb_website);
             }
 
-            // 3. Cek ETD/ATD WEBSITE (Dibandingkan tanpa prefix ETD/ATD:)
+            // 3. Cek ETD/ATD WEBSITE
             const oldEtd = cleanPrefix(oldData.etd_website);
             const newEtd = cleanPrefix(payload.etd_atd_website);
             if (oldEtd !== newEtd && newEtd !== '' && oldEtd !== '-') {
@@ -1440,9 +1449,6 @@
     }
   }
 
-  /* =========================================================================
-     FUNGSI HAPUS SCHEDULE MENGGUNAKAN CUSTOM DIALOG
-     ========================================================================= */
   async function hapusSchedule(event, displayNo, rowId) {
     if (event) {
       event.preventDefault();
@@ -1591,8 +1597,9 @@
         if (isModified) {
           await supabaseClient.from('control_schedule').update(updatePayload).eq('id', row.id);
 
-          if (!updatedVessels.includes(row.feeder_vessel)) {
-            updatedVessels.push(row.feeder_vessel);
+          const vDisplay = row.voyage ? `${row.feeder_vessel} | ${row.voyage}` : row.feeder_vessel;
+          if (!updatedVessels.includes(vDisplay)) {
+            updatedVessels.push(vDisplay);
           }
         }
       }
@@ -1860,8 +1867,8 @@
   }
 
   function downloadFormatUploadSchedule() {
-    let csv = "WEEK,LINER,PORT,FEEDER VESSEL,ETD PORT ORIGINAL,ETB/ATB WEBSITE,ETD/ATD WEBSITE,ETA PORT,DESTINATION,REMARK,UPDATE CLOSING CY\n";
-    csv += "WEEK 36,WAN HAI,SRG,WAN HAI 311 | V.001,25-08-2026,ATB: 24-08-2026 10:00,ETD: 26-08-2026 14:00,30-08-2026,NAGOYA,Sample Remark,24-08-2026 12:00\n";
+    let csv = "WEEK,LINER,PORT,FEEDER VESSEL,ETD PORT ORIGINAL,ETB/ATB WEBSITE,ETD/ATD WEBSITE,ETA PORT,DESTINATION,REMARK,UPDATE CLOSING CY,VOYAGE\n";
+    csv += "WEEK 36,WAN HAI,SRG,WAN HAI 311,25-08-2026,ATB: 24-08-2026 10:00,ETD: 26-08-2026 14:00,30-08-2026,NAGOYA,Sample Remark,24-08-2026 12:00,V.001\n";
     const blob = new Blob([csv], { type: 'text/csv' });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
@@ -1941,11 +1948,13 @@
           eta_port: r[7] || '',
           destination: String(r[8] || '').toUpperCase(),
           remark: r[9] || '',
-          update_closing: r[10] || ''
+          update_closing: r[10] || '',
+          voyage: String(r[11] || '').toUpperCase()
         };
         const { data: inserted } = await supabaseClient.from('control_schedule').insert([payload]).select();
         if (inserted && inserted[0]) {
-          await catatLogChangesServer(inserted[0].id, "Aditya (Import)", "BARU", "ALL", "-", payload.feeder_vessel);
+          const vDisp = payload.voyage ? `${payload.feeder_vessel} | ${payload.voyage}` : payload.feeder_vessel;
+          await catatLogChangesServer(inserted[0].id, "Aditya (Import)", "BARU", "ALL", "-", vDisp);
         }
         addedCount++;
       }
