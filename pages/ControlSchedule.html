@@ -991,7 +991,7 @@
 
   function tutupModalHistori() { document.getElementById("modalHistoriLog").style.display = "none"; }
 
-  /* --- FUNGSI SINKRONISASI UPDATE TPKS (ON-DEMAND MANUAL PASTE PELINDO) --- */
+  /* --- FUNGSI SINKRONISASI UPDATE TPKS (ROBUST PARSER UNTUK LAYOUT BARU PELINDO) --- */
   window.syncDataTPKS = async function(event) {
     if (event) { event.preventDefault(); event.stopPropagation(); }
     document.getElementById("textareaTpksHtml").value = "";
@@ -1029,35 +1029,41 @@
       const doc = new DOMParser().parseFromString(htmlVal, "text/html");
       let parsedTpksVessels = [];
 
-      // Parser disesuaikan dengan layout baru ibstpks.pelindo.co.id/webaccess/
-      doc.querySelectorAll("div, tr, td, li").forEach(block => {
-        const boldTxt = block.querySelector("b") || block.querySelector("strong");
-        const blockText = block.innerText ? block.innerText.trim() : '';
+      // Parser robust: mencari semua card/elemen yang berisi teks jadwal Pelindo
+      doc.querySelectorAll("div, article, section, li, tr, td").forEach(block => {
+        const textFull = block.innerText ? block.innerText.trim() : '';
+        const boldElem = block.querySelector("b") || block.querySelector("strong");
 
-        if (boldTxt && (blockText.includes("ATB") || blockText.includes("ETB") || blockText.includes("ETD") || blockText.includes("Closing Time")) && !blockText.includes("Vessel Schedule")) {
-          let rawTitle = boldTxt.innerText.trim();
-          let cleanVName = rawTitle.replace(/\s*\([A-Z0-9]+\)\s*/gi, '').replace(/\s*\(ID[0-9]+\)\s*/gi, '').trim().toUpperCase();
-          
-          let vItem = { name: cleanVName, voyage: '', etb: '', atb: '', etd: '', atd: '', closing: '' };
+        if (boldElem && (textFull.includes("ATB") || textFull.includes("ETB") || textFull.includes("ETD") || textFull.includes("Closing Time"))) {
+          let rawName = boldElem.innerText.trim();
+          let cleanVName = rawName.replace(/\s*\([A-Z0-9]+\)\s*/gi, '').replace(/\s*\(ID[0-9]+\)\s*/gi, '').trim().toUpperCase();
 
-          let lines = blockText.split("\n").map(l => l.trim()).filter(Boolean);
-          lines.forEach(line => {
-            if (line.includes("/")) vItem.voyage = line.replace(/\s+/g, '').toUpperCase();
-            if (line.startsWith("ATB :")) vItem.atb = line.replace("ATB :", "").trim();
-            if (line.startsWith("ETB :")) vItem.etb = line.replace("ETB :", "").trim();
-            if (line.startsWith("ATD :")) vItem.atd = line.replace("ATD :", "").trim();
-            if (line.startsWith("ETD :")) vItem.etd = line.replace("ETD :", "").trim();
-            if (line.includes("Closing Time")) vItem.closing = line.replace(/Closing Time\s*:\s*/gi, "").trim();
-          });
+          if (cleanVName.length > 2 && !cleanVName.includes("VESSEL") && !cleanVName.includes("SCHEDULE")) {
+            let vItem = { name: cleanVName, voyage: '', etb: '', atb: '', etd: '', atd: '', closing: '' };
 
-          if (vItem.name && !parsedTpksVessels.some(existing => existing.name === vItem.name && existing.voyage === vItem.voyage)) {
-            parsedTpksVessels.push(vItem);
+            let lines = textFull.split("\n").map(l => l.trim()).filter(Boolean);
+            lines.forEach(line => {
+              if (line.includes("/") || (line.includes("S") && line.includes("N"))) {
+                if (!line.includes("Booking") && !line.includes("Actual") && line.length < 25) {
+                  vItem.voyage = line.replace(/\s+/g, '').toUpperCase();
+                }
+              }
+              if (line.startsWith("ATB :") || line.startsWith("ATB:")) vItem.atb = line.replace(/ATB\s*:\s*/i, "").trim();
+              if (line.startsWith("ETB :") || line.startsWith("ETB:")) vItem.etb = line.replace(/ETB\s*:\s*/i, "").trim();
+              if (line.startsWith("ATD :") || line.startsWith("ATD:")) vItem.atd = line.replace(/ATD\s*:\s*/i, "").trim();
+              if (line.startsWith("ETD :") || line.startsWith("ETD:")) vItem.etd = line.replace(/ETD\s*:\s*/i, "").trim();
+              if (line.includes("Closing Time")) vItem.closing = line.replace(/Closing Time\s*:\s*/gi, "").trim();
+            });
+
+            if (vItem.name && !parsedTpksVessels.some(existing => existing.name === vItem.name)) {
+              parsedTpksVessels.push(vItem);
+            }
           }
         }
       });
 
       if (!parsedTpksVessels.length) {
-        await showCustomAlert("⚠️ HTML berhasil dimuat, tetapi struktur elemen kapal gagal dikenali oleh parser. Pastikan kamu menyalin seluruh halaman (Ctrl+U).");
+        await showCustomAlert("⚠️ HTML berhasil dimuat, tetapi parser gagal mengekstrak nama kapal. Pastikan kamu menyalin seluruh kode halaman utama (Ctrl+U).");
         return;
       }
 
@@ -1070,15 +1076,7 @@
         let matched = parsedTpksVessels.find(v => {
           let firstWord = dbVessel.split(" ")[0];
           let isNameMatch = dbVessel.includes(v.name) || v.name.includes(dbVessel) || (firstWord.length > 2 && v.name.includes(firstWord));
-
-          let isVoyageMatch = true;
-          if (dbVoyage && v.voyage) {
-            let cleanDbVoy = dbVoyage.replace(/[^A-Z0-9]/gi, '');
-            let cleanTpksVoy = v.voyage.replace(/[^A-Z0-9]/gi, '');
-            isVoyageMatch = cleanTpksVoy.includes(cleanDbVoy) || cleanDbVoy.includes(cleanTpksVoy);
-          }
-
-          return isNameMatch && isVoyageMatch;
+          return isNameMatch;
         });
 
         if (matched) {
@@ -1113,7 +1111,7 @@
       }
 
       if (updatedVesselsList.length > 0) {
-        await showCustomAlert(`⚡ SINKRONISASI PELINDO TPKS BERHASIL!\n\nBerikut ${updatedVesselsList.length} Kapal yang diperbarui datanya untuk laporan Planner:\n\n${updatedVesselsList.map((v, i) => `${i + 1}. ${v}`).join("\n")}`);
+        await showCustomAlert(`⚡ SINKRONISASI PELINDO BERHASIL!\n\nBerikut ${updatedVesselsList.length} Kapal yang berhasil diperbarui datanya untuk laporan Planner:\n\n${updatedVesselsList.map((v, i) => `${i + 1}. ${v}`).join("\n")}`);
       } else { 
         await showCustomAlert("⚡ Status Web Pelindo TPKS Semarang sudah sinkron (Tidak ada perubahan jadwal terbaru)."); 
       }
