@@ -468,8 +468,8 @@
 </div>
 
 <script>
-  // OPSIONAL: ISIKAN URL APPSCRIPT WEB APP KAMU DI SINI UNTUK PERCEPAT SCRAPING VIA SERVER GOOGLE
-  window.APPSCRIPT_TPKS_URL = ""; 
+  // APPSCRIPT WEB APP URL AKTIF & RESMI:
+  window.APPSCRIPT_TPKS_URL = "https://script.google.com/macros/s/AKfycbwbvBqLZWpSZgfiRBwvkzfBohMvKu9gekISpZXnQuxAgBvm3z6xLRq4B0x6tScFEQej/exec";
 
   let masterDataSchedule = [], currentFilteredSchedule = [], logChangesMap = {}, parsedImportRows = [];
   let currentSortState = { column: null, direction: 'asc' }, currentPreviewMode = 'rapi';
@@ -999,12 +999,12 @@
 
       if (!tpksRawHtml || tpksRawHtml.trim() === '') {
         try {
-          if (window.APPSCRIPT_TPKS_URL) {
+          if (window.APPSCRIPT_TPKS_URL && window.APPSCRIPT_TPKS_URL.trim() !== '') {
             const resAppScript = await fetch(window.APPSCRIPT_TPKS_URL);
             if (resAppScript.ok) tpksRawHtml = await resAppScript.text();
           } 
           
-          if (!tpksRawHtml) {
+          if (!tpksRawHtml || tpksRawHtml.trim() === '') {
             const targetUrl = 'https://webaccess.tpks.co.id/tpks_vessel_schedule/';
             const resProxy = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`);
             if (resProxy.ok) {
@@ -1017,8 +1017,8 @@
         }
       }
 
-      if (!tpksRawHtml) {
-        if (!isAutoCron) await showCustomAlert("⚠️ Gagal mengambil HTML dari Web TPKS. Pastikan koneksi atau AppScript endpoint aktif.");
+      if (!tpksRawHtml || tpksRawHtml.trim() === '') {
+        if (!isAutoCron) await showCustomAlert("⚠️ Gagal mengambil HTML dari Web TPKS. Pastikan koneksi internet aktif.");
         return false;
       }
 
