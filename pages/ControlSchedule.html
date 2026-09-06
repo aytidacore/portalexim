@@ -868,12 +868,30 @@
             if (!logChangesMap[targetKey]) {
               logChangesMap[targetKey] = { total: 0, upd_closing: 0, etb_web: 0, etd_web: 0, eta_port: 0 };
             }
-            logChangesMap[targetKey].total += 1;
-            const col = String(l.column_name || l.kolom || l.field || '').toUpperCase();
-            if (col.includes('CLOSING') || col.includes('UPDATE')) logChangesMap[targetKey].upd_closing += 1;
-            if (col.includes('ETB')) logChangesMap[targetKey].etb_web += 1;
-            if (col.includes('ETD')) logChangesMap[targetKey].etd_web += 1;
-            if (col.includes('ETA')) logChangesMap[targetKey].eta_port += 1;
+            
+            const col = String(l.column_name || l.kolom || l.field || '').toUpperCase().trim();
+            
+            let counted = false;
+            if (col.includes('CLOSING') || col.includes('UPDATE')) {
+              logChangesMap[targetKey].upd_closing += 1;
+              counted = true;
+            }
+            if (col.includes('ETB') || col.includes('ATB')) {
+              logChangesMap[targetKey].etb_web += 1;
+              counted = true;
+            }
+            if (col.includes('ETD') || col.includes('ATD')) {
+              logChangesMap[targetKey].etd_web += 1;
+              counted = true;
+            }
+            if (col.includes('ETA')) {
+              logChangesMap[targetKey].eta_port += 1;
+              counted = true;
+            }
+
+            if (counted) {
+              logChangesMap[targetKey].total += 1;
+            }
           }
         });
       }
@@ -1332,7 +1350,7 @@
       let existingIds = groupIdsStr ? JSON.parse(groupIdsStr) : [];
       let isUpdateAction = existingIds.length > 0;
 
-      /* Ambil data lama jika aksi ini adalah Update/Edit */
+      /* Simpan Peta Data Lama per Destinasi untuk Pengecekan Perubahan Sel */
       let oldGroupDataMap = {};
       if (isUpdateAction) {
         existingIds.forEach(id => {
@@ -1341,10 +1359,6 @@
             oldGroupDataMap[found.destination] = found;
           }
         });
-
-        for (let oldId of existingIds) {
-          await supabaseClient.from('control_schedule').delete().eq('id', oldId);
-        }
       }
 
       for (let r of destRows) {
@@ -1373,29 +1387,35 @@
           remark: remVal || document.getElementById("sched-remark").value.trim()
         };
 
-        const { data: newRow } = await supabaseClient.from('control_schedule').insert([payload]).select();
-        
-        if (newRow && newRow[0]) {
-          const rowId = newRow[0].id;
-          
-          if (!isUpdateAction) {
-            /* CATAT SEBAGAI BARU (INPUT PERTAMA - TIDAK DIHITUNG REVISI) */
-            await catatLogChangesServer(rowId, "Aditya", "BARU", "ALL", "-", fullVesselName);
-          } else {
-            /* PERIKSA DAN CATAT LOG EDIT UNTUK SETIAP KOLOM REVISI SECARA SPESIFIK */
-            const oldData = oldGroupDataMap[destVal] || {};
+        const oldData = oldGroupDataMap[destVal] || {};
+        let targetRowId = oldData.id || null;
 
-            if (oldData.update_closing_cy !== updClosingFormatted) {
-              await catatLogChangesServer(rowId, "Aditya", "UPDATE", "UPDATE CLOSING CY", oldData.update_closing_cy, updClosingFormatted);
+        if (targetRowId) {
+          /* UPDATE BARIS EKSISTING */
+          await supabaseClient.from('control_schedule').update(payload).eq('id', targetRowId);
+        } else {
+          /* INSERT BARIS BARU */
+          const { data: newRow } = await supabaseClient.from('control_schedule').insert([payload]).select();
+          if (newRow && newRow[0]) targetRowId = newRow[0].id;
+        }
+
+        if (targetRowId) {
+          if (!isUpdateAction) {
+            /* CATAT LOG INPUT PERTAMA (TIDAK DIHITUNG REVISI) */
+            await catatLogChangesServer(targetRowId, "Aditya", "BARU", "ALL", "-", fullVesselName);
+          } else {
+            /* PENCATATAN REVISI KHUSUS UNTUK KOLOM YANG MENGALAMI PERUBAHAN NILAI */
+            if (oldData.update_closing_cy !== updClosingFormatted && updClosingFormatted !== '') {
+              await catatLogChangesServer(targetRowId, "Aditya", "UPDATE", "UPDATE CLOSING CY", oldData.update_closing_cy, updClosingFormatted);
             }
-            if (oldData.etb_website !== payload.etb_atb_website) {
-              await catatLogChangesServer(rowId, "Aditya", "UPDATE", "ETB/ATB WEBSITE", oldData.etb_website, payload.etb_atb_website);
+            if (oldData.etb_website !== payload.etb_atb_website && payload.etb_atb_website !== '') {
+              await catatLogChangesServer(targetRowId, "Aditya", "UPDATE", "ETB/ATB WEBSITE", oldData.etb_website, payload.etb_atb_website);
             }
-            if (oldData.etd_website !== payload.etd_atd_website) {
-              await catatLogChangesServer(rowId, "Aditya", "UPDATE", "ETD/ATD WEBSITE", oldData.etd_website, payload.etd_atd_website);
+            if (oldData.etd_website !== payload.etd_atd_website && payload.etd_atd_website !== '') {
+              await catatLogChangesServer(targetRowId, "Aditya", "UPDATE", "ETD/ATD WEBSITE", oldData.etd_website, payload.etd_atd_website);
             }
-            if (oldData.eta_port !== etaFormatted) {
-              await catatLogChangesServer(rowId, "Aditya", "UPDATE", "ETA PORT", oldData.eta_port, etaFormatted);
+            if (oldData.eta_port !== etaFormatted && etaFormatted !== '') {
+              await catatLogChangesServer(targetRowId, "Aditya", "UPDATE", "ETA PORT", oldData.eta_port, etaFormatted);
             }
           }
         }
