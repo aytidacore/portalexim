@@ -136,7 +136,7 @@
 <div class="schedule-container">
   <div class="schedule-header">
     <div class="schedule-title">
-      <h3>🚢 Database Control Schedule Export</h3>
+      <h3>🚢 Database Control Schedule Export (Admin EXIM)</h3>
       <p style="font-size: 10px; color: #94a3b8; margin: 1px 0 0 0;">Sistem Jadwal Pelayaran & Tracking Kapal</p>
     </div>
     <div style="display:flex; gap:5px; flex-wrap:wrap; align-items:center;">
@@ -239,7 +239,7 @@
 
 <div id="tpks-source-data" style="display:none;"></div>
 
-<!-- MODAL PASTE HTML TPKS MANUAL -->
+<!-- MODAL PASTE HTML TPKS MANUAL (FALLBACK) -->
 <div class="modal-overlay" id="modalPasteTpks">
   <div class="modal-card-schedule" style="max-width: 650px;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
@@ -247,7 +247,7 @@
       <button type="button" onclick="tutupModalPasteTpks()" style="background:none; border:none; color:#ef4444; font-size:18px; cursor:pointer;">✖</button>
     </div>
     <p style="font-size:11px; color:#cbd5e1; line-height:1.4; margin-top:0;">
-      Server TPKS membatasi akses otomatis script. Silakan buka <a href="https://webaccess.tpks.co.id/tpks_vessel_schedule/" target="_blank" style="color:#38bdf8;">webaccess.tpks.co.id/tpks_vessel_schedule/</a> di tab lain, tekan <b>Ctrl+U</b>, salin seluruh kodenya, lalu <i>paste</i> di bawah ini:
+      Server TPKS membatasi akses otomatis. Silakan buka <a href="https://webaccess.tpks.co.id/tpks_vessel_schedule/" target="_blank" style="color:#38bdf8;">webaccess.tpks.co.id/tpks_vessel_schedule/</a> di tab lain, tekan <b>Ctrl+U</b>, salin seluruh kodenya, lalu <i>paste</i> di bawah ini untuk persiapan laporan planner:
     </p>
     <textarea id="textareaTpksHtml" rows="10" placeholder="Paste kode HTML mentah dari halaman TPKS di sini..." style="width:100%; background:#0f172a; border:1px solid #334155; border-radius:6px; color:#fff; font-size:11px; padding:8px; box-sizing:border-box; outline:none; resize:vertical;"></textarea>
     <div style="display:flex; gap:8px; margin-top:12px;">
@@ -913,7 +913,7 @@
     try {
       const now = new Date(), hari = ["minggu", "senin", "selasa", "rabu", "kamis", "jumat", "sabtu"];
       const ts = `${hari[now.getDay()]}, ${String(now.getDate()).padStart(2,'0')}-${String(now.getMonth()+1).padStart(2,'0')}-${now.getFullYear()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-      await supabaseClient.from('log_changes').insert([{ timestamp: ts, row_target: String(rowTarget), user: user || 'Aditya', aksi: aksi, kolom: kolom, nilai_lama: String(oldVal || '-'), nilai_baru: String(newVal || '-') }]);
+      await supabaseClient.from('log_changes').insert([{ timestamp: ts, row_target: String(rowTarget), user: user || 'Aditya (Admin EXIM)', aksi: aksi, kolom: kolom, nilai_lama: String(oldVal || '-'), nilai_baru: String(newVal || '-') }]);
     } catch(e) {}
   }
 
@@ -949,13 +949,13 @@
         else { const { data: n } = await supabaseClient.from('control_schedule').insert([payload]).select(); if (n?.[0]) targetRowId = n[0].id; }
 
         if (targetRowId) {
-          if (!existingIds.length) { await catatLogChangesServer(targetRowId, "Aditya", "BARU", "ALL", "-", voyageInp ? `${vesselInp} ${voyageInp}` : vesselInp); }
+          if (!existingIds.length) { await catatLogChangesServer(targetRowId, "Aditya (Admin EXIM)", "BARU", "ALL", "-", voyageInp ? `${vesselInp} ${voyageInp}` : vesselInp); }
           else {
             const clean = (s) => String(s || '').replace(/^(ATB:|ETD:|ATD:)\s*/i, '').trim();
-            if (clean(oldData.update_closing_cy) !== clean(updClosingFormatted) && updClosingFormatted) await catatLogChangesServer(targetRowId, "Aditya", "UPDATE", "UPDATE CLOSING CY", oldData.update_closing_cy, updClosingFormatted);
-            if (clean(oldData.etb_website) !== clean(payload.etb_atb_website) && payload.etb_atb_website) await catatLogChangesServer(targetRowId, "Aditya", "UPDATE", "ETB/ATB WEBSITE", oldData.etb_website, payload.etb_atb_website);
-            if (clean(oldData.etd_website) !== clean(payload.etd_atd_website) && payload.etd_atd_website) await catatLogChangesServer(targetRowId, "Aditya", "UPDATE", "ETD/ATD WEBSITE", oldData.etd_website, payload.etd_atd_website);
-            if (clean(oldData.eta_port) !== clean(etaIsoVal) && etaIsoVal) await catatLogChangesServer(targetRowId, "Aditya", "UPDATE", "ETA PORT", oldData.eta_port, etaIsoVal);
+            if (clean(oldData.update_closing_cy) !== clean(updClosingFormatted) && updClosingFormatted) await catatLogChangesServer(targetRowId, "Aditya (Admin EXIM)", "UPDATE", "UPDATE CLOSING CY", oldData.update_closing_cy, updClosingFormatted);
+            if (clean(oldData.etb_website) !== clean(payload.etb_atb_website) && payload.etb_atb_website) await catatLogChangesServer(targetRowId, "Aditya (Admin EXIM)", "UPDATE", "ETB/ATB WEBSITE", oldData.etb_website, payload.etb_atb_website);
+            if (clean(oldData.etd_website) !== clean(payload.etd_atd_website) && payload.etd_atd_website) await catatLogChangesServer(targetRowId, "Aditya (Admin EXIM)", "UPDATE", "ETD/ATD WEBSITE", oldData.etd_website, payload.etd_atd_website);
+            if (clean(oldData.eta_port) !== clean(etaIsoVal) && etaIsoVal) await catatLogChangesServer(targetRowId, "Aditya (Admin EXIM)", "UPDATE", "ETA PORT", oldData.eta_port, etaIsoVal);
           }
         }
       }
@@ -989,54 +989,59 @@
     const filtered = (data || []).filter(l => String(l.row_target || l.target_id || l.row_id || '').trim() === targetStr || String(l.row_target || '').trim() === titleInfo.trim());
 
     if (!filtered.length) { tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#94a3b8; padding:15px;">Belum ada catatan histori log untuk baris ini.</td></tr>`; return; }
-    tbody.innerHTML = filtered.map(l => `<tr><td>${l.timestamp || l.created_at || '-'}</td><td><b style="color:#38bdf8;">${l.user || 'Aditya'}</b></td><td><b style="color:#f59e0b;">${l.column_name || l.kolom || 'UPDATE'}</b></td><td style="color:#f87171;">${l.nilai_lama || '-'}</td><td style="color:#4ade80;">${l.nilai_baru || '-'}</td></tr>`).join('');
+    tbody.innerHTML = filtered.map(l => `<tr><td>${l.timestamp || l.created_at || '-'}</td><td><b style="color:#38bdf8;">${l.user || 'Aditya (Admin EXIM)'}</b></td><td><b style="color:#f59e0b;">${l.column_name || l.kolom || 'UPDATE'}</b></td><td style="color:#f87171;">${l.nilai_lama || '-'}</td><td style="color:#4ade80;">${l.nilai_baru || '-'}</td></tr>`).join('');
   }
 
   function tutupModalHistori() { document.getElementById("modalHistoriLog").style.display = "none"; }
 
-  /* --- FUNGSI SINKRONISASI WEB TPKS SEMARANG (PORT SRG) --- */
-  window.syncDataTPKS = async function(event, isAutoCron = false) {
+  /* --- FUNGSI SINKRONISASI WEB TPKS ON-DEMAND (UNTUK LAPORAN PLANNER) --- */
+  window.syncDataTPKS = async function(event) {
     if (event) { event.preventDefault(); event.stopPropagation(); }
 
     try {
       if (typeof supabaseClient === 'undefined' || !supabaseClient) { 
-        if (!isAutoCron) await showCustomAlert("❌ Error: Supabase belum siap."); 
-        return false; 
+        await showCustomAlert("❌ Error: Supabase belum siap."); 
+        return; 
       }
 
       const { data: srgRows, error: fetchErr } = await supabaseClient.from('control_schedule').select('*').eq('port', 'SRG');
       if (fetchErr || !srgRows || !srgRows.length) { 
-        if (!isAutoCron) await showCustomAlert("ℹ️ Tidak ditemukan baris kapal PORT 'SRG' di database."); 
-        return false; 
+        await showCustomAlert("ℹ️ Tidak ditemukan baris kapal PORT 'SRG' di database."); 
+        return; 
       }
+
+      const btnSync = document.querySelector('.btn-tpks-sync');
+      const oldBtnText = btnSync ? btnSync.innerText : '⚡ Update TPKS';
+      if (btnSync) { btnSync.innerText = '⏳ Mengambil Data TPKS...'; btnSync.disabled = true; }
 
       let tpksRawHtml = '';
       try {
-        if (window.APPSCRIPT_TPKS_URL && window.APPSCRIPT_TPKS_URL.trim() !== '') {
-          const resAppScript = await fetch(window.APPSCRIPT_TPKS_URL);
-          if (resAppScript.ok) {
-            const jsonRes = await resAppScript.json();
-            if (jsonRes.status === "success") {
-              tpksRawHtml = jsonRes.html;
-            }
+        const resAppScript = await fetch(window.APPSCRIPT_TPKS_URL);
+        if (resAppScript.ok) {
+          const jsonRes = await resAppScript.json();
+          if (jsonRes.status === "success") {
+            tpksRawHtml = jsonRes.html;
           }
         }
       } catch (e) {
-        console.warn("Gagal fetch via Apps Script:", e);
+        console.warn("Gagal terhubung via Apps Script proxy:", e);
       }
 
-      // Jika Apps Script / server TPKS memblokir request, buka modal textarea manual
+      if (btnSync) { btnSync.innerText = oldBtnText; btnSync.disabled = false; }
+
+      // Jika Apps Script gagal/diblokir server TPKS, tampilkan modal Paste HTML Manual
       if (!tpksRawHtml || tpksRawHtml.trim() === '' || tpksRawHtml.includes("Cloudflare") || tpksRawHtml.includes("Diblokir")) {
-        if (isAutoCron) return false;
         document.getElementById("textareaTpksHtml").value = "";
         document.getElementById("modalPasteTpks").style.display = "flex";
         return;
       }
 
-      await prosesDanSimpanDataTPKS(tpksRawHtml, srgRows, isAutoCron);
+      await prosesDanSimpanDataTPKS(tpksRawHtml, srgRows);
 
     } catch(err) { 
-      if (!isAutoCron) await showCustomAlert("❌ Error sync TPKS: " + err.message); 
+      const btnSync = document.querySelector('.btn-tpks-sync');
+      if (btnSync) { btnSync.innerText = '⚡ Update TPKS'; btnSync.disabled = false; }
+      await showCustomAlert("❌ Error sync TPKS: " + err.message); 
     }
   };
 
@@ -1050,7 +1055,7 @@
     tutupModalPasteTpks();
     const { data: srgRows } = await supabaseClient.from('control_schedule').select('*').eq('port', 'SRG');
     if (srgRows) {
-      await prosesDanSimpanDataTPKS(htmlVal, srgRows, false);
+      await prosesDanSimpanDataTPKS(htmlVal, srgRows);
     }
   };
 
@@ -1058,7 +1063,7 @@
     document.getElementById("modalPasteTpks").style.display = "none";
   }
 
-  async function prosesDanSimpanDataTPKS(htmlContent, srgRows, isAutoCron) {
+  async function prosesDanSimpanDataTPKS(htmlContent, srgRows) {
     const debugDiv = document.getElementById("tpks-source-data");
     if (debugDiv) debugDiv.innerHTML = htmlContent;
 
@@ -1091,7 +1096,7 @@
     });
 
     if (!parsedTpksVessels.length) {
-      if (!isAutoCron) await showCustomAlert("⚠️ HTML berhasil dimuat, tetapi struktur elemen kapal gagal dikenali oleh parser.");
+      await showCustomAlert("⚠️ HTML berhasil dimuat, tetapi struktur elemen kapal gagal dikenali oleh parser.");
       return;
     }
 
@@ -1147,19 +1152,13 @@
     }
 
     if (updatedVesselsList.length > 0) {
-      if (!isAutoCron) await showCustomAlert(`⚡ SINKRONISASI TPKS BERHASIL!\n\nBerikut ${updatedVesselsList.length} Kapal yang diperbarui datanya:\n\n${updatedVesselsList.map((v, i) => `${i + 1}. ${v}`).join("\n")}`);
-    } else if (!isAutoCron) { 
-      await showCustomAlert("⚡ Status Web TPKS Semarang sudah sinkron (Tidak ada perubahan jadwal)."); 
+      await showCustomAlert(`⚡ SINKRONISASI TPKS BERHASIL!\n\nBerikut ${updatedVesselsList.length} Kapal yang diperbarui datanya untuk laporan Planner:\n\n${updatedVesselsList.map((v, i) => `${i + 1}. ${v}`).join("\n")}`);
+    } else { 
+      await showCustomAlert("⚡ Status Web TPKS Semarang sudah sinkron (Tidak ada perubahan jadwal terbaru)."); 
     }
 
     muatDataSchedule();
   }
-
-  /* AUTO CRON SYNC 06:00 AM */
-  setInterval(() => {
-    const now = new Date();
-    if (now.getHours() === 6 && now.getMinutes() === 0 && now.getSeconds() < 5) window.syncDataTPKS(null, true);
-  }, 5000);
 
   function bukaModalExportPreview() { document.getElementById("modalExportPreview").style.display = "flex"; document.getElementById("preview-total-count").innerText = currentFilteredSchedule.length; renderExportPreviewContent(); }
   function tutupModalExportPreview() { document.getElementById("modalExportPreview").style.display = "none"; }
@@ -1199,7 +1198,7 @@
 
   function cetakPDFJendelaBaru() {
     const w = window.open('', '_blank', 'width=1250,height=850');
-    w.document.write(`<!DOCTYPE html><html><head><title>Control Schedule Export</title><style>@page { size: A4 landscape; margin: 8mm 6mm; } body { font-family: Calibri, sans-serif; } table { width: 100%; border-collapse: collapse; } th { background: #0284c7; color: #fff; border: 1px solid #000; padding: 5px; font-size: 10px; } td { border: 1px solid #000; padding: 4px; font-size: 9.5px; text-align: center; }</style></head><body>${document.getElementById("printableArea").innerHTML}<script>setTimeout(() => { window.print(); window.close(); }, 500);<\/script></body></html>`);
+    w.document.write(`<!DOCTYPE html><html><head><title>Control Schedule Export (Planner Report)</title><style>@page { size: A4 landscape; margin: 8mm 6mm; } body { font-family: Calibri, sans-serif; } table { width: 100%; border-collapse: collapse; } th { background: #0284c7; color: #fff; border: 1px solid #000; padding: 5px; font-size: 10px; } td { border: 1px solid #000; padding: 4px; font-size: 9.5px; text-align: center; }</style></head><body>${document.getElementById("printableArea").innerHTML}<script>setTimeout(() => { window.print(); window.close(); }, 500);<\/script></body></html>`);
     w.document.close();
   }
 
@@ -1208,7 +1207,7 @@
       const clone = document.getElementById("printableArea").cloneNode(true);
       const html = `<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head><body>${clone.innerHTML}</body></html>`;
       await navigator.clipboard.write([new ClipboardItem({ 'text/html': new Blob([html], { type: 'text/html' }), 'text/plain': new Blob([clone.innerText], { type: 'text/plain' }) })]);
-      await showCustomAlert("✅ Berhasil Di-copy!");
+      await showCustomAlert("✅ Berhasil Di-copy (Format warna siap dipaste ke Email/Excel untuk Planner)!");
     } catch (err) { await showCustomAlert("❌ Gagal menyalin: " + err.message); }
   }
 
@@ -1276,7 +1275,7 @@
         if (!r[1] && !r[3]) continue;
         const payload = { week: r[0] ? (String(r[0]).toUpperCase().includes("WEEK") ? r[0] : `WEEK ${r[0]}`) : '', liner: String(r[1] || '').toUpperCase(), port: String(r[2] || 'SRG').toUpperCase(), feeder_vessel: String(r[3] || '').toUpperCase(), etd_port_origin: r[4] || '', etb_atb_website: r[5] || '', etd_atd_website: r[6] || '', eta_port: r[7] || '', destination: String(r[8] || '').toUpperCase(), remark: r[9] || '', update_closing: r[10] || '', voyage: String(r[11] || '').toUpperCase() };
         const { data: ins } = await supabaseClient.from('control_schedule').insert([payload]).select();
-        if (ins?.[0]) await catatLogChangesServer(ins[0].id, "Aditya (Import)", "BARU", "ALL", "-", payload.voyage ? `${payload.feeder_vessel} ${payload.voyage}` : payload.feeder_vessel);
+        if (ins?.[0]) await catatLogChangesServer(ins[0].id, "Aditya (Admin EXIM)", "BARU", "ALL", "-", payload.voyage ? `${payload.feeder_vessel} ${payload.voyage}` : payload.feeder_vessel);
         added++;
       }
       statusDiv.style.color = "#4ade80"; statusDiv.innerText = `✅ Import Selesai! ${added} baris data ditambahkan.`;
@@ -1287,13 +1286,13 @@
   function downloadCSVExport() {
     let csv = "NO,WEEK,LINER,PORT,FEEDER VESSEL,ETD ORIGINAL,CLOSING CY,UPDATE CLOSING CY,ETB/ATB WEBSITE,ETD/ATD WEBSITE,ETA PORT,DESTINATION,REMARK\n";
     currentFilteredSchedule.forEach((item, i) => { csv += `"${i+1}","${item.week}","${item.liner}","${item.port}","${item.feeder_vessel}","${item.etd_original}","${item.closing_cy}","${item.update_closing_cy}","${item.etb_website}","${item.etd_website}","${item.eta_port}","${item.destination}","${item.remark}"\n`; });
-    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); a.download = "ControlSchedule.csv"; a.click();
+    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); a.download = "ControlSchedule_Planner.csv"; a.click();
   }
 
   function downloadExcelExport() {
     let html = `<table border="1"><tr><th>NO</th><th>WEEK</th><th>LINER</th><th>PORT</th><th>FEEDER VESSEL</th><th>ETD ORIGINAL</th><th>CLOSING CY</th><th>UPDATE CLOSING CY</th><th>ETB/ATB WEBSITE</th><th>ETD/ATD WEBSITE</th><th>ETA PORT</th><th>DESTINATION</th><th>REMARK</th></tr>`;
     currentFilteredSchedule.forEach((item, i) => { html += `<tr><td>${i+1}</td><td>${item.week}</td><td>${item.liner}</td><td>${item.port}</td><td>${item.feeder_vessel}</td><td>${item.etd_original}</td><td>${item.closing_cy}</td><td>${item.update_closing_cy}</td><td>${item.etb_website}</td><td>${item.etd_website}</td><td>${item.eta_port}</td><td>${item.destination}</td><td>${item.remark}</td></tr>`; });
-    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([html], { type: 'application/vnd.ms-excel' })); a.download = "ControlSchedule.xls"; a.click();
+    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([html], { type: 'application/vnd.ms-excel' })); a.download = "ControlSchedule_Planner.xls"; a.click();
   }
 
   document.querySelectorAll('.col-toggle').forEach(chk => {
