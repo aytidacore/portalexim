@@ -176,31 +176,38 @@
   }
   .modal-card-schedule.preview-large { max-width: 98vw !important; width: 1450px !important; }
 
-  /* --- DESAIN MODERN RESPONSIVE FORM GRID (DESKTOP & MOBILE) --- */
+  /* --- PERBAIKAN UKURAN KONTROL & RAPIKAN LAYOUT GRID --- */
   .form-grid-schedule { display: flex; flex-direction: column; gap: 12px; }
 
-  /* BARIS 1: WEEK, LINER, PORT */
+  /* BARIS 1: WEEK (80px), LINER (180px - FIXED), PORT (100px) */
   .row-week-liner-port {
-    display: grid;
-    grid-template-columns: 100px 1fr 120px;
+    display: flex;
     gap: 10px;
+    align-items: flex-start;
   }
+  .row-week-liner-port .col-week { width: 90px; flex-shrink: 0; }
+  .row-week-liner-port .col-liner { width: 180px; flex-shrink: 0; }
+  .row-week-liner-port .col-port { width: 100px; flex-shrink: 0; }
 
-  /* BARIS 2: FEEDER VESSEL, VOYAGE, ETD PORT ORIGINAL */
+  /* BARIS 2: FEEDER VESSEL (220px), VOYAGE (130px), ETD ORIG (140px) */
   .row-vessel-voyage-etd {
-    display: grid;
-    grid-template-columns: 2fr 1.2fr 1.5fr;
+    display: flex;
     gap: 10px;
+    align-items: flex-start;
   }
+  .row-vessel-voyage-etd .col-vessel { width: 220px; flex-shrink: 0; }
+  .row-vessel-voyage-etd .col-voyage { width: 130px; flex-shrink: 0; }
+  .row-vessel-voyage-etd .col-etdorig { width: 140px; flex-shrink: 0; }
 
-  /* BARIS 3: UPDATE CLOSING CY, ETB/ATB, ETD/ATD */
+  /* BARIS 3: UPDATE CLOSING CY (170px), ETB/ATB (170px), ETD/ATD (170px) */
   .row-web-updates {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    display: flex;
     gap: 10px;
+    align-items: flex-start;
   }
+  .row-web-updates .col-web-item { width: 170px; flex-shrink: 0; }
 
-  .form-group-schedule { display: flex; flex-direction: column; width: 100%; }
+  .form-group-schedule { display: flex; flex-direction: column; }
   .form-group-schedule label { font-size: 11px; color: #94a3b8; margin-bottom: 4px; font-weight: 600; white-space: nowrap; }
   .form-group-schedule input, .form-group-schedule select, .form-group-schedule textarea {
     padding: 8px 10px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #fff; font-size: 11.5px; outline: none; transition: 0.2s; box-sizing: border-box; width: 100%;
@@ -212,12 +219,11 @@
     background: #1e293b !important; color: #64748b !important; cursor: not-allowed; border-color: #334155;
   }
 
-  /* DESTINATION SECTION GRID */
+  /* DESTINATION SECTION GRID (DIRESIZER LEBARNYA) */
   .dest-section-box { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 12px; margin-top: 4px; }
   
   .dest-row-item {
-    display: grid;
-    grid-template-columns: 200px 150px 1fr 50px 40px;
+    display: flex;
     gap: 10px;
     align-items: center;
     margin-bottom: 8px;
@@ -226,34 +232,43 @@
     border-radius: 6px;
     border: 1px solid #334155;
   }
+  .dest-row-item .col-dest-val { width: 180px; flex-shrink: 0; }
+  .dest-row-item .col-eta-val { width: 130px; flex-shrink: 0; }
+  .dest-row-item .col-remark-val { width: 180px; flex-shrink: 0; } /* REMARK TIDAK MELEBAR LAGI */
 
   .chk-sync-remark { cursor: pointer; accent-color: #0284c7; width: 16px; height: 16px; margin-top: 2px; }
 
-  /* MEDIA QUERIES UNTUK TAMPILAN MOBILE / TAMPILAN LAYAR KECIL (HP) */
+  /* MEDIA QUERIES UNTUK TAMPILAN MOBILE / HP */
   @media (max-width: 768px) {
     .modal-card-schedule { padding: 12px; }
     
     .row-week-liner-port,
     .row-vessel-voyage-etd,
     .row-web-updates {
-      grid-template-columns: 1fr !important;
+      flex-direction: column;
       gap: 8px;
+    }
+
+    .row-week-liner-port .col-week,
+    .row-week-liner-port .col-liner,
+    .row-week-liner-port .col-port,
+    .row-vessel-voyage-etd .col-vessel,
+    .row-vessel-voyage-etd .col-voyage,
+    .row-vessel-voyage-etd .col-etdorig,
+    .row-web-updates .col-web-item {
+      width: 100% !important;
     }
 
     .dest-row-item {
-      grid-template-columns: 1fr !important;
+      flex-direction: column;
+      align-items: stretch;
       gap: 8px;
     }
 
-    .dest-row-item > div {
-      width: 100%;
-    }
-
-    .dest-row-item-actions {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 4px;
+    .dest-row-item .col-dest-val,
+    .dest-row-item .col-eta-val,
+    .dest-row-item .col-remark-val {
+      width: 100% !important;
     }
   }
 
@@ -502,14 +517,14 @@
 
     <form id="form-schedule-modal" autocomplete="off" onsubmit="return false;">
       <div class="form-grid-schedule">
-        <!-- BARIS 1: WEEK, LINER, PORT -->
+        <!-- BARIS 1: WEEK (90px), LINER (180px - FIXED), PORT (100px) -->
         <div class="row-week-liner-port">
-          <div class="form-group-schedule">
+          <div class="form-group-schedule col-week">
             <label>WEEK</label>
             <input type="number" id="sched-week" placeholder="Mg" autocomplete="off">
           </div>
 
-          <div class="form-group-schedule">
+          <div class="form-group-schedule col-liner">
             <label>LINER *</label>
             <select id="sched-liner" onchange="onLinerChanged()">
               <option value="">-- Pilih Liner --</option>
@@ -523,7 +538,7 @@
             </select>
           </div>
 
-          <div class="form-group-schedule">
+          <div class="form-group-schedule col-port">
             <label>PORT *</label>
             <select id="sched-port">
               <option value="SRG" selected>SRG</option>
@@ -533,19 +548,19 @@
           </div>
         </div>
 
-        <!-- BARIS 2: FEEDER VESSEL, VOYAGE, ETD PORT ORIGINAL -->
+        <!-- BARIS 2: FEEDER VESSEL (220px), VOYAGE (130px), ETD PORT ORIGINAL (140px) -->
         <div class="row-vessel-voyage-etd">
-          <div class="form-group-schedule">
+          <div class="form-group-schedule col-vessel">
             <label>FEEDER VESSEL (NAMA KAPAL) *</label>
             <input type="text" id="sched-vessel-name" placeholder="KM SEJATI / EVER BEAMY" autocomplete="off">
           </div>
 
-          <div class="form-group-schedule">
+          <div class="form-group-schedule col-voyage">
             <label>VOYAGE *</label>
             <input type="text" id="sched-voyage" placeholder="Contoh: V.102N" autocomplete="off">
           </div>
 
-          <div class="form-group-schedule">
+          <div class="form-group-schedule col-etdorig">
             <label>ETD PORT ORIGINAL</label>
             <input type="text" id="sched-etdorig" class="fp-date" placeholder="dd-mm-yyyy" autocomplete="off" onchange="autoHitungClosingCYFrontend()">
           </div>
@@ -555,17 +570,17 @@
 
         <!-- BARIS 3: UPDATE CLOSING CY, ETB/ATB WEBSITE, ETD/ATD WEBSITE -->
         <div class="row-web-updates">
-          <div class="form-group-schedule">
+          <div class="form-group-schedule col-web-item">
             <label>UPDATE CLOSING CY</label>
             <input type="text" id="sched-updclosing" class="fp-datetime" placeholder="dd-mm-yyyy hh:mm" autocomplete="off">
           </div>
 
-          <div class="form-group-schedule">
+          <div class="form-group-schedule col-web-item">
             <label>ETB/ATB WEBSITE</label>
             <input type="text" id="sched-etbweb" class="fp-datetime" placeholder="dd-mm-yyyy hh:mm" autocomplete="off">
           </div>
 
-          <div class="form-group-schedule">
+          <div class="form-group-schedule col-web-item">
             <label>ETD/ATD WEBSITE</label>
             <input type="text" id="sched-etdweb" class="fp-datetime" placeholder="dd-mm-yyyy hh:mm" autocomplete="off">
           </div>
@@ -1285,24 +1300,24 @@
     div.className = "dest-row-item";
 
     div.innerHTML = `
-      <div>
+      <div class="col-dest-val">
         <label style="font-size:9.5px; color:#94a3b8; display:block;">DESTINATION *</label>
         <select class="inp-dest-val" data-initial-val="${selectedDest}" ${isDisabled} onchange="refreshAllDestinationOptions()"></select>
       </div>
-      <div>
+      <div class="col-eta-val">
         <label style="font-size:9.5px; color:#94a3b8; display:block;">ETA PORT</label>
         <input type="text" class="inp-eta-val fp-date" value="${etaValue}" placeholder="dd-mm-yyyy" autocomplete="off">
       </div>
-      <div>
+      <div class="col-remark-val">
         <label style="font-size:9.5px; color:#94a3b8; display:block;">REMARK DESTINATION</label>
         <input type="text" class="inp-dest-remark" value="${remarkValue}" placeholder="Remark kota" autocomplete="off">
       </div>
-      <div style="text-align:center;">
+      <div style="text-align:center; width:40px;">
         <label style="font-size:9.5px; color:#38bdf8; display:block;">Sync</label>
         <input type="checkbox" class="chk-sync-remark" ${syncCheck ? 'checked' : ''} onchange="onToggleSyncRemark(this)">
       </div>
-      <div style="text-align:right;">
-        ${lockDestination ? '' : `<button type="button" onclick="this.closest('.dest-row-item').remove(); refreshAllDestinationOptions();" style="background:#ef4444; color:#fff; border:none; padding:5px 8px; border-radius:4px; font-size:10px; cursor:pointer;">🗑️</button>`}
+      <div style="text-align:right; width:35px;">
+        ${lockDestination ? '' : `<button type="button" onclick="this.closest('.dest-row-item').remove(); refreshAllDestinationOptions();" style="background:#ef4444; color:#fff; border:none; padding:5px 7px; border-radius:4px; font-size:10px; cursor:pointer;">🗑️</button>`}
       </div>
     `;
 
