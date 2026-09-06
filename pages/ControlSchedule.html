@@ -1394,32 +1394,35 @@
           } else {
             /* CEK DAN CATAT PERUBAHAN PER-SEL SECARA INDIVIDUAL (Presisi per Cell) */
             
+            // Helper untuk membersihkan prefix "ATB:", "ETD:", "ATD:" saat perbandingan string
+            const cleanPrefix = (str) => String(str || '').replace(/^(ATB:|ETD:|ATD:)\s*/i, '').trim();
+
             // 1. Cek UPDATE CLOSING CY
-            const oldUpd = String(oldData.update_closing_cy || '').trim();
-            const newUpd = String(updClosingFormatted || '').trim();
+            const oldUpd = cleanPrefix(oldData.update_closing_cy);
+            const newUpd = cleanPrefix(updClosingFormatted);
             if (oldUpd !== newUpd && newUpd !== '' && oldUpd !== '-') {
-              await catatLogChangesServer(targetRowId, "Aditya", "UPDATE", "UPDATE CLOSING CY", oldUpd, newUpd);
+              await catatLogChangesServer(targetRowId, "Aditya", "UPDATE", "UPDATE CLOSING CY", oldData.update_closing_cy, updClosingFormatted);
             }
 
-            // 2. Cek ETB/ATB WEBSITE
-            const oldEtb = String(oldData.etb_website || '').trim();
-            const newEtb = String(payload.etb_atb_website || '').trim();
+            // 2. Cek ETB/ATB WEBSITE (Dibandingkan tanpa prefix ATB:)
+            const oldEtb = cleanPrefix(oldData.etb_website);
+            const newEtb = cleanPrefix(payload.etb_atb_website);
             if (oldEtb !== newEtb && newEtb !== '' && oldEtb !== '-') {
-              await catatLogChangesServer(targetRowId, "Aditya", "UPDATE", "ETB/ATB WEBSITE", oldEtb, newEtb);
+              await catatLogChangesServer(targetRowId, "Aditya", "UPDATE", "ETB/ATB WEBSITE", oldData.etb_website, payload.etb_atb_website);
             }
 
-            // 3. Cek ETD/ATD WEBSITE
-            const oldEtd = String(oldData.etd_website || '').trim();
-            const newEtd = String(payload.etd_atd_website || '').trim();
+            // 3. Cek ETD/ATD WEBSITE (Dibandingkan tanpa prefix ETD/ATD:)
+            const oldEtd = cleanPrefix(oldData.etd_website);
+            const newEtd = cleanPrefix(payload.etd_atd_website);
             if (oldEtd !== newEtd && newEtd !== '' && oldEtd !== '-') {
-              await catatLogChangesServer(targetRowId, "Aditya", "UPDATE", "ETD/ATD WEBSITE", oldEtd, newEtd);
+              await catatLogChangesServer(targetRowId, "Aditya", "UPDATE", "ETD/ATD WEBSITE", oldData.etd_website, payload.etd_atd_website);
             }
 
-            // 4. Cek ETA PORT (Isolasi khusus baris/kota destinasi ini saja)
-            const oldEta = String(oldData.eta_port || '').trim();
-            const newEta = String(etaFormatted || '').trim();
+            // 4. Cek ETA PORT
+            const oldEta = cleanPrefix(oldData.eta_port);
+            const newEta = cleanPrefix(etaFormatted);
             if (oldEta !== newEta && newEta !== '' && oldEta !== '-') {
-              await catatLogChangesServer(targetRowId, "Aditya", "UPDATE", "ETA PORT", oldEta, newEta);
+              await catatLogChangesServer(targetRowId, "Aditya", "UPDATE", "ETA PORT", oldData.eta_port, etaFormatted);
             }
           }
         }
