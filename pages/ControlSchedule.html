@@ -237,26 +237,6 @@
   </div>
 </div>
 
-<div id="tpks-source-data" style="display:none;"></div>
-
-<!-- MODAL PASTE HTML TPKS PELINDO -->
-<div class="modal-overlay" id="modalPasteTpks">
-  <div class="modal-card-schedule" style="max-width: 650px;">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-      <h3 style="color:#38bdf8; margin:0; font-size:14px;">📋 Update Jadwal TPKS Pelindo</h3>
-      <button type="button" onclick="tutupModalPasteTpks()" style="background:none; border:none; color:#ef4444; font-size:18px; cursor:pointer;">✖</button>
-    </div>
-    <p style="font-size:11px; color:#cbd5e1; line-height:1.4; margin-top:0;">
-      Buka <a href="https://ibstpks.pelindo.co.id/webaccess/" target="_blank" style="color:#38bdf8; font-weight:bold;">ibstpks.pelindo.co.id/webaccess/</a> di tab baru, tekan <b>Ctrl+U</b>, salin seluruh kode halamannya, lalu <i>paste</i> di bawah ini untuk memperbarui jadwal laporan ke planner:
-    </p>
-    <textarea id="textareaTpksHtml" rows="10" placeholder="Paste kode HTML mentah dari halaman Pelindo TPKS di sini..." style="width:100%; background:#0f172a; border:1px solid #334155; border-radius:6px; color:#fff; font-size:11px; padding:8px; box-sizing:border-box; outline:none; resize:vertical;"></textarea>
-    <div style="display:flex; gap:8px; margin-top:12px;">
-      <button type="button" class="btn-action" onclick="eksekusiSyncDanTutupModal()" style="flex:1; background:#16a34a; padding:8px; font-weight:700;">⚡ Sinkronisasi & Perbarui Jadwal</button>
-      <button type="button" class="btn-action" onclick="tutupModalPasteTpks()" style="background:#475569; padding:8px;">Batal</button>
-    </div>
-  </div>
-</div>
-
 <!-- MODAL IMPORT -->
 <div class="modal-overlay" id="modalImportSchedule">
   <div class="modal-card-schedule" style="max-width: 520px;">
@@ -491,6 +471,9 @@
   let isEditMode = false, currentPage = 1, pageSize = 20;
 
   let masterTermMap = {};
+
+  // URL WEB APP APPS SCRIPT TERHUBUNG
+  const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzT53uhZ7XSKrsJNpmHMseiPYhbdlCz9AwMvI62Urg8mFQ8RUVAhr1Y5X2S5IkBtX4t/exec";
 
   const getCurrentWeekNumber = () => {
     const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate() + 4 - (d.getDay() || 7));
@@ -991,165 +974,51 @@
 
   function tutupModalHistori() { document.getElementById("modalHistoriLog").style.display = "none"; }
 
-  /* --- FUNGSI PARSER KETAT & TERISOLASI UNTUK WEB PELINDO IBSTPKS --- */
+  /* --- FUNGSI UPDATE TPKS VIA APPS SCRIPT WEB ENDPOINT --- */
   window.syncDataTPKS = async function(event) {
     if (event) { event.preventDefault(); event.stopPropagation(); }
-    document.getElementById("textareaTpksHtml").value = "";
-    document.getElementById("modalPasteTpks").style.display = "flex";
-  };
 
-  window.tutupModalPasteTpks = function() {
-    document.getElementById("modalPasteTpks").style.display = "none";
-  };
-
-  window.eksekusiSyncDanTutupModal = async function() {
-    const htmlVal = document.getElementById("textareaTpksHtml").value.trim();
-    if (!htmlVal) {
-      await showCustomAlert("⚠️ Kolom HTML masih kosong! Silakan paste kode HTML dari halaman Pelindo TPKS terlebih dahulu.");
+    if (!GAS_WEB_APP_URL || GAS_WEB_APP_URL.includes("URL_WEB_APP_GOOGLE_APPS_SCRIPT")) {
+      await showCustomAlert("⚠️ URL Apps Script belum dipasang! Masukkan Web App URL pada variabel GAS_WEB_APP_URL di dalam file HTML ini.");
       return;
     }
 
-    tutupModalPasteTpks();
+    const confirmRun = await showCustomConfirm("⚡ Apakah Anda ingin mengeksekusi sinkronisasi data jadwal TPKS Pelindo secara manual sekarang?");
+    if (!confirmRun) return;
+
+    // Loading overlay
+    const overlay = document.createElement("div");
+    overlay.className = "nexportal-dialog-overlay";
+    overlay.id = "tpksLoadingDialog";
+    overlay.innerHTML = `
+      <div class="nexportal-dialog-card" style="text-align:center;">
+        <h4 class="nexportal-dialog-header">⚡ Mengambil Data Pelindo TPKS...</h4>
+        <div class="nexportal-dialog-body" style="padding:15px 0;">
+          ⏳ Server sedang mengambil data terbaru dari Web Pelindo & memperbarui Supabase...
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
 
     try {
-      if (typeof supabaseClient === 'undefined' || !supabaseClient) { 
-        await showCustomAlert("❌ Error: Supabase belum siap."); 
-        return; 
-      }
+      const res = await fetch(GAS_WEB_APP_URL);
+      const result = await res.json();
 
-      // 1. Ambil data kapal PORT 'SRG' dari Supabase
-      const { data: srgRows, error: fetchErr } = await supabaseClient.from('control_schedule').select('*').eq('port', 'SRG');
-      if (fetchErr || !srgRows || !srgRows.length) { 
-        await showCustomAlert("ℹ️ Tidak ditemukan baris kapal PORT 'SRG' di database Supabase."); 
-        return; 
-      }
+      document.getElementById("tpksLoadingDialog")?.remove();
 
-      // 2. Parse HTML
-      const doc = new DOMParser().parseFromString(htmlVal, "text/html");
-      let parsedTpksVessels = [];
-
-      const cleanDateStr = (str) => str ? str.trim().replace(/\//g, '-') : '';
-
-      // 3. Ambil setiap elemen tebal yang menjadi Judul Kapal pada Pelindo TPKS
-      const vesselTitleNodes = Array.from(doc.querySelectorAll("b, strong, .vessel-name"));
-
-      vesselTitleNodes.forEach(node => {
-        let rawTitle = node.innerText ? node.innerText.trim() : '';
-        if (!rawTitle || rawTitle.length < 3 || /CONFIRMED|ALONGSIDE|OPEN STACK|SCHEDULE|HISTORY/i.test(rawTitle)) return;
-
-        // Misal: "SITC DECHENG (STDC060)" -> "SITC DECHENG"
-        let vesselNameClean = rawTitle.replace(/\s*\([^)]*\)/g, '').trim().toUpperCase();
-
-        // Cari blok terdekat yang membungkus hanya data kapal tersebut
-        let containerBlock = node.closest("td, th, .card, .panel, .box, article, section, div") || node.parentElement;
-        if (!containerBlock) return;
-
-        let blockText = containerBlock.innerText || '';
-
-        // Pastikan blok ini mengandung informasi tanggal
-        if (!/ETB|ETD|Closing|ATB|ATD/i.test(blockText)) return;
-
-        let vItem = {
-          name: vesselNameClean,
-          voyage: '',
-          etb: '', atb: '', etd: '', atd: '', closing: ''
-        };
-
-        // RegEx Tanggal
-        let atbMatch = blockText.match(/ATB\s*:\s*(\d{2}[\/-]\d{2}[\/-]\d{4}(?:\s+\d{2}:\d{2})?)/i);
-        let etbMatch = blockText.match(/ETB\s*:\s*(\d{2}[\/-]\d{2}[\/-]\d{4}(?:\s+\d{2}:\d{2})?)/i);
-        let atdMatch = blockText.match(/ATD\s*:\s*(\d{2}[\/-]\d{2}[\/-]\d{4}(?:\s+\d{2}:\d{2})?)/i);
-        let etdMatch = blockText.match(/ETD\s*:\s*(\d{2}[\/-]\d{2}[\/-]\d{4}(?:\s+\d{2}:\d{2})?)/i);
-        let closingMatch = blockText.match(/Closing\s*Time\s*:\s*(\d{2}[\/-]\d{2}[\/-]\d{4}(?:\s+\d{2}:\d{2})?)/i);
-
-        if (atbMatch) vItem.atb = cleanDateStr(atbMatch[1]);
-        if (etbMatch) vItem.etb = cleanDateStr(etbMatch[1]);
-        if (atdMatch) vItem.atd = cleanDateStr(atdMatch[1]);
-        if (etdMatch) vItem.etd = cleanDateStr(etdMatch[1]);
-        if (closingMatch) vItem.closing = cleanDateStr(closingMatch[1]);
-
-        // Ekstrak voyage
-        let lines = blockText.split("\n").map(l => l.trim()).filter(Boolean);
-        lines.forEach(l => {
-          if ((l.includes("/") || /[0-9]+[A-Z]/i.test(l)) && !/ETB|ETD|ATB|ATD|Closing|Open|Booking|Actual/i.test(l) && l.length < 25) {
-            vItem.voyage = l.replace(/\s+/g, '').toUpperCase();
-          }
-        });
-
-        if (vItem.name && !parsedTpksVessels.some(x => x.name === vItem.name && x.voyage === vItem.voyage)) {
-          parsedTpksVessels.push(vItem);
+      if (result.success) {
+        if (result.updatedCount > 0) {
+          await showCustomAlert(`⚡ SINKRONISASI PELINDO BERHASIL!\n\nBerikut ${result.updatedCount} Kapal yang berhasil diperbarui datanya di Supabase:\n\n${result.updatedVessels.map((v, i) => `${i + 1}. ${v}`).join("\n")}`);
+        } else {
+          await showCustomAlert("⚡ Status Web Pelindo TPKS Semarang sudah sinkron (Tidak ada perubahan jadwal terbaru pada kapal di Supabase).");
         }
-      });
-
-      if (!parsedTpksVessels.length) {
-        await showCustomAlert("⚠️ Parser tidak menemukan data kapal. Pastikan menyalin seluruh kode HTML dari ibstpks.pelindo.co.id/webaccess/ (tekan Ctrl+U).");
-        return;
+        muatDataSchedule();
+      } else {
+        await showCustomAlert("❌ Gagal Sinkronisasi: " + result.message);
       }
 
-      // 4. Pencocokan dengan Supabase
-      let updatedVesselsList = [];
-
-      for (let row of srgRows) {
-        let fullDbVessel = String(row.feeder_vessel || '').trim().toUpperCase(); // Misal: "SITC DECHENG 2619N"
-        let dbVoyageOnly = String(row.voyage || '').trim().toUpperCase();
-
-        let matched = parsedTpksVessels.find(v => {
-          let isNameMatch = fullDbVessel.includes(v.name) || v.name.includes(fullDbVessel.split(" ")[0]);
-
-          let isVoyageMatch = true;
-          let dbVoyClean = dbVoyageOnly.replace(/[^A-Z0-9]/gi, '');
-          let tpksVoyClean = v.voyage.replace(/[^A-Z0-9]/gi, '');
-
-          if (dbVoyClean && tpksVoyClean) {
-            isVoyageMatch = tpksVoyClean.includes(dbVoyClean) || dbVoyClean.includes(tpksVoyClean);
-          } else {
-            let nums = tpksVoyClean.match(/\d+/g);
-            if (nums) isVoyageMatch = nums.some(n => fullDbVessel.includes(n));
-          }
-
-          return isNameMatch && isVoyageMatch;
-        });
-
-        if (matched) {
-          let isMod = false, updatePayload = {};
-
-          if (matched.closing && row.update_closing !== matched.closing) {
-            updatePayload.update_closing = matched.closing; 
-            isMod = true;
-            await catatLogChangesServer(row.id, "system Pelindo", "UPDATE", "UPDATE CLOSING CY", row.update_closing, matched.closing);
-          }
-
-          let newEtbAtb = matched.atb ? `ATB: ${matched.atb}` : (matched.etb ? `ETB: ${matched.etb}` : '');
-          if (newEtbAtb && row.etb_atb_website !== newEtbAtb) {
-            updatePayload.etb_atb_website = newEtbAtb; 
-            isMod = true;
-            await catatLogChangesServer(row.id, "system Pelindo", "UPDATE", "ETB/ATB WEBSITE", row.etb_atb_website, newEtbAtb);
-          }
-
-          let newEtdAtd = matched.atd ? `ATD: ${matched.atd}` : (matched.etd ? `ETD: ${matched.etd}` : '');
-          if (newEtdAtd && row.etd_atd_website !== newEtdAtd) {
-            updatePayload.etd_atd_website = newEtdAtd; 
-            isMod = true;
-            await catatLogChangesServer(row.id, "system Pelindo", "UPDATE", "ETD/ATD WEBSITE", row.etd_atd_website, newEtdAtd);
-          }
-
-          if (isMod) {
-            await supabaseClient.from('control_schedule').update(updatePayload).eq('id', row.id);
-            if (!updatedVesselsList.includes(fullDbVessel)) updatedVesselsList.push(fullDbVessel);
-          }
-        }
-      }
-
-      if (updatedVesselsList.length > 0) {
-        await showCustomAlert(`⚡ SINKRONISASI PELINDO BERHASIL!\n\nBerikut ${updatedVesselsList.length} Kapal yang berhasil diperbarui datanya di Supabase:\n\n${updatedVesselsList.map((v, i) => `${i + 1}. ${v}`).join("\n")}`);
-      } else { 
-        await showCustomAlert("⚡ Status Web Pelindo TPKS Semarang sudah sinkron dengan database Supabase (Tidak ada perubahan jadwal baru)."); 
-      }
-
-      muatDataSchedule();
-
-    } catch(err) {
-      await showCustomAlert("❌ Error proses sinkronisasi: " + err.message);
+    } catch (err) {
+      document.getElementById("tpksLoadingDialog")?.remove();
+      await showCustomAlert("❌ Error saat memanggil server Apps Script: " + err.message);
     }
   };
 
