@@ -308,6 +308,9 @@
   </div>
 </div>
 
+<!-- CONTAINER DATA TPKS SEMARANG (FOR SCRAPING & SYNC) -->
+<div id="tpks-source-data" style="display:none;"></div>
+
 <!-- MODAL IMPORT -->
 <div class="modal-overlay" id="modalImportSchedule">
   <div class="modal-card-schedule" style="max-width: 520px;">
@@ -571,7 +574,7 @@
     return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
   }
 
-  /* --- FLATPICKR SYNC REALTIME SAAT mengetik manual --- */
+  /* --- FLATPICKR SYNC REALTIME SAAT MENGETIK MANUAL --- */
   function initFlatpickrInputs() {
     const syncCalendarOnInput = function(selectedDates, dateStr, instance) {
       const val = instance.input.value.trim();
@@ -1367,38 +1370,152 @@
 
   function tutupModalHistori() { document.getElementById("modalHistoriLog").style.display = "none"; }
 
-  window.syncDataTPKS = async function(event) {
+  /* --- FUNGSI UTAMA SINKRONISASI WEB TPKS SEMARANG (PORT SRG) --- */
+  window.syncDataTPKS = async function(event, isAutoCron = false) {
     if (event) { event.preventDefault(); event.stopPropagation(); }
-    if (!await showCustomConfirm("⚡ Jalankan sinkronisasi otomatis status kapal TPKS (Port SRG)?")) return false;
+    
+    if (!isAutoCron) {
+      if (!await showCustomConfirm("⚡ Jalankan sinkronisasi otomatis status kapal TPKS (Port SRG)?")) return false;
+    }
 
     try {
-      if (typeof supabaseClient === 'undefined' || !supabaseClient) { await showCustomAlert("❌ Error: Koneksi database Supabase belum siap."); return false; }
+      if (typeof supabaseClient === 'undefined' || !supabaseClient) { 
+        if(!isAutoCron) await showCustomAlert("❌ Error: Koneksi database Supabase belum siap."); 
+        return false; 
+      }
+
+      // 1. Ambil data kapal aplikasi khusus Port SRG
       const { data: srgRows, error: fetchErr } = await supabaseClient.from('control_schedule').select('*').eq('port', 'SRG');
-      if (fetchErr || !srgRows || srgRows.length === 0) { await showCustomAlert("ℹ️ Tidak ditemukan baris kapal PORT 'SRG' untuk di-sync."); return false; }
+      if (fetchErr || !srgRows || srgRows.length === 0) { 
+        if(!isAutoCron) await showCustomAlert("ℹ️ Tidak ditemukan baris kapal PORT 'SRG' di database aplikasi."); 
+        return false; 
+      }
 
-      let updatedVessels = [];
-      const now = new Date();
-      const dateStr = `${String(now.getDate()).padStart(2,'0')}-${String(now.getMonth()+1).padStart(2,'0')}-${now.getFullYear()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+      // 2. Parser HTML Web TPKS Semarang
+      const tpksRawHtml = document.getElementById("tpks-source-data") ? document.getElementById("tpks-source-data").innerHTML : (window.tpksHtmlData || '');
+      let parsedTpksVessels = [];
 
+      if (tpksRawHtml) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(tpksRawHtml, "text/html");
+        const vesselBlocks = doc.querySelectorAll(".ves_along_sched");
+        
+        let currentVessel = null;
+        vesselBlocks.forEach(block => {
+          const boldTxt = block.querySelector("b");
+          const rawText = block.innerText.trim();
+
+          // Deteksi Nama Kapal
+          if (boldTxt && !rawText.includes(":") && !rawText.includes("/")) {
+            if (currentVessel && currentVessel.name) parsedTpksVessels.push(currentVessel);
+            
+            // Extract nama kapal murni tanpa ID dalam kurung
+            let vName = boldTxt.innerText.replace(/\s*\([A-Z0-9]+\)\s*/gi, '').trim().toUpperCase();
+            currentVessel = { name: vName, voyage: '', etb: '', atb: '', etd: '', atd: '', closing: '' };
+          } 
+          else if (currentVessel) {
+            // Extract Voyage (Mengambil Voyage Out / bagian kanan dari '/')
+            if (rawText.includes("/")) {
+              const voyParts = rawText.split("/");
+              if (voyParts.length === 2) {
+                currentVessel.voyage = voyParts[1].trim().toUpperCase();
+              }
+            } 
+            // Extract ATB / ETB / ATD / ETD / Closing Time
+            else if (rawText.startsWith("ATB :")) currentVessel.atb = rawText.replace("ATB :", "").trim();
+            else if (rawText.startsWith("ETB :")) currentVessel.etb = rawText.replace("ETB :", "").trim();
+            else if (rawText.startsWith("ATD :")) currentVessel.atd = rawText.replace("ATD :", "").trim();
+            else if (rawText.startsWith("ETD :")) currentVessel.etd = rawText.replace("ETD :", "").trim();
+            else if (rawText.startsWith("Closing Time")) {
+              currentVessel.closing = rawText.replace(/Closing Time\s*:\s*/gi, "").trim();
+            }
+          }
+        });
+        if (currentVessel && currentVessel.name) parsedTpksVessels.push(currentVessel);
+      }
+
+      let updatedVesselsList = [];
+
+      // 3. Bandingkan & Sync ke Database Supabase
       for (let row of srgRows) {
-        let isModified = false; let updatePayload = {};
-        if (!row.update_closing || row.update_closing === '-') { updatePayload.update_closing = dateStr; isModified = true; await catatLogChangesServer(row.id, "TPKS BOT", "SYNC TPKS", "UPDATE CLOSING CY", row.update_closing, dateStr); }
-        if (!row.etb_atb_website || row.etb_atb_website === '-') { updatePayload.etb_atb_website = `ATB: ${dateStr}`; isModified = true; await catatLogChangesServer(row.id, "TPKS BOT", "SYNC TPKS", "ETB/ATB WEBSITE", row.etb_atb_website, `ATB: ${dateStr}`); }
-        if (!row.etd_atd_website || row.etd_atd_website === '-') { updatePayload.etd_atd_website = `ETD: ${dateStr}`; isModified = true; await catatLogChangesServer(row.id, "TPKS BOT", "SYNC TPKS", "ETD/ATD WEBSITE", row.etd_atd_website, `ETD: ${dateStr}`); }
+        const rowVessel = String(row.feeder_vessel || '').trim().toUpperCase();
+        const rowVoyage = String(row.voyage || '').trim().toUpperCase();
 
-        if (isModified) {
-          await supabaseClient.from('control_schedule').update(updatePayload).eq('id', row.id);
-          const vDisplay = row.voyage ? `${row.feeder_vessel} ${row.voyage}` : row.feeder_vessel;
-          if (!updatedVessels.includes(vDisplay)) updatedVessels.push(vDisplay);
+        // Cari pencocokan berdasarkan Nama Kapal & Voyage
+        let matchedTpks = parsedTpksVessels.find(v => 
+          v.name === rowVessel && (v.voyage === rowVoyage || rowVoyage.includes(v.voyage) || v.voyage.includes(rowVoyage))
+        );
+
+        // Jika tidak ketemu voyage persis, fallback ke pencocokan nama kapal
+        if (!matchedTpks) {
+          matchedTpks = parsedTpksVessels.find(v => v.name === rowVessel);
+        }
+
+        if (matchedTpks) {
+          let isModified = false;
+          let updatePayload = {};
+
+          // Sync Update Closing CY ("Closing Time")
+          if (matchedTpks.closing) {
+            const newClosing = matchedTpks.closing;
+            if (row.update_closing !== newClosing) {
+              updatePayload.update_closing = newClosing;
+              isModified = true;
+              await catatLogChangesServer(row.id, "system TPKS", "UPDATE", "UPDATE CLOSING CY", row.update_closing, newClosing);
+            }
+          }
+
+          // Sync ETB/ATB WEBSITE
+          let newEtbAtb = matchedTpks.atb ? `ATB: ${matchedTpks.atb}` : (matchedTpks.etb ? `ETB: ${matchedTpks.etb}` : '');
+          if (newEtbAtb && row.etb_atb_website !== newEtbAtb) {
+            updatePayload.etb_atb_website = newEtbAtb;
+            isModified = true;
+            await catatLogChangesServer(row.id, "system TPKS", "UPDATE", "ETB/ATB WEBSITE", row.etb_atb_website, newEtbAtb);
+          }
+
+          // Sync ETD/ATD WEBSITE
+          let newEtdAtd = matchedTpks.atd ? `ATD: ${matchedTpks.atd}` : (matchedTpks.etd ? `ETD: ${matchedTpks.etd}` : '');
+          if (newEtdAtd && row.etd_atd_website !== newEtdAtd) {
+            updatePayload.etd_atd_website = newEtdAtd;
+            isModified = true;
+            await catatLogChangesServer(row.id, "system TPKS", "UPDATE", "ETD/ATD WEBSITE", row.etd_atd_website, newEtdAtd);
+          }
+
+          // Eksekusi Update jika ada perubahan data
+          if (isModified) {
+            await supabaseClient.from('control_schedule').update(updatePayload).eq('id', row.id);
+            const vDisplay = row.voyage ? `${row.feeder_vessel} ${row.voyage}` : row.feeder_vessel;
+            if (!updatedVesselsList.includes(vDisplay)) updatedVesselsList.push(vDisplay);
+          }
         }
       }
 
-      if (updatedVessels.length > 0) {
-        await showCustomAlert(`⚡ SINKRONISASI TPKS BERHASIL!\n\nBerikut ${updatedVessels.length} Kapal yang diperbarui:\n\n${updatedVessels.map((v, i) => `${i + 1}. ${v}`).join("\n")}`);
-      } else { await showCustomAlert("⚡ Status Web TPKS sudah yang terbaru."); }
+      // 4. Notifikasi Hasil Sync
+      if (updatedVesselsList.length > 0) {
+        if(!isAutoCron) {
+          await showCustomAlert(`⚡ SINKRONISASI TPKS BERHASIL!\n\nBerikut ${updatedVesselsList.length} Kapal yang diperbarui datanya dari Web TPKS:\n\n${updatedVesselsList.map((v, i) => `${i + 1}. ${v}`).join("\n")}`);
+        } else {
+          console.log("⚡ Auto Sync 06:00 AM TPKS Selesai. Kapal direvisi:", updatedVesselsList);
+        }
+      } else {
+        if(!isAutoCron) await showCustomAlert("⚡ Status Web TPKS Semarang sudah sinkron (Tidak ada perubahan jadwal).");
+      }
+
       muatDataSchedule();
-    } catch(err) { await showCustomAlert("❌ Error sync TPKS: " + err.message); }
+
+    } catch(err) { 
+      if(!isAutoCron) await showCustomAlert("❌ Error sync TPKS: " + err.message); 
+    }
   };
+
+  /* --- JADWAL OTOMATIS RUN SETIAP JAM 06:00 AM --- */
+  setInterval(() => {
+    const now = new Date();
+    if (now.getHours() === 6 && now.getMinutes() === 0 && now.getSeconds() < 5) {
+      console.log("⏰ Menjalankan Auto-Sync TPKS Otomatis Jam 06:00 AM...");
+      window.syncDataTPKS(null, true);
+    }
+  }, 5000);
 
   function bukaModalExportPreview() { document.getElementById("modalExportPreview").style.display = "flex"; document.getElementById("preview-total-count").innerText = currentFilteredSchedule.length; renderExportPreviewContent(); }
   function tutupModalExportPreview() { document.getElementById("modalExportPreview").style.display = "none"; }
