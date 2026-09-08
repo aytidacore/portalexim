@@ -974,7 +974,7 @@
 
   function tutupModalHistori() { document.getElementById("modalHistoriLog").style.display = "none"; }
 
-  /* --- FUNGSI UPDATE TPKS OTOMATIS 1x KLIK (FORM-DATA SAFE CORS) --- */
+  /* --- FUNGSI UPDATE TPKS OTOMATIS (SAFE CORS) --- */
   window.syncDataTPKS = async function(event) {
     if (event) { event.preventDefault(); event.stopPropagation(); }
 
@@ -990,18 +990,21 @@
       <div class="nexportal-dialog-card" style="text-align:center;">
         <h4 class="nexportal-dialog-header">⚡ Memproses Sync Pelindo...</h4>
         <div class="nexportal-dialog-body" style="padding:15px 0;">
-          ⏳ Connecting to TPKS Pelindo, membaca data, memperbarui Supabase & log changes...
+          ⏳ Menghubungkan ke Apps Script, mengambil data TPKS Pelindo & memperbarui Supabase...
         </div>
       </div>`;
     document.body.appendChild(overlay);
 
     try {
-      const formData = new FormData();
-      formData.append("action", "auto_sync");
+      const params = new URLSearchParams();
+      params.append("action", "auto_sync");
 
       const res = await fetch(GAS_WEB_APP_URL, {
         method: "POST",
-        body: formData
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: params.toString()
       });
 
       const result = await res.json();
@@ -1020,7 +1023,7 @@
 
     } catch (err) {
       document.getElementById("tpksLoadingDialog")?.remove();
-      await showCustomAlert("❌ Error memanggil Apps Script: " + err.message + "\n\nPastikan Deployment Apps Script sudah di-set ke 'Anyone'.");
+      await showCustomAlert("❌ Error memanggil Apps Script: " + err.message);
     }
   };
 
