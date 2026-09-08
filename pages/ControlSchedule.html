@@ -580,7 +580,7 @@
 
   const showCustomAlert = (msg) => new Promise(res => {
     const overlay = document.createElement("div"); overlay.className = "nexportal-dialog-overlay";
-    overlay.innerHTML = `<div class="nexportal-dialog-card"><h4 class="nexportal-dialog-header">NexPortal-EXIM says:</h4><div class="nexportal-dialog-body">${msg}</div><div class="nexportal-dialog-actions"><button class="nexportal-btn-ok" id="npAlertBtnOk">OK</button></div></div>`;
+    overlay.innerHTML = `<div class="nexportal-dialog-card"><h4 class="nexportal-dialog-header">NexPortal-EXIM says:</h4><div class="nexportal-dialog-body" style="white-space: pre-line;">${msg}</div><div class="nexportal-dialog-actions"><button class="nexportal-btn-ok" id="npAlertBtnOk">OK</button></div></div>`;
     document.body.appendChild(overlay);
     overlay.querySelector("#npAlertBtnOk").onclick = () => { overlay.remove(); res(true); };
   });
@@ -974,27 +974,23 @@
 
   function tutupModalHistori() { document.getElementById("modalHistoriLog").style.display = "none"; }
 
-  /* --- FUNGSI UPDATE TPKS VIA POST PROMPT --- */
+  /* --- FUNGSI UPDATE TPKS OTOMATIS 1x KLIK --- */
   window.syncDataTPKS = async function(event) {
     if (event) { event.preventDefault(); event.stopPropagation(); }
 
     if (!GAS_WEB_APP_URL || GAS_WEB_APP_URL.includes("PASANG_WEB_APP_URL")) {
-      await showCustomAlert("⚠️ URL Apps Script belum dipasang! Masukkan Web App URL yang berakhiran /exec pada variabel GAS_WEB_APP_URL di dalam file HTML ini.");
+      showCustomAlert("⚠️ URL Apps Script belum dipasang! Masukkan Web App URL pada variabel GAS_WEB_APP_URL.");
       return;
     }
 
-    const inputHtml = prompt("📋 Buka ibstpks.pelindo.co.id/webaccess/ di browser, tekan Ctrl+A lalu Ctrl+C (Copy), kemudian Paste (Ctrl+V) teks/HTML-nya di bawah ini:");
-    if (!inputHtml || inputHtml.trim() === "") return;
-
-    // Loading overlay
     const overlay = document.createElement("div");
     overlay.className = "nexportal-dialog-overlay";
     overlay.id = "tpksLoadingDialog";
     overlay.innerHTML = `
       <div class="nexportal-dialog-card" style="text-align:center;">
-        <h4 class="nexportal-dialog-header">⚡ Memproses Data Pelindo...</h4>
+        <h4 class="nexportal-dialog-header">⚡ Memproses Sync Pelindo...</h4>
         <div class="nexportal-dialog-body" style="padding:15px 0;">
-          ⏳ Memperbarui data ke Supabase & mencatat histori revisi...
+          ⏳ Connecting to TPKS Pelindo, membaca data, memperbarui Supabase & log changes...
         </div>
       </div>`;
     document.body.appendChild(overlay);
@@ -1003,15 +999,15 @@
       const res = await fetch(GAS_WEB_APP_URL, {
         method: "POST",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({ html: inputHtml })
+        body: JSON.stringify({ action: "auto_sync" })
       });
-      const result = await res.json();
 
+      const result = await res.json();
       document.getElementById("tpksLoadingDialog")?.remove();
 
       if (result.success) {
         if (result.updatedCount > 0) {
-          await showCustomAlert(`⚡ SINKRONISASI BERHASIL!\n\n${result.updatedCount} Kapal diperbarui:\n\n${result.updatedVessels.map((v, i) => `${i + 1}. ${v}`).join("\n")}`);
+          await showCustomAlert(`⚡ SINKRONISASI BERHASIL!\n\n${result.updatedCount} Jadwal Kapal Diperbarui ke Supabase:\n\n${result.updatedVessels.map((v, i) => `${i + 1}. ${v}`).join("\n")}`);
         } else {
           await showCustomAlert("⚡ Status Web Pelindo TPKS Semarang sudah sinkron (Tidak ada perubahan jadwal terbaru).");
         }
