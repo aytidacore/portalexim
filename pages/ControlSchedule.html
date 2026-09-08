@@ -974,7 +974,7 @@
 
   function tutupModalHistori() { document.getElementById("modalHistoriLog").style.display = "none"; }
 
-  /* --- FUNGSI UPDATE TPKS OTOMATIS (SAFE CORS) --- */
+  /* --- FUNGSI UPDATE TPKS OTOMATIS (SINKRONISASI LATAR BELAKANG VIA NO-CORS) --- */
   window.syncDataTPKS = async function(event) {
     if (event) { event.preventDefault(); event.stopPropagation(); }
 
@@ -990,36 +990,30 @@
       <div class="nexportal-dialog-card" style="text-align:center;">
         <h4 class="nexportal-dialog-header">⚡ Memproses Sync Pelindo...</h4>
         <div class="nexportal-dialog-body" style="padding:15px 0;">
-          ⏳ Menghubungkan ke Apps Script, mengambil data TPKS Pelindo & memperbarui Supabase...
+          ⏳ Memicu Apps Script membaca data TPKS & update Supabase...
         </div>
       </div>`;
     document.body.appendChild(overlay);
 
     try {
-      const params = new URLSearchParams();
-      params.append("action", "auto_sync");
-
-      const res = await fetch(GAS_WEB_APP_URL, {
+      // Mengirim POST dengan mode no-cors untuk menembus batasan browser
+      await fetch(GAS_WEB_APP_URL, {
         method: "POST",
+        mode: "no-cors",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
-        body: params.toString()
+        body: "action=auto_sync"
       });
 
-      const result = await res.json();
       document.getElementById("tpksLoadingDialog")?.remove();
 
-      if (result.success) {
-        if (result.updatedCount > 0) {
-          await showCustomAlert(`⚡ SINKRONISASI BERHASIL!\n\n${result.updatedCount} Jadwal Kapal Diperbarui ke Supabase:\n\n${result.updatedVessels.map((v, i) => `${i + 1}. ${v}`).join("\n")}`);
-        } else {
-          await showCustomAlert("⚡ Status Web Pelindo TPKS Semarang sudah sinkron (Tidak ada perubahan jadwal terbaru).");
-        }
+      await showCustomAlert("⚡ Perintah Sync telah dikirim ke Apps Script!\n\nProses sinkronisasi sedang berjalan di server Google. Tabel akan merefresh otomatis dalam 3 detik.");
+
+      // Beri jeda 3 detik agar Apps Script menyelesaikan scraping & update Supabase
+      setTimeout(() => {
         muatDataSchedule();
-      } else {
-        await showCustomAlert("❌ Gagal Sinkronisasi: " + result.message);
-      }
+      }, 3000);
 
     } catch (err) {
       document.getElementById("tpksLoadingDialog")?.remove();
