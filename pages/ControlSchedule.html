@@ -56,7 +56,6 @@
   td.rev-lvl-9 { background-color: #f3e8ff !important; color: #581c87 !important; font-weight: bold; }
   td.rev-lvl-10 { background-color: #d8b4fe !important; color: #581c87 !important; font-weight: bold; }
   td.rev-lvl-11 { background-color: #a855f7 !important; color: #ffffff !important; font-weight: bold; }
-  .text-actual-red { color: #ef4444 !important; font-weight: 700; }
 
   .col-aksi-header, .col-aksi-cell { position: sticky !important; right: 0 !important; background: #0f172a !important; z-index: 25 !important; border-left: 1px solid #253346; text-align: center; }
   .btn-aksi-tbl { background: #334155; color: #f8fafc; border: 1px solid #475569; padding: 2px 6px; border-radius: 4px; font-size: 10.5px; font-weight: 600; cursor: pointer; }
@@ -97,10 +96,11 @@
   .term-info-body li { margin-bottom: 3px; line-height: 1.4; }
   .term-info-body b { color: #38bdf8; }
 
-  .preview-paper { background: #ffffff; color: #000000; padding: 10px; border-radius: 6px; font-family: Calibri, sans-serif !important; font-size: 11px; overflow-x: auto; }
-  .preview-table { width: 100%; border-collapse: collapse !important; margin-top: 6px; border: 1px solid #000000 !important; }
-  .preview-table th { background-color: #0284c7 !important; color: #ffffff !important; border: 1px solid #000000 !important; padding: 5px 6px; text-align: center; font-size: 11px; font-weight: 700; }
-  .preview-table td { border: 1px solid #000000 !important; padding: 4px 6px; font-size: 10px; color: #000000; text-align: center; }
+  /* PREVIEW & PRINT STYLES */
+  .preview-paper { background: #ffffff; color: #000000; padding: 12px; border-radius: 6px; font-family: Calibri, 'Segoe UI', Arial, sans-serif !important; font-size: 11px; overflow-x: auto; }
+  .preview-table { width: 100%; border-collapse: collapse !important; margin-top: 6px; border: 1px solid #000000 !important; table-layout: fixed; }
+  .preview-table th { background-color: #0284c7 !important; color: #ffffff !important; border: 1px solid #000000 !important; padding: 6px 4px; text-align: center; font-size: 10px; font-weight: 700; word-wrap: break-word; }
+  .preview-table td { border: 1px solid #000000 !important; padding: 5px 4px; font-size: 9.5px; color: #000000; text-align: center; vertical-align: middle; word-wrap: break-word; overflow-wrap: break-word; }
   .btn-preview-mode { background: #334155; color: #94a3b8; border: 1px solid #475569; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; }
   .btn-preview-mode.active-mode { background: #0284c7; color: #ffffff; border-color: #38bdf8; }
 
@@ -451,9 +451,19 @@
       <table class="preview-table" id="preview-table-element" border="1">
         <thead>
           <tr>
-            <th>NO</th><th>WEEK</th><th>LINER</th><th>PORT</th><th>FEEDER VESSEL</th>
-            <th>ETD ORIGINAL</th><th>CLOSING CY</th><th>UPDATE CLOSING CY</th>
-            <th>ETB/ATB WEBSITE</th><th>ETD/ATD WEBSITE</th><th>ETA PORT</th><th>DESTINATION</th><th>REMARK</th>
+            <th style="width: 32px;">NO</th>
+            <th style="width: 60px;">WEEK</th>
+            <th style="width: 80px;">LINER</th>
+            <th style="width: 45px;">PORT</th>
+            <th style="width: 170px;">FEEDER VESSEL</th>
+            <th style="width: 85px;">ETD ORIGINAL</th>
+            <th style="width: 85px;">CLOSING CY</th>
+            <th style="width: 125px;">UPDATE CLOSING CY</th>
+            <th style="width: 135px;">ETB/ATB WEBSITE</th>
+            <th style="width: 135px;">ETD/ATD WEBSITE</th>
+            <th style="width: 85px;">ETA PORT</th>
+            <th style="width: 100px;">DESTINATION</th>
+            <th style="width: 180px;">REMARK</th>
           </tr>
         </thead>
         <tbody id="tbody-export-preview"></tbody>
@@ -714,6 +724,13 @@
       const isAtd = item.etd_website.toUpperCase().includes("ATD");
       if (isAtd || parseDateForSorting(item.etd_website !== '-' ? item.etd_website : item.etd_original) < today) tr.className = "row-past-atd";
 
+      // Pengecekan status ATB dan ATD untuk pewarnaan merah tebal
+      const isAtbStatus = item.etb_website.toUpperCase().includes("ATB");
+      const isAtdStatus = item.etd_website.toUpperCase().includes("ATD");
+      
+      const styleEtbRed = isAtbStatus ? 'color: #ef4444 !important; font-weight: 700;' : '';
+      const styleEtdRed = isAtdStatus ? 'color: #ef4444 !important; font-weight: 700;' : '';
+
       const fnDbl = `bukaModalHistori('${item.id}', ${no}, '${(item.feeder_vessel || 'Vessel').replace(/'/g, "\\'")}')`;
       tr.innerHTML = `
         <td class="col-no" ondblclick="${fnDbl}">${no}</td>
@@ -724,8 +741,8 @@
         <td class="col-etdorig" ondblclick="${fnDbl}">${item.etd_original || '-'}</td>
         <td class="col-closing" ondblclick="${fnDbl}">${item.closing_cy || '-'}</td>
         <td class="col-updclosing ${getRevColorClass(item.revUpdClosing)}" ondblclick="${fnDbl}">${item.update_closing_cy || '-'}</td>
-        <td class="col-etbweb ${getRevColorClass(item.revEtbWeb)} ${item.etb_website.toUpperCase().includes("ATB") ? "text-actual-red" : ""}" ondblclick="${fnDbl}">${item.etb_website || '-'}</td>
-        <td class="col-etdweb ${getRevColorClass(item.revEtdWeb)} ${item.etd_website.toUpperCase().includes("ATD") ? "text-actual-red" : ""}" ondblclick="${fnDbl}">${item.etd_website || '-'}</td>
+        <td class="col-etbweb ${getRevColorClass(item.revEtbWeb)}" style="${styleEtbRed}" ondblclick="${fnDbl}">${item.etb_website || '-'}</td>
+        <td class="col-etdweb ${getRevColorClass(item.revEtdWeb)}" style="${styleEtdRed}" ondblclick="${fnDbl}">${item.etd_website || '-'}</td>
         <td class="col-etaport ${getRevColorClass(item.revEtaPort)}" ondblclick="${fnDbl}">${item.eta_port || '-'}</td>
         <td class="col-dest" ondblclick="${fnDbl}" style="font-weight:600;">${item.destination || '-'}</td>
         <td class="col-remark" ondblclick="${fnDbl}">${item.remark || '-'}</td>
@@ -896,7 +913,6 @@
     } catch(e) {}
   }
 
-  /* --- FUNGSI SIMPAN SCHEDULE DENGAN KOLOM SKEMA FIX --- */
   async function simpanSchedule() {
     const groupIdsStr = document.getElementById("sched-group-ids").value;
     const weekInp = document.getElementById("sched-week").value.trim();
@@ -937,7 +953,6 @@
         const etbWebFormatted = document.getElementById("sched-etbweb").value;
         const etdWebFormatted = document.getElementById("sched-etdweb").value;
 
-        // Payload disesuaikan dengan skema asli Supabase (kolom: update_closing)
         const payload = {
           week: weekInp ? `WEEK ${weekInp}` : '', 
           liner: linerInp, 
@@ -1102,18 +1117,39 @@
   function tutupModalExportPreview() { document.getElementById("modalExportPreview").style.display = "none"; }
   function setPreviewMode(mode) { currentPreviewMode = mode; document.getElementById("btn-mode-normal").classList.toggle("active-mode", mode === 'normal'); document.getElementById("btn-mode-rapi").classList.toggle("active-mode", mode === 'rapi'); renderExportPreviewContent(); }
 
+  /* --- RENDER EXPORT PREVIEW TAMPILAN RAPI & PRESISI --- */
   function renderExportPreviewContent() {
     const tbody = document.getElementById("tbody-export-preview"); tbody.innerHTML = "";
     if (!currentFilteredSchedule.length) { tbody.innerHTML = `<tr><td colspan="13" style="text-align:center; padding:15px; color:#ef4444;">Tidak ada data untuk di-export!</td></tr>`; return; }
 
-    const bTd = "border: 1px solid #000000; padding: 4px 6px; font-size: 10px; color: #000000; text-align: center;", bTdL = "border: 1px solid #000000; padding: 4px 6px; font-size: 10px; color: #000000; text-align: left;";
+    const bTd = "border: 1px solid #000000; padding: 5px 4px; font-size: 9.5px; color: #000000; text-align: center; vertical-align: middle; word-wrap: break-word;", 
+          bTdL = "border: 1px solid #000000; padding: 5px 6px; font-size: 9.5px; color: #000000; text-align: left; vertical-align: middle; word-wrap: break-word;";
+
     if (currentPreviewMode === 'normal') {
       currentFilteredSchedule.forEach((item, i) => {
-        tbody.innerHTML += `<tr><td style="${bTd}">${i + 1}</td><td style="${bTd}"><b>${item.week || '-'}</b></td><td style="${bTd}"><b>${item.liner || '-'}</b></td><td style="${bTd}">${item.port || '-'}</td><td style="${bTdL}"><b>${item.feeder_vessel || '-'}</b></td><td style="${bTd}">${item.etd_original || '-'}</td><td style="${bTd}">${item.closing_cy || '-'}</td><td style="${bTd} ${getRevInlineStyle(item.revUpdClosing)}">${item.update_closing_cy || '-'}</td><td style="${bTd} ${getRevInlineStyle(item.revEtbWeb)}">${item.etb_website || '-'}</td><td style="${bTd} ${getRevInlineStyle(item.revEtdWeb)}">${item.etd_website || '-'}</td><td style="${bTd} ${getRevInlineStyle(item.revEtaPort)}">${item.eta_port || '-'}</td><td style="${bTd}"><b>${item.destination || '-'}</b></td><td style="${bTdL}">${item.remark || '-'}</td></tr>`;
+        const styleEtbRed = item.etb_website.toUpperCase().includes("ATB") ? "color: #ef4444 !important; font-weight: 700;" : "";
+        const styleEtdRed = item.etd_website.toUpperCase().includes("ATD") ? "color: #ef4444 !important; font-weight: 700;" : "";
+
+        tbody.innerHTML += `<tr>
+          <td style="${bTd}">${i + 1}</td>
+          <td style="${bTd}"><b>${item.week || '-'}</b></td>
+          <td style="${bTd}"><b>${item.liner || '-'}</b></td>
+          <td style="${bTd}">${item.port || '-'}</td>
+          <td style="${bTdL}"><b>${item.feeder_vessel || '-'}</b></td>
+          <td style="${bTd}">${item.etd_original || '-'}</td>
+          <td style="${bTd}">${item.closing_cy || '-'}</td>
+          <td style="${bTd} ${getRevInlineStyle(item.revUpdClosing)}">${item.update_closing_cy || '-'}</td>
+          <td style="${bTd} ${getRevInlineStyle(item.revEtbWeb)} ${styleEtbRed}">${item.etb_website || '-'}</td>
+          <td style="${bTd} ${getRevInlineStyle(item.revEtdWeb)} ${styleEtdRed}">${item.etd_website || '-'}</td>
+          <td style="${bTd} ${getRevInlineStyle(item.revEtaPort)}">${item.eta_port || '-'}</td>
+          <td style="${bTd}"><b>${item.destination || '-'}</b></td>
+          <td style="${bTdL}">${item.remark || '-'}</td>
+        </tr>`;
       });
       return;
     }
 
+    // MODE RAPI (MERGED GROUPING)
     let groups = [];
     currentFilteredSchedule.forEach(item => {
       const k = `${item.week}_${item.liner}_${item.feeder_vessel}`;
@@ -1124,19 +1160,53 @@
     groups.forEach(group => {
       group.items.forEach((item, idx) => {
         let trHtml = "<tr>";
+        const styleEtbRed = item.etb_website.toUpperCase().includes("ATB") ? "color: #ef4444 !important; font-weight: 700;" : "";
+        const styleEtdRed = item.etd_website.toUpperCase().includes("ATD") ? "color: #ef4444 !important; font-weight: 700;" : "";
+
         if (idx === 0) {
           const rSpan = `rowspan="${group.items.length}"`;
-          trHtml += `<td ${rSpan} style="${bTd}">${displayNo++}</td><td ${rSpan} style="${bTd}"><b>${item.week || '-'}</b></td><td ${rSpan} style="${bTd}"><b>${item.liner || '-'}</b></td><td ${rSpan} style="${bTd}">${item.port || '-'}</td><td ${rSpan} style="${bTdL}"><b>${item.feeder_vessel || '-'}</b></td><td ${rSpan} style="${bTd}">${item.etd_original || '-'}</td><td ${rSpan} style="${bTd}">${item.closing_cy || '-'}</td><td ${rSpan} style="${bTd} ${getRevInlineStyle(item.revUpdClosing)}">${item.update_closing_cy || '-'}</td><td ${rSpan} style="${bTd} ${getRevInlineStyle(item.revEtbWeb)}">${item.etb_website || '-'}</td><td ${rSpan} style="${bTd} ${getRevInlineStyle(item.revEtdWeb)}">${item.etd_website || '-'}</td>`;
+          trHtml += `<td ${rSpan} style="${bTd}">${displayNo++}</td>
+                     <td ${rSpan} style="${bTd}"><b>${item.week || '-'}</b></td>
+                     <td ${rSpan} style="${bTd}"><b>${item.liner || '-'}</b></td>
+                     <td ${rSpan} style="${bTd}">${item.port || '-'}</td>
+                     <td ${rSpan} style="${bTdL}"><b>${item.feeder_vessel || '-'}</b></td>
+                     <td ${rSpan} style="${bTd}">${item.etd_original || '-'}</td>
+                     <td ${rSpan} style="${bTd}">${item.closing_cy || '-'}</td>
+                     <td ${rSpan} style="${bTd} ${getRevInlineStyle(item.revUpdClosing)}">${item.update_closing_cy || '-'}</td>
+                     <td ${rSpan} style="${bTd} ${getRevInlineStyle(item.revEtbWeb)} ${styleEtbRed}">${item.etb_website || '-'}</td>
+                     <td ${rSpan} style="${bTd} ${getRevInlineStyle(item.revEtdWeb)} ${styleEtdRed}">${item.etd_website || '-'}</td>`;
         }
-        trHtml += `<td style="${bTd} ${getRevInlineStyle(item.revEtaPort)}">${item.eta_port || '-'}</td><td style="${bTd}"><b>${item.destination || '-'}</b></td><td style="${bTdL}">${item.remark || '-'}</td></tr>`;
+        trHtml += `<td style="${bTd} ${getRevInlineStyle(item.revEtaPort)}">${item.eta_port || '-'}</td>
+                   <td style="${bTd}"><b>${item.destination || '-'}</b></td>
+                   <td style="${bTdL}">${item.remark || '-'}</td>
+                   </tr>`;
         tbody.innerHTML += trHtml;
       });
     });
   }
 
+  /* --- CETAK PDF OTOMATIS LANDSCAPE & PRESISI --- */
   function cetakPDFJendelaBaru() {
-    const w = window.open('', '_blank', 'width=1250,height=850');
-    w.document.write(`<!DOCTYPE html><html><head><title>Control Schedule Export (Planner Report)</title><style>@page { size: A4 landscape; margin: 8mm 6mm; } body { font-family: Calibri, sans-serif; } table { width: 100%; border-collapse: collapse; } th { background: #0284c7; color: #fff; border: 1px solid #000; padding: 5px; font-size: 10px; } td { border: 1px solid #000; padding: 4px; font-size: 9.5px; text-align: center; }</style></head><body>${document.getElementById("printableArea").innerHTML}<script>setTimeout(() => { window.print(); window.close(); }, 500);<\/script></body></html>`);
+    const w = window.open('', '_blank', 'width=1350,height=850');
+    w.document.write(`<!DOCTYPE html>
+      <html>
+      <head>
+        <title>Control Schedule Export (Planner Report)</title>
+        <style>
+          @page { size: A4 landscape; margin: 6mm 5mm; }
+          body { font-family: Calibri, 'Segoe UI', Arial, sans-serif; margin: 0; padding: 0; background: #fff; }
+          table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+          th { background: #0284c7 !important; color: #ffffff !important; border: 1px solid #000000 !important; padding: 5px 3px; font-size: 9.5px; font-weight: bold; text-align: center; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          td { border: 1px solid #000000 !important; padding: 4px 3px; font-size: 9px; color: #000000; text-align: center; vertical-align: middle; word-wrap: break-word; overflow-wrap: break-word; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        </style>
+      </head>
+      <body>
+        ${document.getElementById("printableArea").innerHTML}
+        <script>
+          setTimeout(() => { window.print(); window.close(); }, 600);
+        <\/script>
+      </body>
+      </html>`);
     w.document.close();
   }
 
