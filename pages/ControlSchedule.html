@@ -897,51 +897,102 @@
   }
 
   async function simpanSchedule() {
-    const groupIdsStr = document.getElementById("sched-group-ids").value, weekInp = document.getElementById("sched-week").value.trim();
-    const linerInp = document.getElementById("sched-liner").value.trim().toUpperCase(), vesselInp = document.getElementById("sched-vessel-name").value.trim().toUpperCase();
-    const voyageInp = document.getElementById("sched-voyage").value.trim().toUpperCase(), alertDiv = document.getElementById("sched-alert");
+    const groupIdsStr = document.getElementById("sched-group-ids").value;
+    const weekInp = document.getElementById("sched-week").value.trim();
+    const linerInp = document.getElementById("sched-liner").value.trim().toUpperCase();
+    const vesselInp = document.getElementById("sched-vessel-name").value.trim().toUpperCase();
+    const voyageInp = document.getElementById("sched-voyage").value.trim().toUpperCase();
+    const alertDiv = document.getElementById("sched-alert");
     const destRows = document.querySelectorAll("#dest-rows-wrapper .dest-row-item");
 
-    if (!linerInp || !vesselInp || !destRows.length) { alertDiv.style.color = "#ef4444"; alertDiv.innerText = "⚠️ Harap isi Liner, Feeder Vessel, dan minimal 1 Destination!"; return; }
-    alertDiv.style.color = "#38bdf8"; alertDiv.innerText = "⏳ Menyimpan data grup kapal ke Supabase...";
+    if (!linerInp || !vesselInp || !destRows.length) { 
+      alertDiv.style.color = "#ef4444"; 
+      alertDiv.innerText = "⚠️ Harap isi Liner, Feeder Vessel, dan minimal 1 Destination!"; 
+      return; 
+    }
+    
+    alertDiv.style.color = "#38bdf8"; 
+    alertDiv.innerText = "⏳ Menyimpan data grup kapal ke Supabase...";
 
     try {
-      let existingIds = groupIdsStr ? JSON.parse(groupIdsStr) : [], oldGroupMap = {};
-      if (existingIds.length) existingIds.forEach(id => { const f = masterDataSchedule.find(m => String(m.id) === String(id)); if (f) oldGroupMap[f.destination] = f; });
+      let existingIds = groupIdsStr ? JSON.parse(groupIdsStr) : [];
+      let oldGroupMap = {};
+      
+      if (existingIds.length) {
+        existingIds.forEach(id => { 
+          const f = masterDataSchedule.find(m => String(m.id) === String(id)); 
+          if (f) oldGroupMap[f.destination] = f; 
+        });
+      }
 
       for (let r of destRows) {
-        const destVal = r.querySelector(".inp-dest-val").value, etaIsoVal = r.querySelector(".inp-eta-val").value, remVal = r.querySelector(".inp-dest-remark").value;
-        const etdOrigFormatted = document.getElementById("sched-etdorig").value, updClosingFormatted = document.getElementById("sched-updclosing").value;
-        const etbWebFormatted = document.getElementById("sched-etbweb").value, etdWebFormatted = document.getElementById("sched-etdweb").value;
+        const selectElem = r.querySelector(".inp-dest-val");
+        const destVal = (selectElem.value || selectElem.getAttribute("data-initial-val") || "").trim().toUpperCase();
+        
+        const etaIsoVal = r.querySelector(".inp-eta-val").value;
+        const remVal = r.querySelector(".inp-dest-remark").value;
+        const etdOrigFormatted = document.getElementById("sched-etdorig").value;
+        const updClosingFormatted = document.getElementById("sched-updclosing").value;
+        const etbWebFormatted = document.getElementById("sched-etbweb").value;
+        const etdWebFormatted = document.getElementById("sched-etdweb").value;
 
         const payload = {
-          week: weekInp ? `WEEK ${weekInp}` : '', liner: linerInp, port: document.getElementById("sched-port").value,
-          feeder_vessel: vesselInp, voyage: voyageInp, etd_port_origin: etdOrigFormatted, closing_cy: document.getElementById("sched-closingcy").value,
+          week: weekInp ? `WEEK ${weekInp}` : '', 
+          liner: linerInp, 
+          port: document.getElementById("sched-port").value,
+          feeder_vessel: vesselInp, 
+          voyage: voyageInp, 
+          etd_port_origin: etdOrigFormatted, 
+          closing_cy: document.getElementById("sched-closingcy").value,
           update_closing: updClosingFormatted,
           update_closing_cy: updClosingFormatted,
-          etb_atb_website: etbWebFormatted ? (etbWebFormatted.toUpperCase().includes('ATB') ? etbWebFormatted : `ATB: ${etbWebFormatted}`) : '',
+          etb_atb_website: etbWebFormatted ? (etbWebFormatted.toUpperCase().includes('ATB') || etbWebFormatted.toUpperCase().includes('ETB') ? etbWebFormatted : `ETB: ${etbWebFormatted}`) : '',
           etd_atd_website: etdWebFormatted ? (etdWebFormatted.toUpperCase().includes('ETD') || etdWebFormatted.toUpperCase().includes('ATD') ? etdWebFormatted : `ETD: ${etdWebFormatted}`) : '',
-          eta_port: etaIsoVal, destination: destVal, remark: remVal || document.getElementById("sched-remark").value.trim()
+          eta_port: etaIsoVal, 
+          destination: destVal, 
+          remark: remVal || document.getElementById("sched-remark").value.trim()
         };
 
-        const oldData = oldGroupMap[destVal] || {}; let targetRowId = oldData.id || null;
-        if (targetRowId) { await supabaseClient.from('control_schedule').update(payload).eq('id', targetRowId); }
-        else { const { data: n } = await supabaseClient.from('control_schedule').insert([payload]).select(); if (n?.[0]) targetRowId = n[0].id; }
+        const oldData = oldGroupMap[destVal] || {}; 
+        let targetRowId = oldData.id || null;
+
+        if (targetRowId) { 
+          const { error: updErr } = await supabaseClient.from('control_schedule').update(payload).eq('id', targetRowId); 
+          if (updErr) throw updErr;
+        } else { 
+          const { data: n, error: insErr } = await supabaseClient.from('control_schedule').insert([payload]).select(); 
+          if (insErr) throw insErr;
+          if (n?.[0]) targetRowId = n[0].id; 
+        }
 
         if (targetRowId) {
-          if (!existingIds.length) { await catatLogChangesServer(targetRowId, "Aditya Febriansyah", "BARU", "ALL", "-", voyageInp ? `${vesselInp} ${voyageInp}` : vesselInp); }
-          else {
+          if (!existingIds.length) { 
+            await catatLogChangesServer(targetRowId, "Aditya Febriansyah", "BARU", "ALL", "-", voyageInp ? `${vesselInp} ${voyageInp}` : vesselInp); 
+          } else {
             const clean = (s) => String(s || '').replace(/^(ATB:|ETD:|ATD:)\s*/i, '').trim();
-            if (clean(oldData.update_closing_cy) !== clean(updClosingFormatted) && updClosingFormatted) await catatLogChangesServer(targetRowId, "Aditya Febriansyah", "UPDATE", "UPDATE CLOSING CY", oldData.update_closing_cy, updClosingFormatted);
-            if (clean(oldData.etb_website) !== clean(payload.etb_atb_website) && payload.etb_atb_website) await catatLogChangesServer(targetRowId, "Aditya Febriansyah", "UPDATE", "ETB/ATB WEBSITE", oldData.etb_website, payload.etb_atb_website);
-            if (clean(oldData.etd_website) !== clean(payload.etd_atd_website) && payload.etd_atd_website) await catatLogChangesServer(targetRowId, "Aditya Febriansyah", "UPDATE", "ETD/ATD WEBSITE", oldData.etd_website, payload.etd_atd_website);
-            if (clean(oldData.eta_port) !== clean(etaIsoVal) && etaIsoVal) await catatLogChangesServer(targetRowId, "Aditya Febriansyah", "UPDATE", "ETA PORT", oldData.eta_port, etaIsoVal);
+            if (clean(oldData.update_closing_cy) !== clean(updClosingFormatted) && updClosingFormatted) 
+              await catatLogChangesServer(targetRowId, "Aditya Febriansyah", "UPDATE", "UPDATE CLOSING CY", oldData.update_closing_cy, updClosingFormatted);
+            if (clean(oldData.etb_website) !== clean(payload.etb_atb_website) && payload.etb_atb_website) 
+              await catatLogChangesServer(targetRowId, "Aditya Febriansyah", "UPDATE", "ETB/ATB WEBSITE", oldData.etb_website, payload.etb_atb_website);
+            if (clean(oldData.etd_website) !== clean(payload.etd_atd_website) && payload.etd_atd_website) 
+              await catatLogChangesServer(targetRowId, "Aditya Febriansyah", "UPDATE", "ETD/ATD WEBSITE", oldData.etd_website, payload.etd_atd_website);
+            if (clean(oldData.eta_port) !== clean(etaIsoVal) && etaIsoVal) 
+              await catatLogChangesServer(targetRowId, "Aditya Febriansyah", "UPDATE", "ETA PORT", oldData.eta_port, etaIsoVal);
           }
         }
       }
-      alertDiv.style.color = "#4ade80"; alertDiv.innerText = "✅ Data Schedule berhasil disimpan!";
-      setTimeout(() => { tutupModalSchedule(); muatDataSchedule(); }, 1000);
-    } catch(err) { alertDiv.style.color = "#ef4444"; alertDiv.innerText = "❌ Gagal menyimpan: " + err.message; }
+
+      alertDiv.style.color = "#4ade80"; 
+      alertDiv.innerText = "✅ Data Schedule berhasil disimpan!";
+      setTimeout(() => { 
+        tutupModalSchedule(); 
+        muatDataSchedule(); 
+      }, 1000);
+
+    } catch(err) { 
+      alertDiv.style.color = "#ef4444"; 
+      alertDiv.innerText = "❌ Gagal menyimpan: " + err.message; 
+    }
   }
 
   async function hapusSchedule(event, displayNo, rowId) {
@@ -983,16 +1034,13 @@
       return;
     }
 
-    // 1. Pop-up Konfirmasi Sebelum Sinkronisasi
     const confirmMsg = `⚡ <b>SYNC TPKS SEMARANG:</b><br><br>Apakah Anda yakin ingin menarik data Closing Time, ETB/ATB & ETD/ATD terbaru dari situs web TPKS Pelindo?<br><br><span style="color:#94a3b8; font-size:11.5px;">Sistem hanya akan memperbarui jadwal kapal dengan PORT = 'SRG'.</span>`;
     
     const userAgreed = await showCustomConfirm(confirmMsg);
     if (!userAgreed) return;
 
-    // Catat Waktu Detik Saat Tombol Diklik (ISO string format)
     const syncStartTime = new Date().toISOString();
 
-    // 2. Tampilkan Overlay Loading
     const overlay = document.createElement("div");
     overlay.className = "nexportal-dialog-overlay";
     overlay.id = "tpksLoadingDialog";
@@ -1006,7 +1054,6 @@
     document.body.appendChild(overlay);
 
     try {
-      // 3. Trigger Apps Script
       await fetch(GAS_WEB_APP_URL, {
         method: "POST",
         mode: "no-cors",
@@ -1014,10 +1061,8 @@
         body: "action=auto_sync"
       });
 
-      // 4. Jeda Eksekusi Server Apps Script (3.5 Detik)
       await new Promise(r => setTimeout(r, 3500));
 
-      // 5. Cek Log Changes Supabase HANYA YANG DIBUAT SETELAH TOMBOL DIKLIK (gte.syncStartTime)
       const { data: recentLogs } = await supabaseClient
         .from('log_changes')
         .select('row_target, created_at, user')
@@ -1037,7 +1082,6 @@
         updatedVesselNames = [...new Set(updatedVesselNames)];
       }
 
-      // 6. Tampilkan Notifikasi Sesuai Hasil Nyata
       if (updatedVesselNames.length > 0) {
         let vesselListStr = updatedVesselNames.map(v => `• ${v}`).join('\n');
         await showCustomAlert(`⚡ Sinkronisasi Berhasil!\n\nBerikut kapal yang berhasil diperbarui:\n${vesselListStr}`);
@@ -1045,7 +1089,6 @@
         await showCustomAlert("⚡ Sinkronisasi Selesai!\n\nSemua data kapal sudah sinkron dengan web Pelindo TPKS (Tidak ada perubahan jadwal baru).");
       }
 
-      // 7. Refresh Tabel Utama
       muatDataSchedule();
 
     } catch (err) {
