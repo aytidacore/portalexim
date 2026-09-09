@@ -109,10 +109,10 @@
   .log-table td { padding: 6px; border-bottom: 1px solid #334155; color: #cbd5e1; white-space: nowrap; }
 
   .upload-dropzone { border: 2px dashed #0284c7; border-radius: 8px; padding: 20px; text-align: center; background: #0f172a; cursor: pointer; }
-  .nexportal-dialog-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: flex-start; padding-top: 5vh; z-index: 99999999 !important; }
-  .nexportal-dialog-card { background: #182232; border: 1.5px solid #38bdf8; border-left: 6px solid #4ade80; border-radius: 12px; width: 90%; max-width: 460px; padding: 18px 20px; box-shadow: 0 20px 35px rgba(0,0,0,0.8); display: flex; flex-direction: column; gap: 14px; }
-  .nexportal-dialog-header { color: #4ade80; font-size: 13px; font-weight: 700; margin: 0; }
-  .nexportal-dialog-body { color: #f1f5f9; font-size: 12.5px; line-height: 1.5; font-weight: 500; }
+  .nexportal-dialog-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: flex-start; padding-top: 15vh; z-index: 99999999 !important; }
+  .nexportal-dialog-card { background: #182232; border: 1.5px solid #38bdf8; border-left: 6px solid #f59e0b; border-radius: 12px; width: 90%; max-width: 480px; padding: 18px 20px; box-shadow: 0 20px 35px rgba(0,0,0,0.8); display: flex; flex-direction: column; gap: 14px; }
+  .nexportal-dialog-header { color: #f59e0b; font-size: 13.5px; font-weight: 700; margin: 0; }
+  .nexportal-dialog-body { color: #f1f5f9; font-size: 12.5px; line-height: 1.5; font-weight: 500; white-space: pre-line; }
   .nexportal-dialog-actions { display: flex; justify-content: flex-end; gap: 10px; }
   .nexportal-btn-ok { background: #0284c7; color: #ffffff; border: none; padding: 6px 18px; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; }
   .nexportal-btn-cancel { background: #334155; color: #cbd5e1; border: 1px solid #475569; padding: 6px 16px; border-radius: 8px; font-weight: 600; font-size: 12px; cursor: pointer; }
@@ -472,7 +472,6 @@
 
   let masterTermMap = {};
 
-  // URL WEB APP APPS SCRIPT BERAKHIRAN /exec
   const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwIVlSGlT7tH8yl2CKBa5KokFwtdZ3hlLIYsyB1Ioxh3oP5x5QPjGblIaacXkMpOVM/exec";
 
   const getCurrentWeekNumber = () => {
@@ -572,7 +571,7 @@
 
   const showCustomConfirm = (msg) => new Promise(res => {
     const overlay = document.createElement("div"); overlay.className = "nexportal-dialog-overlay";
-    overlay.innerHTML = `<div class="nexportal-dialog-card"><h4 class="nexportal-dialog-header">NexPortal-EXIM says:</h4><div class="nexportal-dialog-body">${msg}</div><div class="nexportal-dialog-actions"><button class="nexportal-btn-ok" id="npConfirmBtnOk">OK</button><button class="nexportal-btn-cancel" id="npConfirmBtnCancel">Cancel</button></div></div>`;
+    overlay.innerHTML = `<div class="nexportal-dialog-card"><h4 class="nexportal-dialog-header">NexPortal-EXIM says:</h4><div class="nexportal-dialog-body">${msg}</div><div class="nexportal-dialog-actions"><button class="nexportal-btn-cancel" id="npConfirmBtnCancel">BATAL</button><button class="nexportal-btn-ok" id="npConfirmBtnOk">OK</button></div></div>`;
     document.body.appendChild(overlay);
     overlay.querySelector("#npConfirmBtnOk").onclick = () => { overlay.remove(); res(true); };
     overlay.querySelector("#npConfirmBtnCancel").onclick = () => { overlay.remove(); res(false); };
@@ -580,7 +579,7 @@
 
   const showCustomAlert = (msg) => new Promise(res => {
     const overlay = document.createElement("div"); overlay.className = "nexportal-dialog-overlay";
-    overlay.innerHTML = `<div class="nexportal-dialog-card"><h4 class="nexportal-dialog-header">NexPortal-EXIM says:</h4><div class="nexportal-dialog-body" style="white-space: pre-line;">${msg}</div><div class="nexportal-dialog-actions"><button class="nexportal-btn-ok" id="npAlertBtnOk">OK</button></div></div>`;
+    overlay.innerHTML = `<div class="nexportal-dialog-card"><h4 class="nexportal-dialog-header">NexPortal-EXIM says:</h4><div class="nexportal-dialog-body">${msg}</div><div class="nexportal-dialog-actions"><button class="nexportal-btn-ok" id="npAlertBtnOk">OK</button></div></div>`;
     document.body.appendChild(overlay);
     overlay.querySelector("#npAlertBtnOk").onclick = () => { overlay.remove(); res(true); };
   });
@@ -672,9 +671,9 @@
           port: getSupabaseVal(row, ['port', 'Port']) || 'SRG', vessel_name_only: v, voyage_only: vy, feeder_vessel: vy ? `${v} ${vy}` : v,
           etd_original: formatDateTimeAppScript(getSupabaseVal(row, ['etd_port_origin', 'etd_original'])),
           closing_cy: formatDateTimeAppScript(getSupabaseVal(row, ['closing_cy', 'closing'])),
-          update_closing_cy: formatDateTimeAppScript(getSupabaseVal(row, ['update_closing', 'update_closing_cy'])),
-          etb_website: formatDateTimeAppScript(getSupabaseVal(row, ['etb_atb_website', 'etb_website'])),
-          etd_website: formatDateTimeAppScript(getSupabaseVal(row, ['etd_atd_website', 'etd_website'])),
+          update_closing_cy: formatDateTimeAppScript(getSupabaseVal(row, ['update_closing', 'update_closing_cy', 'updateClosing'])),
+          etb_website: formatDateTimeAppScript(getSupabaseVal(row, ['etb_atb_website', 'etb_website', 'etbWebsite'])),
+          etd_website: formatDateTimeAppScript(getSupabaseVal(row, ['etd_atd_website', 'etd_website', 'etdWebsite'])),
           eta_port: formatDateTimeAppScript(getSupabaseVal(row, ['eta_port', 'etaPort'])),
           destination: getSupabaseVal(row, ['destination', 'dest']), remark: getSupabaseVal(row, ['remark', 'Remark']),
           revCount: info.total, revUpdClosing: info.upd_closing, revEtbWeb: info.etb_web, revEtdWeb: info.etd_web, revEtaPort: info.eta_port
@@ -919,6 +918,7 @@
           week: weekInp ? `WEEK ${weekInp}` : '', liner: linerInp, port: document.getElementById("sched-port").value,
           feeder_vessel: vesselInp, voyage: voyageInp, etd_port_origin: etdOrigFormatted, closing_cy: document.getElementById("sched-closingcy").value,
           update_closing: updClosingFormatted,
+          update_closing_cy: updClosingFormatted,
           etb_atb_website: etbWebFormatted ? (etbWebFormatted.toUpperCase().includes('ATB') ? etbWebFormatted : `ATB: ${etbWebFormatted}`) : '',
           etd_atd_website: etdWebFormatted ? (etdWebFormatted.toUpperCase().includes('ETD') || etdWebFormatted.toUpperCase().includes('ATD') ? etdWebFormatted : `ETD: ${etdWebFormatted}`) : '',
           eta_port: etaIsoVal, destination: destVal, remark: remVal || document.getElementById("sched-remark").value.trim()
@@ -974,7 +974,7 @@
 
   function tutupModalHistori() { document.getElementById("modalHistoriLog").style.display = "none"; }
 
-  /* --- FUNGSI UPDATE TPKS OTOMATIS (SINKRONISASI LATAR BELAKANG VIA NO-CORS) --- */
+  /* --- FUNGSI UPDATE TPKS DENGAN DIALOG KONFIRMASI CUSTOM --- */
   window.syncDataTPKS = async function(event) {
     if (event) { event.preventDefault(); event.stopPropagation(); }
 
@@ -983,37 +983,67 @@
       return;
     }
 
+    // 1. Dapatkan Pop-up Konfirmasi Sebelum Sinkronisasi
+    const confirmMsg = `⚡ <b>SYNC TPKS SEMARANG:</b><br><br>Apakah Anda yakin ingin menarik data Closing Time, ETB/ATB & ETD/ATD terbaru dari situs web TPKS Pelindo?<br><br><span style="color:#94a3b8; font-size:11.5px;">Sistem hanya akan memperbarui jadwal kapal dengan PORT = 'SRG'.</span>`;
+    
+    const userAgreed = await showCustomConfirm(confirmMsg);
+    if (!userAgreed) return; // Batal jika pengguna menekan tombol BATAL
+
+    // 2. Tampilkan Overlay Loading saat Sinkronisasi Berjalan
     const overlay = document.createElement("div");
     overlay.className = "nexportal-dialog-overlay";
     overlay.id = "tpksLoadingDialog";
     overlay.innerHTML = `
       <div class="nexportal-dialog-card" style="text-align:center;">
-        <h4 class="nexportal-dialog-header">⚡ Memproses Sync Pelindo...</h4>
+        <h4 class="nexportal-dialog-header">⚡ Memproses Sync Pelindo TPKS...</h4>
         <div class="nexportal-dialog-body" style="padding:15px 0;">
-          ⏳ Memicu Apps Script membaca data TPKS & update Supabase...
+          ⏳ Menghubungi Apps Script & melakukan pemindaian jadwal...
         </div>
       </div>`;
     document.body.appendChild(overlay);
 
     try {
-      // Mengirim POST dengan mode no-cors untuk menembus batasan browser
+      // 3. Panggil Apps Script via POST no-cors
       await fetch(GAS_WEB_APP_URL, {
         method: "POST",
         mode: "no-cors",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: "action=auto_sync"
       });
 
+      // 4. Jeda untuk Waktu Eksekusi Server Apps Script
+      await new Promise(r => setTimeout(r, 3500));
+
+      // 5. Cek Log Changes Supabase untuk kapal yang baru di-update
+      const { data: recentLogs } = await supabaseClient
+        .from('log_changes')
+        .select('row_target, created_at, user')
+        .eq('user', 'Auto Sync TPKS')
+        .order('id', { ascending: false })
+        .limit(20);
+
       document.getElementById("tpksLoadingDialog")?.remove();
 
-      await showCustomAlert("⚡ Perintah Sync telah dikirim ke Apps Script!\n\nProses sinkronisasi sedang berjalan di server Google. Tabel akan merefresh otomatis dalam 3 detik.");
+      let updatedVesselNames = [];
+      if (recentLogs && recentLogs.length > 0) {
+        let updatedRowIds = [...new Set(recentLogs.map(l => l.row_target))];
+        updatedVesselNames = masterDataSchedule
+          .filter(s => updatedRowIds.includes(String(s.id)))
+          .map(s => s.feeder_vessel);
+        
+        updatedVesselNames = [...new Set(updatedVesselNames)];
+      }
 
-      // Beri jeda 3 detik agar Apps Script menyelesaikan scraping & update Supabase
-      setTimeout(() => {
-        muatDataSchedule();
-      }, 3000);
+      // 6. Tampilkan Notifikasi Hasil Aktual
+      if (updatedVesselNames.length > 0) {
+        let vesselListStr = updatedVesselNames.map(v => `• ${v}`).join('\n');
+        await showCustomAlert(`⚡ Sinkronisasi Berhasil!\n\nBerikut kapal yang berhasil diperbarui:\n${vesselListStr}`);
+      } else {
+        await showCustomAlert("⚡ Sinkronisasi Selesai!\n\nSemua data kapal sudah sinkron dengan web Pelindo TPKS (Tidak ada perubahan jadwal baru).");
+      }
+
+      // 7. Refresh Tabel Utama
+      muatDataSchedule();
 
     } catch (err) {
       document.getElementById("tpksLoadingDialog")?.remove();
@@ -1134,7 +1164,7 @@
       let added = 0;
       for (let r of parsedImportRows) {
         if (!r[1] && !r[3]) continue;
-        const payload = { week: r[0] ? (String(r[0]).toUpperCase().includes("WEEK") ? r[0] : `WEEK ${r[0]}`) : '', liner: String(r[1] || '').toUpperCase(), port: String(r[2] || 'SRG').toUpperCase(), feeder_vessel: String(r[3] || '').toUpperCase(), etd_port_origin: r[4] || '', etb_atb_website: r[5] || '', etd_atd_website: r[6] || '', eta_port: r[7] || '', destination: String(r[8] || '').toUpperCase(), remark: r[9] || '', update_closing: r[10] || '', voyage: String(r[11] || '').toUpperCase() };
+        const payload = { week: r[0] ? (String(r[0]).toUpperCase().includes("WEEK") ? r[0] : `WEEK ${r[0]}`) : '', liner: String(r[1] || '').toUpperCase(), port: String(r[2] || 'SRG').toUpperCase(), feeder_vessel: String(r[3] || '').toUpperCase(), etd_port_origin: r[4] || '', etb_atb_website: r[5] || '', etd_atd_website: r[6] || '', eta_port: r[7] || '', destination: String(r[8] || '').toUpperCase(), remark: r[9] || '', update_closing: r[10] || '', update_closing_cy: r[10] || '', voyage: String(r[11] || '').toUpperCase() };
         const { data: ins } = await supabaseClient.from('control_schedule').insert([payload]).select();
         if (ins?.[0]) await catatLogChangesServer(ins[0].id, "Aditya Febriansyah", "BARU", "ALL", "-", payload.voyage ? `${payload.feeder_vessel} ${payload.voyage}` : payload.feeder_vessel);
         added++;
