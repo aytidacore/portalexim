@@ -896,6 +896,7 @@
     } catch(e) {}
   }
 
+  /* --- FUNGSI SIMPAN SCHEDULE DENGAN KOLOM SKEMA FIX --- */
   async function simpanSchedule() {
     const groupIdsStr = document.getElementById("sched-group-ids").value;
     const weekInp = document.getElementById("sched-week").value.trim();
@@ -936,6 +937,7 @@
         const etbWebFormatted = document.getElementById("sched-etbweb").value;
         const etdWebFormatted = document.getElementById("sched-etdweb").value;
 
+        // Payload disesuaikan dengan skema asli Supabase (kolom: update_closing)
         const payload = {
           week: weekInp ? `WEEK ${weekInp}` : '', 
           liner: linerInp, 
@@ -945,7 +947,6 @@
           etd_port_origin: etdOrigFormatted, 
           closing_cy: document.getElementById("sched-closingcy").value,
           update_closing: updClosingFormatted,
-          update_closing_cy: updClosingFormatted,
           etb_atb_website: etbWebFormatted ? (etbWebFormatted.toUpperCase().includes('ATB') || etbWebFormatted.toUpperCase().includes('ETB') ? etbWebFormatted : `ETB: ${etbWebFormatted}`) : '',
           etd_atd_website: etdWebFormatted ? (etdWebFormatted.toUpperCase().includes('ETD') || etdWebFormatted.toUpperCase().includes('ATD') ? etdWebFormatted : `ETD: ${etdWebFormatted}`) : '',
           eta_port: etaIsoVal, 
@@ -1210,7 +1211,7 @@
       let added = 0;
       for (let r of parsedImportRows) {
         if (!r[1] && !r[3]) continue;
-        const payload = { week: r[0] ? (String(r[0]).toUpperCase().includes("WEEK") ? r[0] : `WEEK ${r[0]}`) : '', liner: String(r[1] || '').toUpperCase(), port: String(r[2] || 'SRG').toUpperCase(), feeder_vessel: String(r[3] || '').toUpperCase(), etd_port_origin: r[4] || '', etb_atb_website: r[5] || '', etd_atd_website: r[6] || '', eta_port: r[7] || '', destination: String(r[8] || '').toUpperCase(), remark: r[9] || '', update_closing: r[10] || '', update_closing_cy: r[10] || '', voyage: String(r[11] || '').toUpperCase() };
+        const payload = { week: r[0] ? (String(r[0]).toUpperCase().includes("WEEK") ? r[0] : `WEEK ${r[0]}`) : '', liner: String(r[1] || '').toUpperCase(), port: String(r[2] || 'SRG').toUpperCase(), feeder_vessel: String(r[3] || '').toUpperCase(), etd_port_origin: r[4] || '', etb_atb_website: r[5] || '', etd_atd_website: r[6] || '', eta_port: r[7] || '', destination: String(r[8] || '').toUpperCase(), remark: r[9] || '', update_closing: r[10] || '', voyage: String(r[11] || '').toUpperCase() };
         const { data: ins } = await supabaseClient.from('control_schedule').insert([payload]).select();
         if (ins?.[0]) await catatLogChangesServer(ins[0].id, "Aditya Febriansyah", "BARU", "ALL", "-", payload.voyage ? `${payload.feeder_vessel} ${payload.voyage}` : payload.feeder_vessel);
         added++;
