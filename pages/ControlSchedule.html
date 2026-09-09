@@ -974,7 +974,7 @@
 
   function tutupModalHistori() { document.getElementById("modalHistoriLog").style.display = "none"; }
 
-  /* --- FUNGSI UPDATE TPKS DENGAN DIALOG KONFIRMASI CUSTOM --- */
+  /* --- FUNGSI UPDATE TPKS DENGAN FILTER WAKTU LOG PRESISI --- */
   window.syncDataTPKS = async function(event) {
     if (event) { event.preventDefault(); event.stopPropagation(); }
 
@@ -983,13 +983,16 @@
       return;
     }
 
-    // 1. Dapatkan Pop-up Konfirmasi Sebelum Sinkronisasi
+    // 1. Pop-up Konfirmasi Sebelum Sinkronisasi
     const confirmMsg = `⚡ <b>SYNC TPKS SEMARANG:</b><br><br>Apakah Anda yakin ingin menarik data Closing Time, ETB/ATB & ETD/ATD terbaru dari situs web TPKS Pelindo?<br><br><span style="color:#94a3b8; font-size:11.5px;">Sistem hanya akan memperbarui jadwal kapal dengan PORT = 'SRG'.</span>`;
     
     const userAgreed = await showCustomConfirm(confirmMsg);
-    if (!userAgreed) return; // Batal jika pengguna menekan tombol BATAL
+    if (!userAgreed) return;
 
-    // 2. Tampilkan Overlay Loading saat Sinkronisasi Berjalan
+    // Catat Waktu Detik Saat Tombol Diklik (ISO string format)
+    const syncStartTime = new Date().toISOString();
+
+    // 2. Tampilkan Overlay Loading
     const overlay = document.createElement("div");
     overlay.className = "nexportal-dialog-overlay";
     overlay.id = "tpksLoadingDialog";
@@ -1003,7 +1006,7 @@
     document.body.appendChild(overlay);
 
     try {
-      // 3. Panggil Apps Script via POST no-cors
+      // 3. Trigger Apps Script
       await fetch(GAS_WEB_APP_URL, {
         method: "POST",
         mode: "no-cors",
@@ -1011,22 +1014,22 @@
         body: "action=auto_sync"
       });
 
-      // 4. Jeda untuk Waktu Eksekusi Server Apps Script
+      // 4. Jeda Eksekusi Server Apps Script (3.5 Detik)
       await new Promise(r => setTimeout(r, 3500));
 
-      // 5. Cek Log Changes Supabase untuk kapal yang baru di-update
+      // 5. Cek Log Changes Supabase HANYA YANG DIBUAT SETELAH TOMBOL DIKLIK (gte.syncStartTime)
       const { data: recentLogs } = await supabaseClient
         .from('log_changes')
         .select('row_target, created_at, user')
         .eq('user', 'Auto Sync TPKS')
-        .order('id', { ascending: false })
-        .limit(20);
+        .gte('created_at', syncStartTime)
+        .order('id', { ascending: false });
 
       document.getElementById("tpksLoadingDialog")?.remove();
 
       let updatedVesselNames = [];
       if (recentLogs && recentLogs.length > 0) {
-        let updatedRowIds = [...new Set(recentLogs.map(l => l.row_target))];
+        let updatedRowIds = [...new Set(recentLogs.map(l => String(l.row_target)))];
         updatedVesselNames = masterDataSchedule
           .filter(s => updatedRowIds.includes(String(s.id)))
           .map(s => s.feeder_vessel);
@@ -1034,7 +1037,7 @@
         updatedVesselNames = [...new Set(updatedVesselNames)];
       }
 
-      // 6. Tampilkan Notifikasi Hasil Aktual
+      // 6. Tampilkan Notifikasi Sesuai Hasil Nyata
       if (updatedVesselNames.length > 0) {
         let vesselListStr = updatedVesselNames.map(v => `• ${v}`).join('\n');
         await showCustomAlert(`⚡ Sinkronisasi Berhasil!\n\nBerikut kapal yang berhasil diperbarui:\n${vesselListStr}`);
