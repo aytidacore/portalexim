@@ -11,105 +11,24 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
-    /* VARIABLES TEMA UTAMA - SOFT & MODERN PRO */
     :root {
       --bg-image: url('https://lh3.googleusercontent.com/d/1Rxg3_8Q53qaXpV2bMtMfS-llOf5bSw80');
-      
-      /* TEMA DEFAULT: DARK SLATE (SOFT & BALANCED) */
-      --bg-main: #0f172a;
-      --bg-card: #1e293b;
-      --bg-sidebar: #1e293b;
-      --bg-topbar: #1e293b;
-      --border-color: #334155;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --accent-color: #38bdf8;
-      --accent-hover: #0284c7;
-      --table-bg: #141d2b;
-      --table-header-bg: #0f172a;
-      --table-row-hover: #253346;
-      --input-bg: #0f172a;
-    }
-
-    /* PRESET TEMA TERANG & LINER MODERN SOFT */
-    [data-theme="light-clean"] {
-      --bg-main: #f8fafc;
-      --bg-card: #ffffff;
-      --bg-sidebar: #0f172a;
-      --bg-topbar: #ffffff;
-      --border-color: #e2e8f0;
-      --text-main: #1e293b;
-      --text-muted: #64748b;
-      --accent-color: #0284c7;
-      --accent-hover: #0369a1;
-      --table-bg: #ffffff;
-      --table-header-bg: #f1f5f9;
-      --table-row-hover: #f8fafc;
-      --input-bg: #ffffff;
-    }
-
-    [data-theme="one-line"] {
-      --bg-main: #fff1f2;
-      --bg-card: #ffffff;
-      --bg-sidebar: #1f2937;
-      --bg-topbar: #ffffff;
-      --border-color: #fecdd3;
-      --text-main: #1f2937;
-      --text-muted: #881337;
-      --accent-color: #e11d48;
-      --accent-hover: #be123c;
-      --table-bg: #ffffff;
-      --table-header-bg: #ffe4e6;
-      --table-row-hover: #fff1f2;
-      --input-bg: #ffffff;
-    }
-
-    [data-theme="evergreen"] {
-      --bg-main: #f0fdf4;
-      --bg-card: #ffffff;
-      --bg-sidebar: #064e3b;
-      --bg-topbar: #ffffff;
-      --border-color: #bbf7d0;
-      --text-main: #064e3b;
-      --text-muted: #047857;
-      --accent-color: #059669;
-      --accent-hover: #047857;
-      --table-bg: #ffffff;
-      --table-header-bg: #dcfce7;
-      --table-row-hover: #f0fdf4;
-      --input-bg: #ffffff;
-    }
-
-    [data-theme="maersk"] {
-      --bg-main: #f0f9ff;
-      --bg-card: #ffffff;
-      --bg-sidebar: #0f172a;
-      --bg-topbar: #ffffff;
-      --border-color: #bae6fd;
-      --text-main: #0c4a6e;
-      --text-muted: #0369a1;
-      --accent-color: #0284c7;
-      --accent-hover: #0369a1;
-      --table-bg: #ffffff;
-      --table-header-bg: #e0f2fe;
-      --table-row-hover: #f0f9ff;
-      --input-bg: #ffffff;
     }
 
     * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter', sans-serif; }
     
     html, body { 
-      background: var(--bg-main); 
-      color: var(--text-main); 
+      background: #0f172a; 
+      color: #f8fafc; 
       height: 100vh; 
       width: 100vw;
       overflow: hidden !important; 
-      transition: background 0.25s ease, color 0.25s ease;
     }
 
     ::-webkit-scrollbar { display: none; }
     html, body, div { -ms-overflow-style: none; scrollbar-width: none; }
 
+    /* Anti Blink / Flicker Login Screen */
     #login-screen {
       display: none; 
       justify-content: center; 
@@ -141,7 +60,7 @@
     .login-subtitle { text-align: center; color: #cbd5e1; font-size: 12px; margin-bottom: 18px; }
 
     .input-group { margin-bottom: 14px; position: relative; text-align: left; }
-    .input-group label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 4px; font-weight: 500; }
+    .input-group label { display: block; font-size: 12px; color: #cbd5e1; margin-bottom: 4px; font-weight: 500; }
     
     .password-wrapper { position: relative; display: flex; align-items: center; }
     .input-group input, .input-group select {
@@ -174,15 +93,14 @@
     }
     
     .sidebar {
-      background: var(--bg-sidebar); 
-      border-right: 1px solid var(--border-color);
+      background: #1e293b; 
+      border-right: 1px solid #334155;
       flex-shrink: 0; 
       z-index: 99; 
       height: 100vh; 
       overflow-x: hidden;
       overflow-y: auto;
       white-space: nowrap;
-      transition: background 0.25s ease;
     }
 
     .sidebar-header { 
@@ -190,7 +108,7 @@
       justify-content: space-between; 
       align-items: center; 
       padding-bottom: 10px; 
-      border-bottom: 1px solid var(--border-color); 
+      border-bottom: 1px solid #334155; 
       min-height: 50px; 
     }
     
@@ -206,41 +124,41 @@
       border-radius: 8px; text-align: left; font-size: 13px; font-weight: 500; cursor: pointer;
       display: flex; align-items: center; justify-content: space-between; transition: 0.2s;
     }
-    .dropdown-btn:hover { background: rgba(255,255,255,0.08); color: #fff; }
+    .dropdown-btn:hover { background: #334155; color: #fff; }
     .menu-label { margin-left: 6px; }
     .dropdown-container { display: none; padding-left: 18px; margin-top: 4px; }
     
     .dropdown-container a {
-      display: block; padding: 8px 10px; color: #cbd5e1; text-decoration: none;
+      display: block; padding: 8px 10px; color: #94a3b8; text-decoration: none;
       font-size: 12px; border-radius: 6px; cursor: pointer; margin-bottom: 2px; transition: 0.2s;
     }
-    .dropdown-container a:hover, .dropdown-container a.active-link { color: var(--accent-color); background: rgba(56, 189, 248, 0.12); font-weight: 600; }
+    .dropdown-container a:hover, .dropdown-container a.active-link { color: #38bdf8; background: rgba(56, 189, 248, 0.1); font-weight: 600; }
     .arrow { font-size: 9px; transition: transform 0.3s; }
     .active-arrow { transform: rotate(180deg); }
 
     .main-wrapper { 
-      flex: 1; display: flex; flex-direction: column; background: var(--bg-main); 
-      min-width: 0; height: 100vh; overflow: hidden !important; transition: background 0.25s ease;
+      flex: 1; display: flex; flex-direction: column; background: #0f172a; 
+      min-width: 0; height: 100vh; overflow: hidden !important;
     }
 
     .topbar {
-      height: 50px; background: var(--bg-topbar); border-bottom: 1px solid var(--border-color);
+      height: 50px; background: #1e293b; border-bottom: 1px solid #334155;
       display: flex; justify-content: space-between; align-items: center; padding: 0 16px;
-      flex-shrink: 0; z-index: 100; transition: background 0.25s ease;
+      flex-shrink: 0; z-index: 100;
     }
     .topbar-left { display: flex; align-items: center; gap: 10px; }
-    .topbar-brand { font-size: 16px; font-weight: 700; color: var(--accent-color); letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px; }
+    .topbar-brand { font-size: 16px; font-weight: 700; color: #38bdf8; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px; }
     .topbar-logo-img { width: 28px; height: 28px; object-fit: contain; }
-    .btn-toggle-menu { display: none; background: var(--bg-card); color: var(--accent-color); border: 1px solid var(--border-color); padding: 6px 10px; border-radius: 6px; font-size: 16px; cursor: pointer; }
+    .btn-toggle-menu { display: none; background: #334155; color: #38bdf8; border: none; padding: 6px 10px; border-radius: 6px; font-size: 16px; cursor: pointer; }
     
     .topbar-actions { display: flex; align-items: center; }
     .user-dropdown { position: relative; }
     .user-info-btn { 
-      font-size: 13px; color: var(--text-muted); white-space: nowrap; display: flex; align-items: center; 
+      font-size: 13px; color: #94a3b8; white-space: nowrap; display: flex; align-items: center; 
       padding: 5px 8px; border-radius: 8px; cursor: pointer; transition: 0.2s; gap: 6px;
     }
-    .user-info-btn:hover { background: rgba(56, 189, 248, 0.1); }
-    .user-name-text { color: var(--accent-color); font-weight: 600; text-transform: uppercase; }
+    .user-info-btn:hover { background: rgba(56, 189, 248, 0.08); }
+    .user-name-text { color: #38bdf8; font-weight: 600; text-transform: uppercase; }
     
     .badge-role { background: #0284c7; color: #fff; padding: 2px 5px; border-radius: 4px; font-size: 9px; text-transform: uppercase; font-weight: 600; }
     .badge-dev { background: #a855f7 !important; }
@@ -251,71 +169,68 @@
       right: 0; 
       top: 100%; 
       margin-top: 6px;
-      background: var(--bg-card);
-      border: 1px solid var(--border-color); 
+      background: #1e293b;
+      border: 1px solid #334155; 
       border-radius: 8px; 
       width: 210px; 
-      box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.8);
       z-index: 10000 !important; 
       overflow: hidden;
     }
-    .user-menu a { display: block; padding: 10px 12px; color: var(--text-main); text-decoration: none; font-size: 12px; cursor: pointer; transition: 0.2s; }
-    .user-menu a:hover { background: rgba(56, 189, 248, 0.12); color: var(--accent-color); }
+    .user-menu a { display: block; padding: 10px 12px; color: #f8fafc; text-decoration: none; font-size: 12px; cursor: pointer; transition: 0.2s; }
+    .user-menu a:hover { background: #334155; color: #38bdf8; }
     .user-menu a.dev-item { color: #c084fc; font-weight: 500; }
     .user-menu a.dev-item:hover { background: rgba(168, 85, 247, 0.15); color: #e9d5ff; }
-    .user-menu a.theme-item { color: var(--accent-color); font-weight: 600; border-top: 1px solid var(--border-color); }
-    .user-menu a.logout-item { color: #f87171; border-top: 1px solid var(--border-color); font-weight: 600; }
+    .user-menu a.logout-item { color: #f87171; border-top: 1px solid #334155; font-weight: 600; }
     .user-menu a.logout-item:hover { background: #dc2626; color: #fff; }
     
     .content-area { padding: 10px; flex: 1; height: calc(100vh - 50px); overflow: hidden !important; }
-    .card { background: var(--bg-card); padding: 12px; border-radius: 10px; border: 1px solid var(--border-color); width: 100%; height: 100%; overflow: hidden !important; display: flex; flex-direction: column; transition: background 0.25s ease; }
+    .card { background: #1e293b; padding: 12px; border-radius: 10px; border: 1px solid #334155; width: 100%; height: 100%; overflow: hidden !important; display: flex; flex-direction: column; }
 
-    .ceisa-pagination-bar { display: flex; justify-content: flex-end; align-items: center; gap: 6px; padding: 8px 12px; background: var(--bg-main); border-top: 1px solid var(--border-color); font-size: 12px; color: var(--text-muted); flex-wrap: wrap; border-radius: 0 0 8px 8px; }
-    .ceisa-page-total { color: var(--text-main); font-weight: 500; margin-right: 8px; }
+    .ceisa-pagination-bar { display: flex; justify-content: flex-end; align-items: center; gap: 6px; padding: 8px 12px; background: #0f172a; border-top: 1px solid #334155; font-size: 12px; color: #94a3b8; flex-wrap: wrap; border-radius: 0 0 8px 8px; }
+    .ceisa-page-total { color: #cbd5e1; font-weight: 500; margin-right: 8px; }
     .ceisa-page-btn-group { display: flex; align-items: center; gap: 4px; }
-    .ceisa-page-btn { background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; transition: all 0.2s; }
-    .ceisa-page-btn:hover:not(:disabled) { border-color: var(--accent-color); color: var(--accent-color); background: rgba(56, 189, 248, 0.1); }
+    .ceisa-page-btn { background: #1e293b; border: 1px solid #334155; color: #cbd5e1; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; transition: all 0.2s; }
+    .ceisa-page-btn:hover:not(:disabled) { border-color: #38bdf8; color: #38bdf8; background: #334155; }
     .ceisa-page-btn.active { background: #0284c7; border-color: #0284c7; color: #ffffff; font-weight: 700; }
     .ceisa-page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-    .ceisa-page-select { background: var(--bg-card); border: 1px solid var(--border-color); color: var(--accent-color); padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600; outline: none; cursor: pointer; }
+    .ceisa-page-select { background: #1e293b; border: 1px solid #334155; color: #38bdf8; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600; outline: none; cursor: pointer; }
 
-    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(6px); justify-content: center; align-items: center; z-index: 2000; padding: 12px; }
-    .modal-card { background: var(--bg-card); border: 1px solid var(--border-color); padding: 18px; border-radius: 12px; width: 100%; max-width: 420px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3); }
+    .table-responsive-custom {
+      width: 100%; flex: 1; overflow-x: auto !important; overflow-y: auto !important;
+      border-radius: 8px 8px 0 0; background-color: #0f172a;
+    }
+
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); justify-content: center; align-items: center; z-index: 2000; padding: 12px; }
+    .modal-card { background: #1e293b; border: 1px solid #334155; padding: 18px; border-radius: 12px; width: 100%; max-width: 420px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); }
     .modal-card-lg { max-width: 800px !important; }
-    .modal-card h3 { color: var(--accent-color); margin-bottom: 12px; font-size: 15px; }
+    .modal-card h3 { color: #38bdf8; margin-bottom: 12px; font-size: 15px; }
 
-    /* SELEKSI TEMA MODAL MODERN & SOFT */
-    .theme-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
-    .theme-card-option { background: var(--bg-main); border: 2px solid var(--border-color); border-radius: 8px; padding: 10px; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; gap: 6px; }
-    .theme-card-option:hover, .theme-card-option.active-theme { border-color: var(--accent-color); box-shadow: 0 0 10px rgba(56, 189, 248, 0.2); }
-    .theme-preview-box { height: 16px; border-radius: 4px; width: 100%; display: flex; overflow: hidden; border: 1px solid rgba(0,0,0,0.15); }
-    .theme-preview-box div { flex: 1; height: 100%; }
-
-    .dev-table-container { max-height: 320px; overflow-y: auto; overflow-x: auto; margin: 12px 0; border: 1px solid var(--border-color); border-radius: 8px; }
+    .dev-table-container { max-height: 320px; overflow-y: auto; overflow-x: auto; margin: 12px 0; border: 1px solid #334155; border-radius: 8px; }
     .dev-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 11px; min-width: 620px; }
-    .dev-table th, .dev-table td { padding: 8px; border-bottom: 1px solid var(--border-color); }
-    .dev-table th { background: var(--bg-main); color: var(--accent-color); position: sticky; top: 0; }
+    .dev-table th, .dev-table td { padding: 8px; border-bottom: 1px solid #334155; }
+    .dev-table th { background: #0f172a; color: #38bdf8; position: sticky; top: 0; }
     .btn-sm { padding: 4px 8px; border-radius: 4px; font-size: 10px; border: none; cursor: pointer; font-weight: 600; }
     .btn-edit { background: #eab308; color: #000; }
     .btn-reset { background: #0284c7; color: #fff; margin-left: 4px; }
     .btn-delete { background: #ef4444; color: #fff; margin-left: 4px; }
 
-    .perm-tab-header { display: flex; gap: 8px; border-bottom: 1px solid var(--border-color); margin-bottom: 12px; padding-bottom: 4px; }
-    .perm-tab-btn { background: transparent; border: none; color: var(--text-muted); padding: 6px 14px; font-size: 12px; font-weight: 600; cursor: pointer; border-radius: 6px; transition: 0.2s; }
+    .perm-tab-header { display: flex; gap: 8px; border-bottom: 1px solid #334155; margin-bottom: 12px; padding-bottom: 4px; }
+    .perm-tab-btn { background: transparent; border: none; color: #94a3b8; padding: 6px 14px; font-size: 12px; font-weight: 600; cursor: pointer; border-radius: 6px; transition: 0.2s; }
     .perm-tab-btn.active { background: #0284c7; color: #fff; }
     
     .perm-grid-compact { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; max-height: 48vh; overflow-y: auto; padding-right: 4px; }
-    .perm-card-compact { background: var(--bg-main); border: 1px solid var(--border-color); padding: 10px; border-radius: 8px; }
-    .perm-card-compact h5 { color: var(--accent-color); font-size: 11px; text-transform: uppercase; margin-bottom: 6px; border-bottom: 1px solid var(--border-color); padding-bottom: 4px; }
+    .perm-card-compact { background: #0f172a; border: 1px solid #334155; padding: 10px; border-radius: 8px; }
+    .perm-card-compact h5 { color: #38bdf8; font-size: 11px; text-transform: uppercase; margin-bottom: 6px; border-bottom: 1px solid #334155; padding-bottom: 4px; }
     
-    .perm-item { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 11px; color: var(--text-main); cursor: pointer; }
-    .perm-item input[type="checkbox"] { accent-color: var(--accent-color); cursor: pointer; }
+    .perm-item { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 11px; color: #cbd5e1; cursor: pointer; }
+    .perm-item input[type="checkbox"] { accent-color: #38bdf8; cursor: pointer; }
 
-    .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 98; backdrop-filter: blur(2px); }
+    .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 98; backdrop-filter: blur(2px); }
 
     @media (min-width: 769px) {
       .sidebar { width: 60px; padding: 12px 8px; transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-      .sidebar:hover { width: 240px; padding: 12px 14px; box-shadow: 10px 0 25px rgba(0,0,0,0.3); }
+      .sidebar:hover { width: 240px; padding: 12px 14px; box-shadow: 10px 0 25px rgba(0,0,0,0.5); }
       .brand-logo-img { width: 40px; height: 40px; }
       .sidebar:hover .brand-logo-img { width: 100%; max-width: 200px; max-height: 60px; }
       .menu-label, .arrow { opacity: 0; transition: opacity 0.2s; }
@@ -337,7 +252,7 @@
         position: fixed; top: 0; left: 0; height: 100vh; 
         width: 240px !important; transform: translateX(-100%); 
         transition: transform 0.3s ease; padding: 14px 12px !important;
-        box-shadow: 5px 0 20px rgba(0,0,0,0.4);
+        box-shadow: 5px 0 20px rgba(0,0,0,0.7);
       }
       .sidebar.active { transform: translateX(0); }
       .sidebar .brand-logo-img { width: 100% !important; max-width: 180px !important; height: auto !important; max-height: 48px !important; }
@@ -356,7 +271,6 @@
       .content-area { padding: 6px; height: calc(100vh - 46px); }
       .card { padding: 8px; border-radius: 8px; }
       .ceisa-pagination-bar { justify-content: center; }
-      .theme-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -456,7 +370,6 @@
               <a onclick="bukaModalPass(false)">🔒 Ubah Password Saya</a>
               <a id="dev-menu-item" style="display:none;" class="dev-item" onclick="bukaModalDevUser()">👑 Kelola Semua User</a>
               <a id="dev-perm-item" style="display:none;" class="dev-item" onclick="bukaModalDevPerm()">🛡️ Permission User</a>
-              <a onclick="bukaModalTheme()" class="theme-item">🎨 Pilih Tema Aplikasi</a>
               <a onclick="logout()" class="logout-item">🚪 LOGOUT</a>
             </div>
           </div>
@@ -466,66 +379,9 @@
       <div class="content-area">
         <div class="card" id="app-content">
           <h2>Selamat Datang di Portal Operasional</h2>
-          <p style="color: var(--text-muted); margin-top: 8px;">Pilih salah satu menu di sebelah kiri untuk mengakses sistem.</p>
+          <p style="color: #94a3b8; margin-top: 8px;">Pilih salah satu menu di sebelah kiri untuk mengakses sistem.</p>
         </div>
       </div>
-    </div>
-  </div>
-
-  <!-- MODAL PILIH TEMA TAMPILAN -->
-  <div class="modal-overlay" id="modalTheme">
-    <div class="modal-card">
-      <h3>🎨 Pilih Tema Tampilan Aplikasi</h3>
-      <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">Pilihan tema akan otomatis tersimpan untuk akun Anda.</p>
-      
-      <div class="theme-grid">
-        <div class="theme-card-option" id="opt-theme-default" onclick="setApplicationTheme('default')">
-          <div style="font-size:12px; font-weight:700; color:#38bdf8;">🌙 Dark Slate (Default)</div>
-          <div class="theme-preview-box">
-            <div style="background:#0f172a;"></div>
-            <div style="background:#1e293b;"></div>
-            <div style="background:#38bdf8;"></div>
-          </div>
-        </div>
-
-        <div class="theme-card-option" id="opt-theme-light-clean" onclick="setApplicationTheme('light-clean')">
-          <div style="font-size:12px; font-weight:700; color:#0284c7;">☀️ Modern Soft Light</div>
-          <div class="theme-preview-box">
-            <div style="background:#f8fafc;"></div>
-            <div style="background:#ffffff;"></div>
-            <div style="background:#0284c7;"></div>
-          </div>
-        </div>
-
-        <div class="theme-card-option" id="opt-theme-one-line" onclick="setApplicationTheme('one-line')">
-          <div style="font-size:12px; font-weight:700; color:#e11d48;">🌸 ONE Executive Magenta</div>
-          <div class="theme-preview-box">
-            <div style="background:#fff1f2;"></div>
-            <div style="background:#ffffff;"></div>
-            <div style="background:#e11d48;"></div>
-          </div>
-        </div>
-
-        <div class="theme-card-option" id="opt-theme-evergreen" onclick="setApplicationTheme('evergreen')">
-          <div style="font-size:12px; font-weight:700; color:#059669;">🌲 Evergreen Maritime</div>
-          <div class="theme-preview-box">
-            <div style="background:#f0fdf4;"></div>
-            <div style="background:#ffffff;"></div>
-            <div style="background:#059669;"></div>
-          </div>
-        </div>
-
-        <div class="theme-card-option" id="opt-theme-maersk" onclick="setApplicationTheme('maersk')">
-          <div style="font-size:12px; font-weight:700; color:#0284c7;">🌊 Ocean Navy & Cyan</div>
-          <div class="theme-preview-box">
-            <div style="background:#f0f9ff;"></div>
-            <div style="background:#0f172a;"></div>
-            <div style="background:#0284c7;"></div>
-          </div>
-        </div>
-      </div>
-
-      <button type="button" onclick="tutupModalTheme()" style="width:100%; margin-top:16px; background:#475569; border:none; padding:9px; border-radius:8px; color:white; cursor:pointer; font-weight:600; font-size:12px;">Tutup</button>
     </div>
   </div>
 
@@ -533,7 +389,7 @@
   <div class="modal-overlay" id="modalPassword">
     <div class="modal-card">
       <h3 id="modal-title">🔑 Ubah Kata Sandi Saya</h3>
-      <p id="modal-desc" style="font-size:12px; color:var(--text-muted); margin-bottom:16px;"></p>
+      <p id="modal-desc" style="font-size:12px; color:#94a3b8; margin-bottom:16px;"></p>
       
       <div class="input-group">
         <label>Password Lama</label>
@@ -562,21 +418,21 @@
         <button onclick="tutupModalDevUser()" style="background:none; border:none; color:#ef4444; font-size:18px; cursor:pointer;">✖</button>
       </div>
 
-      <div style="background:var(--bg-main); padding:12px; border-radius:8px; margin-top:12px; border:1px solid var(--border-color);">
-        <h4 id="form-dev-title" style="font-size:13px; color:var(--accent-color); margin-bottom:10px;">➕ Tambah / Edit User Baru</h4>
+      <div style="background:#0f172a; padding:12px; border-radius:8px; margin-top:12px; border:1px solid #334155;">
+        <h4 id="form-dev-title" style="font-size:13px; color:#38bdf8; margin-bottom:10px;">➕ Tambah / Edit User Baru</h4>
         <input type="hidden" id="dev-old-uname">
         <div class="dev-grid-form" style="display:grid; grid-template-columns: 1fr 1fr 1fr auto; gap:8px; align-items:end;">
           <div>
-            <label style="font-size:11px; color:var(--text-muted);">Username</label>
+            <label style="font-size:11px; color:#94a3b8;">Username</label>
             <input type="text" id="dev-uname" placeholder="cth: budi" style="padding:8px; font-size:12px;">
           </div>
           <div>
-            <label style="font-size:11px; color:var(--text-muted);">Password</label>
+            <label style="font-size:11px; color:#94a3b8;">Password</label>
             <input type="text" id="dev-pass" placeholder="Password user" style="padding:8px; font-size:12px;">
           </div>
           <div>
-            <label style="font-size:11px; color:var(--text-muted);">Role</label>
-            <select id="dev-role" style="padding:8px; font-size:12px; background:var(--bg-card); color:var(--text-main); border:1px solid var(--border-color); border-radius:6px; width:100%;">
+            <label style="font-size:11px; color:#94a3b8;">Role</label>
+            <select id="dev-role" style="padding:8px; font-size:12px; background:#1e293b; color:#fff; border:1px solid #334155; border-radius:6px; width:100%;">
               <option value="user">User</option>
               <option value="admin">Admin</option>
               <option value="developer">Developer</option>
@@ -624,18 +480,18 @@
 
       <!-- TAB 1: PERMISSION PER ROLE -->
       <div id="perm-view-role">
-        <p style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">Atur hak akses bawaan/default berdasarkan Role Pengguna (User / Admin).</p>
+        <p style="font-size:11px; color:#94a3b8; margin-bottom:8px;">Atur hak akses bawaan/default berdasarkan Role Pengguna (User / Admin).</p>
         <div id="perm-container-role" class="perm-grid-compact"></div>
       </div>
 
       <!-- TAB 2: PERMISSION PER USERNAME -->
       <div id="perm-view-user" style="display:none;">
         <div style="display:flex; gap:10px; margin-bottom:10px; align-items:center;">
-          <select id="perm-user-select" onchange="devRenderUserPermForm()" style="flex:1; padding:8px; background:var(--bg-main); border:1px solid var(--border-color); color:var(--accent-color); border-radius:6px; font-size:12px; font-weight:600;">
+          <select id="perm-user-select" onchange="devRenderUserPermForm()" style="flex:1; padding:8px; background:#0f172a; border:1px solid #334155; color:#38bdf8; border-radius:6px; font-size:12px; font-weight:600;">
           </select>
-          <input type="text" id="perm-user-search" placeholder="🔍 Cari Username..." onkeyup="filterPermUserDropdown()" style="width:180px; padding:8px; background:var(--bg-main); border:1px solid var(--border-color); color:var(--text-main); border-radius:6px; font-size:12px;">
+          <input type="text" id="perm-user-search" placeholder="🔍 Cari Username..." onkeyup="filterPermUserDropdown()" style="width:180px; padding:8px; background:#0f172a; border:1px solid #334155; color:#fff; border-radius:6px; font-size:12px;">
         </div>
-        <p style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">Jika centang diisi, izin ini akan **mengabaikan (override)** permission bawaan Role user tersebut.</p>
+        <p style="font-size:11px; color:#94a3b8; margin-bottom:8px;">Jika centang diisi, izin ini akan **mengabaikan (override)** permission bawaan Role user tersebut.</p>
         <div id="perm-container-user" class="perm-grid-compact"></div>
       </div>
 
@@ -648,11 +504,11 @@
 
   <!-- TOAST NOTIFIKASI -->
   <div class="modal-overlay" id="globalToastOverlay" style="z-index: 99999999 !important; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); align-items: flex-start; padding-top: 30px;">
-    <div id="globalNexprtToast" style="background: var(--bg-card); border: 1px solid var(--accent-color); border-left: 5px solid var(--accent-color); color: var(--text-main); padding: 16px 20px; border-radius: 10px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); width: 92%; max-width: 440px; font-family: Calibri, 'Segoe UI', Arial, sans-serif !important; transition: all 0.3s ease;">
-      <div style="font-size: 13.5px; font-weight: bold; color: var(--accent-color); margin-bottom: 8px;" id="globalToastTitle">
+    <div id="globalNexprtToast" style="background: #1e293b; border: 1px solid #38bdf8; border-left: 5px solid #38bdf8; color: #ffffff; padding: 16px 20px; border-radius: 10px; box-shadow: 0 20px 40px rgba(0,0,0,0.9); width: 92%; max-width: 440px; font-family: Calibri, 'Segoe UI', Arial, sans-serif !important; transition: all 0.3s ease;">
+      <div style="font-size: 13.5px; font-weight: bold; color: #38bdf8; margin-bottom: 8px;" id="globalToastTitle">
         NexPortal-EXIM says:
       </div>
-      <div style="font-size: 12px; color: var(--text-muted); line-height: 1.5; word-break: break-word; margin-bottom: 16px;" id="globalToastBody"></div>
+      <div style="font-size: 12px; color: #cbd5e1; line-height: 1.5; word-break: break-word; margin-bottom: 16px;" id="globalToastBody"></div>
       <div style="display: flex; justify-content: flex-end; gap: 8px;">
         <button id="globalToastBtnCancel" style="display: none; background: #475569; color: #ffffff; border: none; padding: 6px 18px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; transition: 0.2s;">
           BATAL
@@ -672,48 +528,6 @@
 
     let GLOBAL_PERM_DATA = {};
     let GLOBAL_USER_LIST = [];
-
-    /* ENGINE METODE PENYIMPANAN TEMA PER USER WITH CLASS SYNC */
-    function initThemeEngine() {
-      const activeUser = sessionStorage.getItem("user_session") || "default";
-      const savedTheme = localStorage.getItem("user_theme_" + activeUser) || "default";
-      setApplicationTheme(savedTheme, false);
-    }
-
-    function bukaModalTheme() {
-      document.getElementById("userMenu").style.display = "none";
-      document.getElementById("modalTheme").style.display = "flex";
-      
-      const activeUser = sessionStorage.getItem("user_session") || "default";
-      const currentTheme = localStorage.getItem("user_theme_" + activeUser) || "default";
-      
-      document.querySelectorAll(".theme-card-option").forEach(card => card.classList.remove("active-theme"));
-      const activeCard = document.getElementById("opt-theme-" + currentTheme);
-      if (activeCard) activeCard.classList.add("active-theme");
-    }
-
-    function tutupModalTheme() {
-      document.getElementById("modalTheme").style.display = "none";
-    }
-
-    function setApplicationTheme(themeKey, saveToStorage = true) {
-      if (themeKey === "default") {
-        document.documentElement.removeAttribute("data-theme");
-        document.body.className = "";
-      } else {
-        document.documentElement.setAttribute("data-theme", themeKey);
-        document.body.className = "theme-" + themeKey;
-      }
-
-      if (saveToStorage) {
-        const activeUser = sessionStorage.getItem("user_session") || "default";
-        localStorage.setItem("user_theme_" + activeUser, themeKey);
-        
-        document.querySelectorAll(".theme-card-option").forEach(card => card.classList.remove("active-theme"));
-        const activeCard = document.getElementById("opt-theme-" + themeKey);
-        if (activeCard) activeCard.classList.add("active-theme");
-      }
-    }
 
     function scanAllAvailablePagesFromSidebar() {
       const pages = [];
@@ -867,6 +681,7 @@
       }
     });
 
+    // SISTEM LOGIN AMAN SUPABASE
     async function prosesLogin() {
       const u = document.getElementById("user-input").value.trim();
       const p = document.getElementById("pass-input").value.trim();
@@ -908,6 +723,7 @@
           return;
         }
 
+        // Ambil Permissions
         const { data: permData } = await supabaseClient
           .from('system_permissions')
           .select('*');
@@ -972,7 +788,6 @@
           sessionStorage.setItem("active_menu", defaultMenu);
         }
 
-        initThemeEngine();
         tampilkanDashboard(u, user.role, allowedMenus);
         alertBox.innerHTML = "";
 
@@ -1042,7 +857,7 @@
       } else {
         btnBatal.style.display = "block";
         desc.innerText = msg || "Perbarui kata sandi Anda secara berkala.";
-        desc.style.color = msg ? "#f59e0b" : "var(--text-muted)";
+        desc.style.color = msg ? "#f59e0b" : "#94a3b8";
       }
     }
 
@@ -1128,9 +943,9 @@
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td><b>${u.username}</b> ${statusIcon}</td>
-          <td style="font-family:monospace; color:var(--accent-color);">${u.password}</td>
+          <td style="font-family:monospace; color:#38bdf8;">${u.password}</td>
           <td><span class="badge-role ${u.role === 'developer' ? 'badge-dev' : ''}">${u.role}</span></td>
-          <td style="font-size:10px; color:var(--text-muted);">${dateText}</td>
+          <td style="font-size:10px; color:#94a3b8;">${dateText}</td>
           <td>
             <button class="btn-sm btn-edit" onclick="devPilihEdit('${u.username}', '${u.password}', '${u.role}')">✏️ Edit</button>
             <button class="btn-sm btn-reset" onclick="devResetPassUser('${u.username}')">🔄 Reset Psw</button>
@@ -1230,7 +1045,7 @@
 
     async function devMuatPermissions() {
       const roleContainer = document.getElementById("perm-container-role");
-      roleContainer.innerHTML = "<p style='color:var(--accent-color);'>⏳ Memuat data...</p>";
+      roleContainer.innerHTML = "<p style='color:#38bdf8;'>⏳ Memuat data...</p>";
 
       const availablePages = scanAllAvailablePagesFromSidebar();
 
@@ -1274,7 +1089,7 @@
     function devRenderUserPermForm() {
       const userSelect = document.getElementById("perm-user-select");
       const userContainer = document.getElementById("perm-container-user");
-      if (!userSelect.value) { userContainer.innerHTML = "<p style='color:var(--text-muted);'>Belum ada user terdaftar.</p>"; return; }
+      if (!userSelect.value) { userContainer.innerHTML = "<p style='color:#94a3b8;'>Belum ada user terdaftar.</p>"; return; }
 
       const selectedUser = userSelect.value;
       const activePages = GLOBAL_PERM_DATA[selectedUser] || [];
@@ -1353,14 +1168,13 @@
       });
     }
 
+    /* SISTEM CEK SESI TANPA FLICKER / BERKEDIP SAMA SEKALI */
     function cekSession() {
       const user = sessionStorage.getItem("user_session");
       const role = sessionStorage.getItem("user_role");
       const allowedMenus = JSON.parse(sessionStorage.getItem("allowed_menus") || "[]");
       const lastActivity = sessionStorage.getItem("last_activity");
       const currentTime = new Date().getTime();
-
-      initThemeEngine();
 
       if (user && lastActivity) {
         if (currentTime - lastActivity > TIMEOUT_60_MENIT) {
@@ -1385,6 +1199,7 @@
     window.addEventListener("keypress", perbaruiAktivitas);
     window.addEventListener("click", perbaruiAktivitas);
 
+    // Dijalankan Secepat Mungkin Saat DOM Ready
     document.addEventListener("DOMContentLoaded", function() {
       cekSession();
       setInterval(function() {
@@ -1419,6 +1234,7 @@
       }
     }
 
+    // PEMUATAN MODUL STATIC DARI GITHUB
     function loadMenu(pageName) {
       sessionStorage.setItem("active_menu", pageName);
       const contentArea = document.getElementById("app-content");
@@ -1440,7 +1256,7 @@
           });
         })
         .catch(err => {
-          contentArea.innerHTML = "<div style='color:var(--text-main); padding:20px;'><h3>⚠️ Halaman Modul: " + pageName + "</h3><p style='color:var(--text-muted); margin-top:8px;'>" + err.message + "</p></div>";
+          contentArea.innerHTML = "<div style='color:white; padding:20px;'><h3>⚠️ Halaman Modul: " + pageName + "</h3><p style='color:#94a3b8; margin-top:8px;'>" + err.message + "</p></div>";
         });
     }
 
@@ -1499,7 +1315,7 @@
 
         if (startP > 1) {
           btnPagesHtml += `<button class="ceisa-page-btn" onclick="NexPagination.goToPage('${menuName}', 1, '${containerId}')">1</button>`;
-          if (startP > 2) btnPagesHtml += `<span style="color:var(--text-muted); padding:0 2px;">...</span>`;
+          if (startP > 2) btnPagesHtml += `<span style="color:#64748b; padding:0 2px;">...</span>`;
         }
 
         for (let i = startP; i <= endP; i++) {
@@ -1508,7 +1324,7 @@
         }
 
         if (endP < totalPages) {
-          if (endP < totalPages - 1) btnPagesHtml += `<span style="color:var(--text-muted); padding:0 2px;">...</span>`;
+          if (endP < totalPages - 1) btnPagesHtml += `<span style="color:#64748b; padding:0 2px;">...</span>`;
           btnPagesHtml += `<button class="ceisa-page-btn" onclick="NexPagination.goToPage('${menuName}', ${totalPages}, '${containerId}')">${totalPages}</button>`;
         }
 
