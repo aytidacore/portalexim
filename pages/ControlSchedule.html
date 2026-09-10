@@ -724,7 +724,7 @@
       const isAtd = item.etd_website.toUpperCase().includes("ATD");
       if (isAtd || parseDateForSorting(item.etd_website !== '-' ? item.etd_website : item.etd_original) < today) tr.className = "row-past-atd";
 
-      // Pengecekan status ATB dan ATD untuk pewarnaan merah tebal
+      // Pewarnaan Merah Tebal untuk ATB & ATD
       const isAtbStatus = item.etb_website.toUpperCase().includes("ATB");
       const isAtdStatus = item.etd_website.toUpperCase().includes("ATD");
       
@@ -913,6 +913,7 @@
     } catch(e) {}
   }
 
+  /* --- FUNGSI SIMPAN SCHEDULE DENGAN SKEMA ASLI SUPABASE (update_closing) --- */
   async function simpanSchedule() {
     const groupIdsStr = document.getElementById("sched-group-ids").value;
     const weekInp = document.getElementById("sched-week").value.trim();
@@ -1210,13 +1211,43 @@
     w.document.close();
   }
 
+  /* --- SALIN TABEL KHUSUS SUPORT OUTLOOK/EMAIL --- */
   async function copyTableWithInlineStyles() {
     try {
       const clone = document.getElementById("printableArea").cloneNode(true);
-      const html = `<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head><body>${clone.innerHTML}</body></html>`;
-      await navigator.clipboard.write([new ClipboardItem({ 'text/html': new Blob([html], { type: 'text/html' }), 'text/plain': new Blob([clone.innerText], { type: 'text/plain' }) })]);
-      await showCustomAlert("✅ Berhasil Di-copy (Format warna siap dipaste ke Email/Excel untuk Planner)!");
-    } catch (err) { await showCustomAlert("❌ Gagal menyalin: " + err.message); }
+
+      // Injeksi warna background legacy (bgcolor) & inline style pada <th> untuk Outlook
+      const thList = clone.querySelectorAll("table.preview-table th");
+      thList.forEach(th => {
+        th.setAttribute("bgcolor", "#0284c7");
+        th.setAttribute("style", "background-color: #0284c7 !important; color: #ffffff !important; border: 1px solid #000000 !important; padding: 6px 4px; font-size: 10px; font-weight: bold; text-align: center; vertical-align: middle;");
+      });
+
+      // Injeksi warna background legacy (bgcolor) & inline style pada <td> untuk Outlook
+      const tdList = clone.querySelectorAll("table.preview-table td");
+      tdList.forEach(td => {
+        let existingStyle = td.getAttribute("style") || "";
+        
+        if (td.style.backgroundColor) {
+          td.setAttribute("bgcolor", td.style.backgroundColor);
+        }
+
+        td.setAttribute("style", existingStyle + " border: 1px solid #000000 !important; padding: 5px 4px; font-size: 9.5px; vertical-align: middle;");
+      });
+
+      const html = `<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head><body>${clone.innerHTML}</body></html>`;
+      
+      await navigator.clipboard.write([
+        new ClipboardItem({ 
+          'text/html': new Blob([html], { type: 'text/html' }), 
+          'text/plain': new Blob([clone.innerText], { type: 'text/plain' }) 
+        })
+      ]);
+
+      await showCustomAlert("✅ Berhasil Di-copy! Format warna biru header & revisi sekarang bisa langsung dipaste ke Outlook tanpa lewat Gmail.");
+    } catch (err) { 
+      await showCustomAlert("❌ Gagal menyalin: " + err.message); 
+    }
   }
 
   function filterMultiColumn() {
