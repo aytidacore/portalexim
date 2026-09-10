@@ -588,7 +588,7 @@
 
     try {
       const { data, error } = await supabaseClient
-        .from('control_schedules')
+        .from('control_schedule')
         .select('*')
         .order('id', { ascending: false });
 
@@ -982,7 +982,7 @@
         payload.revision_count = revCount;
 
         const { error } = await supabaseClient
-          .from('control_schedules')
+          .from('control_schedule')
           .update(payload)
           .eq('id', id);
 
@@ -993,7 +993,7 @@
         payload.revision_history = {};
 
         const { error } = await supabaseClient
-          .from('control_schedules')
+          .from('control_schedule')
           .insert([payload]);
 
         if (error) throw error;
@@ -1017,7 +1017,7 @@
 
     try {
       const { error } = await supabaseClient
-        .from('control_schedules')
+        .from('control_schedule')
         .delete()
         .eq('id', id);
 
@@ -1081,13 +1081,13 @@
 
         if (IMPORT_MODE === 'ADD') {
           formattedPayloads.forEach(p => delete p.id);
-          const { error } = await supabaseClient.from('control_schedules').insert(formattedPayloads);
+          const { error } = await supabaseClient.from('control_schedule').insert(formattedPayloads);
           if (error) throw error;
           alert("✅ Import Tambah Data Baru Berhasil!");
         } else {
           for (let item of formattedPayloads) {
             if (item.id) {
-              await supabaseClient.from('control_schedules').update(item).eq('id', item.id);
+              await supabaseClient.from('control_schedule').update(item).eq('id', item.id);
             }
           }
           alert("✅ Import Update Massal Berhasil!");
